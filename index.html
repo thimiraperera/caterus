@@ -612,11 +612,12 @@
 
       <form class="cform" id="contact-form" novalidate>
         <div class="cform__row">
-          <label>Name<input type="text" name="name" autocomplete="name" required/></label>
-          <label>Email<input type="email" name="email" autocomplete="email" required/></label>
+          <label>First name<input type="text" name="firstName" placeholder="Jane" autocomplete="given-name" required/></label>
+          <label><span class="cform__head">Last name <span class="cform__opt">(optional)</span></span><input type="text" name="lastName" placeholder="Doe" autocomplete="family-name"/></label>
         </div>
-        <label>Phone <span>(optional)</span><input type="tel" name="phone" autocomplete="tel"/></label>
-        <label>Tell us about your event<textarea name="message" rows="4" required></textarea></label>
+        <label>Email<input type="email" name="email" placeholder="jane@example.com" autocomplete="email" required/></label>
+        <label>Phone<input type="tel" name="phone" id="cf-phone" placeholder="0412 345 678" inputmode="numeric" maxlength="12" autocomplete="tel" required/></label>
+        <label>Tell us about your event<textarea name="message" rows="4" placeholder="e.g. Corporate lunch for 80 guests, Melbourne CBD, 20 June"></textarea></label>
         <button type="submit" class="btn btn--fill">Send message</button>
       </form>
       <p class="cform__success" hidden>Thanks - your message is on its way. We'll be in touch shortly.</p>

@@ -172,6 +172,15 @@
     );
     $$("[data-contact-close]", modal).forEach((el) => el.addEventListener("click", closeModal));
 
+    /* Auto-space the phone number as it's typed (e.g. 0412 345 678) */
+    const phone = $("#cf-phone", modal);
+    if (phone) {
+      phone.addEventListener("input", () => {
+        const d = phone.value.replace(/\D/g, "").slice(0, 10);
+        phone.value = [d.slice(0, 4), d.slice(4, 7), d.slice(7, 10)].filter(Boolean).join(" ");
+      });
+    }
+
     if (cform) {
       cform.addEventListener("submit", (e) => {
         e.preventDefault();
