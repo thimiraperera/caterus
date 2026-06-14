@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caterus | Book vetted caterers in one place</title>
+  <meta name="description" content="Caterus is a managed catering marketplace web app for finding, comparing, booking, and paying vetted caterers.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Caterus home">
+      <span class="brand-mark">C</span>
+      <span>Caterus</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary navigation">
+      <a href="#marketplace">Marketplace</a>
+      <a href="#app">Web App</a>
+      <a href="#operations">Operations</a>
+      <a href="#roadmap">Roadmap</a>
+    </nav>
+    <div class="header-actions">
+      <a class="ghost-link" href="#caterers">For caterers</a>
+      <a class="icon-button primary" href="#booking" aria-label="Start booking">
+        <i data-lucide="calendar-check"></i>
+        <span>Start booking</span>
+      </a>
+      <button class="menu-button" type="button" aria-label="Open menu" aria-expanded="false">
+        <i data-lucide="menu"></i>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-card">
+        <div class="hero-copy">
+          <p class="eyebrow">Managed catering marketplace</p>
+          <h1 id="hero-title">Book catering without chasing five suppliers.</h1>
+          <p class="hero-lede">Caterus helps customers find, compare, book, and pay vetted caterers for events while admins keep quality, confirmation, and payouts under control.</p>
+          <div class="hero-actions">
+            <a class="icon-button primary large" href="#booking">
+              <i data-lucide="search"></i>
+              <span>Find caterers</span>
+            </a>
+            <a class="icon-button secondary large" href="#app">
+              <i data-lucide="layout-dashboard"></i>
+              <span>View web app</span>
+            </a>
+          </div>
+          <div class="rating-strip" aria-label="Marketplace highlights">
+            <div>
+              <strong>Curated first</strong>
+              <span>Every listing controlled by admin</span>
+            </div>
+            <div>
+              <strong>Stripe-ready</strong>
+              <span>Pay in one secure checkout</span>
+            </div>
+            <div>
+              <strong>3 portals</strong>
+              <span>Customer, admin, caterer</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-visual" aria-label="Catered event spread and app preview">
+          <img src="assets/caterus-hero.png" alt="Catering table with a digital booking device">
+          <div class="search-panel" id="booking">
+            <div class="panel-top">
+              <span>Plan an event</span>
+              <i data-lucide="sparkles"></i>
+            </div>
+            <label>
+              <span>Suburb or postcode</span>
+              <input type="text" value="Melbourne CBD" aria-label="Suburb or postcode">
+            </label>
+            <div class="field-grid">
+              <label>
+                <span>Guests</span>
+                <input type="number" value="80" min="10" aria-label="Guests">
+              </label>
+              <label>
+                <span>Budget</span>
+                <select aria-label="Budget per head">
+                  <option>$25-45 / head</option>
+                  <option>$45-70 / head</option>
+                  <option>$70+ / head</option>
+                </select>
+              </label>
+            </div>
+            <button class="icon-button primary full" type="button">
+              <i data-lucide="utensils"></i>
+              <span>Match caterers</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ticker" aria-label="Catering categories">
+      <div>Corporate lunches</div>
+      <div>Wedding grazing tables</div>
+      <div>Birthday buffets</div>
+      <div>Halal friendly</div>
+      <div>Vegan menus</div>
+      <div>Last-mile confirmations</div>
+    </section>
+
+    <section class="section split" id="marketplace">
+      <div>
+        <p class="eyebrow">Customer marketplace</p>
+        <h2>Search like a food app. Book like a serious event planner.</h2>
+      </div>
+      <p class="section-lede">The first launch stays intentionally curated: customers get a polished booking flow, while Caterus manages listings, confirmation, quality, and payouts behind the scenes.</p>
+    </section>
+
+    <section class="cards-grid">
+      <article class="feature-card">
+        <i data-lucide="map-pin"></i>
+        <h3>Local search</h3>
+        <p>Filter by suburb, postcode, cuisine, occasion, headcount, and per-head budget.</p>
+      </article>
+      <article class="feature-card accent">
+        <i data-lucide="badge-check"></i>
+        <h3>Vetted listings</h3>
+        <p>Profiles, menus, reviews, pricing, safety checks, ABN, and insurance managed by admin.</p>
+      </article>
+      <article class="feature-card">
+        <i data-lucide="credit-card"></i>
+        <h3>One checkout</h3>
+        <p>Customers book and pay in one place, with Stripe Connect ready for platform payouts.</p>
+      </article>
+    </section>
+
+    <section class="app-shell" id="app" aria-labelledby="app-title">
+      <div class="app-intro">
+        <p class="eyebrow">Backend-ready web application</p>
+        <h2 id="app-title">The frontend target for the later backend.</h2>
+        <p>These screens are static now, but the interface is structured around the real product surfaces: discovery, profile, checkout, admin order queue, and future caterer dashboard.</p>
+      </div>
+      <div class="tabs" role="tablist" aria-label="App screen previews">
+        <button type="button" class="tab active" data-tab="customer" role="tab" aria-selected="true">Customer</button>
+        <button type="button" class="tab" data-tab="admin" role="tab" aria-selected="false">Admin</button>
+        <button type="button" class="tab" data-tab="caterer" role="tab" aria-selected="false">Caterer</button>
+      </div>
+      <div class="screen-frame">
+        <div class="app-screen active" data-panel="customer">
+          <aside class="sidebar">
+            <div class="mini-brand"><span></span>Caterus</div>
+            <button class="side-item active"><i data-lucide="search"></i>Discover</button>
+            <button class="side-item"><i data-lucide="shopping-bag"></i>Orders</button>
+            <button class="side-item"><i data-lucide="heart"></i>Saved</button>
+          </aside>
+          <div class="workspace">
+            <div class="workspace-head">
+              <div>
+                <span class="status-pill">Melbourne CBD</span>
+                <h3>12 vetted caterers available</h3>
+              </div>
+              <button class="icon-only" type="button" aria-label="Filter results"><i data-lucide="sliders-horizontal"></i></button>
+            </div>
+            <div class="filter-row">
+              <span class="active">Corporate</span><span>Finger food</span><span>Vegan</span><span>$25-45</span>
+            </div>
+            <div class="listing-grid">
+              <article class="listing-card">
+                <div class="listing-image img-one"></div>
+                <div>
+                  <strong>Northside Feast Co.</strong>
+                  <span>Modern Australian · from $34/head</span>
+                </div>
+                <button type="button">Book</button>
+              </article>
+              <article class="listing-card">
+                <div class="listing-image img-two"></div>
+                <div>
+                  <strong>Spice Table Catering</strong>
+                  <span>Indian fusion · from $29/head</span>
+                </div>
+                <button type="button">View</button>
+              </article>
+            </div>
+          </div>
+        </div>
+
+        <div class="app-screen" data-panel="admin">
+          <aside class="sidebar">
+            <div class="mini-brand"><span></span>Admin</div>
+            <button class="side-item active"><i data-lucide="clipboard-list"></i>Orders</button>
+            <button class="side-item"><i data-lucide="shield-check"></i>Vetting</button>
+            <button class="side-item"><i data-lucide="banknote"></i>Payouts</button>
+          </aside>
+          <div class="workspace">
+            <div class="workspace-head">
+              <div>
+                <span class="status-pill urgent">Needs confirmation</span>
+                <h3>Concierge order queue</h3>
+              </div>
+              <button class="icon-button primary compact" type="button"><i data-lucide="plus"></i><span>Create listing</span></button>
+            </div>
+            <div class="queue-table">
+              <div class="queue-row head"><span>Event</span><span>Caterer</span><span>Status</span><span>Total</span></div>
+              <div class="queue-row"><span>Office lunch · 80</span><span>Northside Feast</span><span>Matched</span><span>$2,720</span></div>
+              <div class="queue-row"><span>Birthday · 45</span><span>Spice Table</span><span>Confirming</span><span>$1,305</span></div>
+              <div class="queue-row"><span>Wedding · 160</span><span>Unassigned</span><span>Review</span><span>$9,600</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="app-screen" data-panel="caterer">
+          <aside class="sidebar">
+            <div class="mini-brand"><span></span>Caterer</div>
+            <button class="side-item active"><i data-lucide="calendar-days"></i>Bookings</button>
+            <button class="side-item"><i data-lucide="book-open"></i>Menus</button>
+            <button class="side-item"><i data-lucide="chart-no-axes-combined"></i>Revenue</button>
+          </aside>
+          <div class="workspace">
+            <div class="workspace-head">
+              <div>
+                <span class="status-pill later">Phase 2</span>
+                <h3>Self-serve dashboard</h3>
+              </div>
+              <button class="icon-button secondary compact" type="button"><i data-lucide="clock"></i><span>Availability</span></button>
+            </div>
+            <div class="metric-grid">
+              <div><strong>$18.4k</strong><span>Month revenue</span></div>
+              <div><strong>24</strong><span>Bookings</span></div>
+              <div><strong>4.8</strong><span>Rating</span></div>
+            </div>
+            <div class="calendar-strip"><span></span><span></span><span class="busy"></span><span></span><span class="busy"></span><span></span><span></span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section split" id="operations">
+      <div>
+        <p class="eyebrow">Operations model</p>
+        <h2>Launch curated, then scale into self-serve.</h2>
+      </div>
+      <div class="flow-stack">
+        <article>
+          <span>01</span>
+          <h3>Customer requests catering</h3>
+          <p>Search, compare, build order, pay, and receive confirmation by email or SMS.</p>
+        </article>
+        <article>
+          <span>02</span>
+          <h3>Admin controls quality</h3>
+          <p>Create listings, vet caterers, match bookings, confirm details, and monitor payments.</p>
+        </article>
+        <article>
+          <span>03</span>
+          <h3>Caterers get the keys later</h3>
+          <p>Dashboards, menu editing, availability, statements, and promoted placement come in Phase 2.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="roadmap" id="roadmap">
+      <div class="roadmap-card live">
+        <p>Phase 1 · MVP</p>
+        <h2>Curated marketplace</h2>
+        <ul>
+          <li>Customer discovery and booking</li>
+          <li>Admin-managed caterer listings</li>
+          <li>Stripe checkout and payout oversight</li>
+          <li>Concierge confirmation behind the scenes</li>
+        </ul>
+      </div>
+      <div class="roadmap-card next" id="caterers">
+        <p>Phase 2 · Scale</p>
+        <h2>Hybrid self-serve</h2>
+        <ul>
+          <li>Caterer accounts and menu editor</li>
+          <li>Availability accept or decline workflow</li>
+          <li>Reviews, loyalty credits, and reorder</li>
+          <li>Promoted listing and analytics tools</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div>
+      <strong>Caterus</strong>
+      <span>Managed catering marketplace for Melbourne events.</span>
+    </div>
+    <a class="icon-button secondary" href="#top">
+      <i data-lucide="arrow-up"></i>
+      <span>Back to top</span>
+    </a>
+  </footer>
+
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
