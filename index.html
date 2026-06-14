@@ -1,301 +1,549 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-AU">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Caterus | Book vetted caterers in one place</title>
-  <meta name="description" content="Caterus is a managed catering marketplace web app for finding, comparing, booking, and paying vetted caterers.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Caterus — Find &amp; Book Melbourne's Best Caterers</title>
+  <meta name="description" content="Caterus is Australia's trusted catering marketplace. Search, compare and book vetted catering companies and independent chefs for any event. Secure payments, instant confirmation."/>
+  <meta property="og:title" content="Caterus — Australia's Catering Marketplace"/>
+  <meta property="og:description" content="Find and book vetted caterers for corporate events, weddings, parties and more."/>
+  <meta property="og:type" content="website"/>
+  <link rel="canonical" href="https://www.caterus.com.au/"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="#top" aria-label="Caterus home">
-      <span class="brand-mark">C</span>
-      <span>Caterus</span>
-    </a>
-    <nav class="nav-links" aria-label="Primary navigation">
-      <a href="#marketplace">Marketplace</a>
-      <a href="#app">Web App</a>
-      <a href="#operations">Operations</a>
-      <a href="#roadmap">Roadmap</a>
-    </nav>
-    <div class="header-actions">
-      <a class="ghost-link" href="#caterers">For caterers</a>
-      <a class="icon-button primary" href="#booking" aria-label="Start booking">
-        <i data-lucide="calendar-check"></i>
-        <span>Start booking</span>
+  <div class="noise" aria-hidden="true"></div>
+
+  <!-- ============ NAV ============ -->
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="#top" class="logo" aria-label="Caterus home">
+        <span class="logo__dot" aria-hidden="true"></span>
+        Caterus
       </a>
-      <button class="menu-button" type="button" aria-label="Open menu" aria-expanded="false">
-        <i data-lucide="menu"></i>
+
+      <nav class="nav__links" aria-label="Primary">
+        <a href="#how-it-works">How it works</a>
+        <a href="#caterers">Caterers</a>
+        <a href="#occasions">Occasions</a>
+        <a href="#for-caterers">For caterers</a>
+      </nav>
+
+      <div class="nav__end">
+        <a href="#" class="nav__signin">Sign in</a>
+        <a href="#search" class="btn btn--fill">Find a caterer</a>
+      </div>
+
+      <button class="nav__ham" id="ham" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
       </button>
+    </div>
+
+    <div class="nav__mob" id="mob" hidden>
+      <a href="#how-it-works">How it works</a>
+      <a href="#caterers">Caterers</a>
+      <a href="#occasions">Occasions</a>
+      <a href="#for-caterers">For caterers</a>
+      <a href="#" class="nav__signin">Sign in</a>
+      <a href="#search" class="btn btn--fill">Find a caterer</a>
     </div>
   </header>
 
   <main id="top">
-    <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-card">
-        <div class="hero-copy">
-          <p class="eyebrow">Managed catering marketplace</p>
-          <h1 id="hero-title">Book catering without chasing five suppliers.</h1>
-          <p class="hero-lede">Caterus helps customers find, compare, book, and pay vetted caterers for events while admins keep quality, confirmation, and payouts under control.</p>
-          <div class="hero-actions">
-            <a class="icon-button primary large" href="#booking">
-              <i data-lucide="search"></i>
-              <span>Find caterers</span>
-            </a>
-            <a class="icon-button secondary large" href="#app">
-              <i data-lucide="layout-dashboard"></i>
-              <span>View web app</span>
-            </a>
-          </div>
-          <div class="rating-strip" aria-label="Marketplace highlights">
-            <div>
-              <strong>Curated first</strong>
-              <span>Every listing controlled by admin</span>
-            </div>
-            <div>
-              <strong>Stripe-ready</strong>
-              <span>Pay in one secure checkout</span>
-            </div>
-            <div>
-              <strong>3 portals</strong>
-              <span>Customer, admin, caterer</span>
-            </div>
-          </div>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="search">
+    <div class="hero__inner container">
+      <p class="kicker"><span class="kicker__dot"></span> Australia's catering marketplace</p>
+
+      <h1 class="hero__h1">Find the <span class="hl">perfect caterer</span> for any event.</h1>
+
+      <p class="hero__body">Search hundreds of vetted catering companies and independent chefs across Melbourne. Book securely in minutes.</p>
+
+      <!-- Search form -->
+      <form class="search" id="search-form" role="search" novalidate>
+        <div class="search__field">
+          <label for="s-loc">Suburb</label>
+          <input id="s-loc" type="text" placeholder="e.g. Melbourne CBD" autocomplete="off"/>
         </div>
-        <div class="hero-visual" aria-label="Catered event spread and app preview">
-          <img src="assets/caterus-hero.png" alt="Catering table with a digital booking device">
-          <div class="search-panel" id="booking">
-            <div class="panel-top">
-              <span>Plan an event</span>
-              <i data-lucide="sparkles"></i>
-            </div>
-            <label>
-              <span>Suburb or postcode</span>
-              <input type="text" value="Melbourne CBD" aria-label="Suburb or postcode">
-            </label>
-            <div class="field-grid">
-              <label>
-                <span>Guests</span>
-                <input type="number" value="80" min="10" aria-label="Guests">
-              </label>
-              <label>
-                <span>Budget</span>
-                <select aria-label="Budget per head">
-                  <option>$25-45 / head</option>
-                  <option>$45-70 / head</option>
-                  <option>$70+ / head</option>
-                </select>
-              </label>
-            </div>
-            <button class="icon-button primary full" type="button">
-              <i data-lucide="utensils"></i>
-              <span>Match caterers</span>
-            </button>
-          </div>
+        <div class="search__field">
+          <label for="s-occ">Occasion</label>
+          <select id="s-occ" aria-label="Occasion">
+            <option value="">Any occasion</option>
+            <option>Corporate event</option>
+            <option>Wedding</option>
+            <option>Birthday party</option>
+            <option>Conference</option>
+            <option>Private dinner</option>
+            <option>Product launch</option>
+          </select>
         </div>
-      </div>
-    </section>
-
-    <section class="ticker" aria-label="Catering categories">
-      <div>Corporate lunches</div>
-      <div>Wedding grazing tables</div>
-      <div>Birthday buffets</div>
-      <div>Halal friendly</div>
-      <div>Vegan menus</div>
-      <div>Last-mile confirmations</div>
-    </section>
-
-    <section class="section split" id="marketplace">
-      <div>
-        <p class="eyebrow">Customer marketplace</p>
-        <h2>Search like a food app. Book like a serious event planner.</h2>
-      </div>
-      <p class="section-lede">The first launch stays intentionally curated: customers get a polished booking flow, while Caterus manages listings, confirmation, quality, and payouts behind the scenes.</p>
-    </section>
-
-    <section class="cards-grid">
-      <article class="feature-card">
-        <i data-lucide="map-pin"></i>
-        <h3>Local search</h3>
-        <p>Filter by suburb, postcode, cuisine, occasion, headcount, and per-head budget.</p>
-      </article>
-      <article class="feature-card accent">
-        <i data-lucide="badge-check"></i>
-        <h3>Vetted listings</h3>
-        <p>Profiles, menus, reviews, pricing, safety checks, ABN, and insurance managed by admin.</p>
-      </article>
-      <article class="feature-card">
-        <i data-lucide="credit-card"></i>
-        <h3>One checkout</h3>
-        <p>Customers book and pay in one place, with Stripe Connect ready for platform payouts.</p>
-      </article>
-    </section>
-
-    <section class="app-shell" id="app" aria-labelledby="app-title">
-      <div class="app-intro">
-        <p class="eyebrow">Backend-ready web application</p>
-        <h2 id="app-title">The frontend target for the later backend.</h2>
-        <p>These screens are static now, but the interface is structured around the real product surfaces: discovery, profile, checkout, admin order queue, and future caterer dashboard.</p>
-      </div>
-      <div class="tabs" role="tablist" aria-label="App screen previews">
-        <button type="button" class="tab active" data-tab="customer" role="tab" aria-selected="true">Customer</button>
-        <button type="button" class="tab" data-tab="admin" role="tab" aria-selected="false">Admin</button>
-        <button type="button" class="tab" data-tab="caterer" role="tab" aria-selected="false">Caterer</button>
-      </div>
-      <div class="screen-frame">
-        <div class="app-screen active" data-panel="customer">
-          <aside class="sidebar">
-            <div class="mini-brand"><span></span>Caterus</div>
-            <button class="side-item active"><i data-lucide="search"></i>Discover</button>
-            <button class="side-item"><i data-lucide="shopping-bag"></i>Orders</button>
-            <button class="side-item"><i data-lucide="heart"></i>Saved</button>
-          </aside>
-          <div class="workspace">
-            <div class="workspace-head">
-              <div>
-                <span class="status-pill">Melbourne CBD</span>
-                <h3>12 vetted caterers available</h3>
-              </div>
-              <button class="icon-only" type="button" aria-label="Filter results"><i data-lucide="sliders-horizontal"></i></button>
-            </div>
-            <div class="filter-row">
-              <span class="active">Corporate</span><span>Finger food</span><span>Vegan</span><span>$25-45</span>
-            </div>
-            <div class="listing-grid">
-              <article class="listing-card">
-                <div class="listing-image img-one"></div>
-                <div>
-                  <strong>Northside Feast Co.</strong>
-                  <span>Modern Australian · from $34/head</span>
-                </div>
-                <button type="button">Book</button>
-              </article>
-              <article class="listing-card">
-                <div class="listing-image img-two"></div>
-                <div>
-                  <strong>Spice Table Catering</strong>
-                  <span>Indian fusion · from $29/head</span>
-                </div>
-                <button type="button">View</button>
-              </article>
-            </div>
-          </div>
+        <div class="search__field">
+          <label for="s-guests">Guests</label>
+          <select id="s-guests" aria-label="Number of guests">
+            <option value="">Any size</option>
+            <option>1–20</option>
+            <option>21–50</option>
+            <option>51–100</option>
+            <option>101–250</option>
+            <option>250+</option>
+          </select>
         </div>
+        <button class="btn btn--fill search__go" type="submit" id="go-btn">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Search
+        </button>
+      </form>
 
-        <div class="app-screen" data-panel="admin">
-          <aside class="sidebar">
-            <div class="mini-brand"><span></span>Admin</div>
-            <button class="side-item active"><i data-lucide="clipboard-list"></i>Orders</button>
-            <button class="side-item"><i data-lucide="shield-check"></i>Vetting</button>
-            <button class="side-item"><i data-lucide="banknote"></i>Payouts</button>
-          </aside>
-          <div class="workspace">
-            <div class="workspace-head">
-              <div>
-                <span class="status-pill urgent">Needs confirmation</span>
-                <h3>Concierge order queue</h3>
-              </div>
-              <button class="icon-button primary compact" type="button"><i data-lucide="plus"></i><span>Create listing</span></button>
-            </div>
-            <div class="queue-table">
-              <div class="queue-row head"><span>Event</span><span>Caterer</span><span>Status</span><span>Total</span></div>
-              <div class="queue-row"><span>Office lunch · 80</span><span>Northside Feast</span><span>Matched</span><span>$2,720</span></div>
-              <div class="queue-row"><span>Birthday · 45</span><span>Spice Table</span><span>Confirming</span><span>$1,305</span></div>
-              <div class="queue-row"><span>Wedding · 160</span><span>Unassigned</span><span>Review</span><span>$9,600</span></div>
-            </div>
-          </div>
+      <div class="hero__proof">
+        <div class="faces" aria-hidden="true">
+          <span>SR</span><span>MK</span><span>JP</span><span>AL</span>
         </div>
-
-        <div class="app-screen" data-panel="caterer">
-          <aside class="sidebar">
-            <div class="mini-brand"><span></span>Caterer</div>
-            <button class="side-item active"><i data-lucide="calendar-days"></i>Bookings</button>
-            <button class="side-item"><i data-lucide="book-open"></i>Menus</button>
-            <button class="side-item"><i data-lucide="chart-no-axes-combined"></i>Revenue</button>
-          </aside>
-          <div class="workspace">
-            <div class="workspace-head">
-              <div>
-                <span class="status-pill later">Phase 2</span>
-                <h3>Self-serve dashboard</h3>
-              </div>
-              <button class="icon-button secondary compact" type="button"><i data-lucide="clock"></i><span>Availability</span></button>
-            </div>
-            <div class="metric-grid">
-              <div><strong>$18.4k</strong><span>Month revenue</span></div>
-              <div><strong>24</strong><span>Bookings</span></div>
-              <div><strong>4.8</strong><span>Rating</span></div>
-            </div>
-            <div class="calendar-strip"><span></span><span></span><span class="busy"></span><span></span><span class="busy"></span><span></span><span></span></div>
-          </div>
-        </div>
+        <p><span class="stars">★★★★★</span> Trusted by <strong>12,000+</strong> event planners</p>
       </div>
-    </section>
+    </div>
 
-    <section class="section split" id="operations">
-      <div>
-        <p class="eyebrow">Operations model</p>
-        <h2>Launch curated, then scale into self-serve.</h2>
+    <!-- Full-bleed hero strip -->
+    <div class="hero__media container">
+      <figure class="hero__shot hero__shot--big">
+        <img src="assets/hero_main.png" alt="Premium catering spread" fetchpriority="high"/>
+        <figcaption><span class="tick">✓</span> 148+ vetted caterers available</figcaption>
+      </figure>
+      <figure class="hero__shot">
+        <img src="assets/catering_spread.png" alt="Grazing table" loading="lazy"/>
+        <figcaption>4.9 ★ · 2,400+ reviews</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ MARQUEE STRIP ============ -->
+  <div class="marquee-wrap" aria-hidden="true">
+    <div class="marquee">
+      <span>Corporate Events</span><i>/</i>
+      <span>Weddings</span><i>/</i>
+      <span>Gala Dinners</span><i>/</i>
+      <span>Birthday Parties</span><i>/</i>
+      <span>Product Launches</span><i>/</i>
+      <span>Private Dining</span><i>/</i>
+      <span>Conferences</span><i>/</i>
+      <span>Christmas Parties</span><i>/</i>
+      <span>Team Building</span><i>/</i>
+      <span>Networking Events</span><i>/</i>
+      <span>Corporate Events</span><i>/</i>
+      <span>Weddings</span><i>/</i>
+      <span>Gala Dinners</span><i>/</i>
+      <span>Birthday Parties</span><i>/</i>
+      <span>Product Launches</span><i>/</i>
+      <span>Private Dining</span><i>/</i>
+      <span>Conferences</span><i>/</i>
+      <span>Christmas Parties</span><i>/</i>
+    </div>
+  </div>
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <section class="section hiw" id="how-it-works">
+    <div class="container">
+      <div class="head" data-reveal>
+        <p class="section-label">How it works</p>
+        <h2 class="h-display">From search to your event day in minutes.</h2>
       </div>
-      <div class="flow-stack">
-        <article>
-          <span>01</span>
-          <h3>Customer requests catering</h3>
-          <p>Search, compare, build order, pay, and receive confirmation by email or SMS.</p>
+
+      <div class="hiw__grid">
+        <article class="step" data-reveal data-delay="0">
+          <span class="step__num">01</span>
+          <h3>Search</h3>
+          <p>Enter your suburb, event type and guest count. Our filters surface the best-matched vetted caterers instantly.</p>
         </article>
-        <article>
-          <span>02</span>
-          <h3>Admin controls quality</h3>
-          <p>Create listings, vet caterers, match bookings, confirm details, and monitor payments.</p>
+        <article class="step" data-reveal data-delay="80">
+          <span class="step__num">02</span>
+          <h3>Compare</h3>
+          <p>Browse full menus, per-head pricing, real photos and verified reviews. Every caterer is food-safety certified and insured.</p>
         </article>
-        <article>
-          <span>03</span>
-          <h3>Caterers get the keys later</h3>
-          <p>Dashboards, menu editing, availability, statements, and promoted placement come in Phase 2.</p>
+        <article class="step" data-reveal data-delay="160">
+          <span class="step__num">03</span>
+          <h3>Book</h3>
+          <p>Customise your order, set the date, add dietary requirements. See your live total and confirm — all in one clean flow.</p>
+        </article>
+        <article class="step" data-reveal data-delay="240">
+          <span class="step__num">04</span>
+          <h3>Relax</h3>
+          <p>Pay securely via Stripe. Get instant SMS and email confirmation. Your caterer shows up ready to impress.</p>
         </article>
       </div>
-    </section>
 
-    <section class="roadmap" id="roadmap">
-      <div class="roadmap-card live">
-        <p>Phase 1 · MVP</p>
-        <h2>Curated marketplace</h2>
-        <ul>
-          <li>Customer discovery and booking</li>
-          <li>Admin-managed caterer listings</li>
-          <li>Stripe checkout and payout oversight</li>
-          <li>Concierge confirmation behind the scenes</li>
+      <p class="hiw__note" data-reveal><span class="tick">✓</span> Every caterer vetted — Food safety · Insurance · ABN checked</p>
+    </div>
+  </section>
+
+  <!-- ============ CATERER CARDS ============ -->
+  <section class="section caterers" id="caterers">
+    <div class="container">
+      <div class="head head--row" data-reveal>
+        <div>
+          <p class="section-label">Browse caterers</p>
+          <h2 class="h-display">Top-rated caterers across Melbourne.</h2>
+        </div>
+        <a href="#" class="link-arrow">View all 150+ <span aria-hidden="true">→</span></a>
+      </div>
+
+      <div class="filters" data-reveal>
+        <button class="filter filter--on" data-f="all">All</button>
+        <button class="filter" data-f="corporate">Corporate</button>
+        <button class="filter" data-f="wedding">Wedding</button>
+        <button class="filter" data-f="party">Party</button>
+        <button class="filter" data-f="italian">Italian</button>
+        <button class="filter" data-f="asian">Asian</button>
+        <button class="filter" data-f="bbq">BBQ</button>
+      </div>
+
+      <div class="cat-grid" id="cat-grid">
+        <article class="card" data-tags="all corporate wedding" data-reveal data-delay="0">
+          <a href="#" class="card__img" aria-label="View Harbour Table Co.">
+            <img src="assets/food2.png" alt="Harbour Table Co. catering" loading="lazy"/>
+            <span class="card__badge card__badge--top">★ Top Rated</span>
+          </a>
+          <div class="card__body">
+            <div class="card__row">
+              <h3><a href="#">Harbour Table Co.</a></h3>
+              <span class="card__score">5.0 <small>★</small></span>
+            </div>
+            <p class="card__sub">Southbank, Melbourne · ★★★★★ (142)</p>
+            <p class="card__desc">Premium modern Australian cuisine with seasonal Victorian produce. Specialists in high-end corporate events and gala dinners.</p>
+            <div class="card__tags"><span>Modern Australian</span><span>Corporate</span><span>Up to 1000</span></div>
+            <div class="card__foot">
+              <span class="card__price">from <strong>$35</strong>/pp</span>
+              <a href="#" class="btn btn--line btn--sm">View &amp; Book</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card" data-tags="all wedding party" data-reveal data-delay="60">
+          <a href="#" class="card__img" aria-label="View Olive & Vine Catering">
+            <img src="assets/food1.png" alt="Olive &amp; Vine Catering" loading="lazy"/>
+            <span class="card__badge">✓ Vetted</span>
+          </a>
+          <div class="card__body">
+            <div class="card__row">
+              <h3><a href="#">Olive &amp; Vine Catering</a></h3>
+              <span class="card__score">4.9 <small>★</small></span>
+            </div>
+            <p class="card__sub">Fitzroy, Melbourne · ★★★★★ (86)</p>
+            <p class="card__desc">Authentic Mediterranean sharing plates, grazing boards and mezze spreads. The centrepiece of any wedding or celebration.</p>
+            <div class="card__tags"><span>Mediterranean</span><span>Weddings</span><span>Up to 500</span></div>
+            <div class="card__foot">
+              <span class="card__price">from <strong>$22</strong>/pp</span>
+              <a href="#" class="btn btn--line btn--sm">View &amp; Book</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card" data-tags="all asian party corporate" data-reveal data-delay="120">
+          <a href="#" class="card__img" aria-label="View East & West Kitchen">
+            <img src="assets/food4.png" alt="East &amp; West Kitchen" loading="lazy"/>
+            <span class="card__badge">✓ Vetted</span>
+          </a>
+          <div class="card__body">
+            <div class="card__row">
+              <h3><a href="#">East &amp; West Kitchen</a></h3>
+              <span class="card__score">4.8 <small>★</small></span>
+            </div>
+            <p class="card__sub">Richmond, Melbourne · ★★★★★ (67)</p>
+            <p class="card__desc">Bold Asian-inspired flavours with a modern Australian twist. Dumplings, bao, share plates and canape selections for any occasion.</p>
+            <div class="card__tags"><span>Asian Fusion</span><span>Parties</span><span>Up to 300</span></div>
+            <div class="card__foot">
+              <span class="card__price">from <strong>$28</strong>/pp</span>
+              <a href="#" class="btn btn--line btn--sm">View &amp; Book</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card" data-tags="all corporate party" data-reveal data-delay="0">
+          <a href="#" class="card__img" aria-label="View Art of Feast">
+            <img src="assets/food3.png" alt="Art of Feast fine dining" loading="lazy"/>
+            <span class="card__badge">✓ Vetted</span>
+          </a>
+          <div class="card__body">
+            <div class="card__row">
+              <h3><a href="#">Art of Feast</a></h3>
+              <span class="card__score">4.9 <small>★</small></span>
+            </div>
+            <p class="card__sub">Toorak, Melbourne · ★★★★★ (54)</p>
+            <p class="card__desc">Michelin-trained chef delivering restaurant-quality fine dining to your event. Bespoke menus and immaculate presentation.</p>
+            <div class="card__tags"><span>Fine Dining</span><span>Private Events</span><span>Up to 150</span></div>
+            <div class="card__foot">
+              <span class="card__price">from <strong>$55</strong>/pp</span>
+              <a href="#" class="btn btn--line btn--sm">View &amp; Book</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card" data-tags="all italian party corporate" data-reveal data-delay="60">
+          <a href="#" class="card__img" aria-label="View La Cucina Collective">
+            <img src="assets/hero_main.png" alt="La Cucina Collective" loading="lazy"/>
+            <span class="card__badge">✓ Vetted</span>
+          </a>
+          <div class="card__body">
+            <div class="card__row">
+              <h3><a href="#">La Cucina Collective</a></h3>
+              <span class="card__score">4.7 <small>★</small></span>
+            </div>
+            <p class="card__sub">Carlton, Melbourne · ★★★★★ (93)</p>
+            <p class="card__desc">Authentic Italian family recipes for your event. Handmade pasta, wood-fired pizza, antipasto platters, and heavenly tiramisu.</p>
+            <div class="card__tags"><span>Italian</span><span>Family Style</span><span>Up to 400</span></div>
+            <div class="card__foot">
+              <span class="card__price">from <strong>$25</strong>/pp</span>
+              <a href="#" class="btn btn--line btn--sm">View &amp; Book</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card" data-tags="all bbq party corporate" data-reveal data-delay="120">
+          <a href="#" class="card__img" aria-label="View Smoke & Ember">
+            <img src="assets/corporate.png" alt="Smoke &amp; Ember BBQ catering" loading="lazy"/>
+            <span class="card__badge">✓ Vetted</span>
+          </a>
+          <div class="card__body">
+            <div class="card__row">
+              <h3><a href="#">Smoke &amp; Ember</a></h3>
+              <span class="card__score">4.8 <small>★</small></span>
+            </div>
+            <p class="card__sub">Brunswick, Melbourne · ★★★★★ (112)</p>
+            <p class="card__desc">Low-and-slow BBQ experts. Slow-smoked brisket, ribs, pulled pork and all the fixings for outdoor events and team days.</p>
+            <div class="card__tags"><span>BBQ &amp; Grill</span><span>Outdoor Events</span><span>Up to 600</span></div>
+            <div class="card__foot">
+              <span class="card__price">from <strong>$18</strong>/pp</span>
+              <a href="#" class="btn btn--line btn--sm">View &amp; Book</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ OCCASIONS ============ -->
+  <section class="section occasions" id="occasions">
+    <div class="container">
+      <div class="head" data-reveal>
+        <p class="section-label">Every occasion</p>
+        <h2 class="h-display">Whatever your event, we have the caterer.</h2>
+      </div>
+
+      <div class="occ-grid">
+        <a href="#" class="occ occ--tall" data-reveal>
+          <img src="assets/corporate.png" alt="Corporate event catering" loading="lazy"/>
+          <div class="occ__body">
+            <span class="occ__tag">Corporate Events</span>
+            <p>Board lunches, product launches, team days, annual dinners, client entertainment.</p>
+            <span class="occ__link">Browse caterers →</span>
+          </div>
+        </a>
+        <a href="#" class="occ" data-reveal data-delay="80">
+          <img src="assets/wedding.png" alt="Wedding catering" loading="lazy"/>
+          <div class="occ__body">
+            <span class="occ__tag">Weddings</span>
+            <p>Cocktail receptions, seated dinners, grazing tables, dessert stations.</p>
+            <span class="occ__link">Browse →</span>
+          </div>
+        </a>
+        <a href="#" class="occ" data-reveal data-delay="160">
+          <img src="assets/party.png" alt="Party catering" loading="lazy"/>
+          <div class="occ__body">
+            <span class="occ__tag">Parties</span>
+            <p>Birthdays, baby showers, house warmings, graduations and celebrations.</p>
+            <span class="occ__link">Browse →</span>
+          </div>
+        </a>
+        <a href="#" class="occ occ--tall" data-reveal data-delay="80">
+          <img src="assets/food3.png" alt="Private dining catering" loading="lazy"/>
+          <div class="occ__body">
+            <span class="occ__tag">Private Dining</span>
+            <p>Intimate chef experiences, exclusive dinner parties, degustation menus.</p>
+            <span class="occ__link">Browse caterers →</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STATS BAND ============ -->
+  <div class="stats">
+    <div class="container stats__inner">
+      <div class="stat" data-reveal>
+        <span class="stat__n" data-count="12000" data-suffix="+">0</span>
+        <span class="stat__l">Events catered</span>
+      </div>
+      <div class="stat" data-reveal data-delay="80">
+        <span class="stat__n" data-count="150" data-suffix="+">0</span>
+        <span class="stat__l">Vetted caterers</span>
+      </div>
+      <div class="stat" data-reveal data-delay="160">
+        <span class="stat__n" data-count="98" data-suffix="%">0</span>
+        <span class="stat__l">Satisfaction rate</span>
+      </div>
+      <div class="stat" data-reveal data-delay="240">
+        <span class="stat__n" data-count="3" data-suffix="">0</span>
+        <span class="stat__l">Cities &amp; growing</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ WHY CATERUS ============ -->
+  <section class="section why" id="why">
+    <div class="container why__inner">
+      <div class="why__img" data-slide-left>
+        <img src="assets/food2.png" alt="Premium catering presentation" loading="lazy"/>
+        <div class="why__card">
+          <strong>4.9 ★</strong>
+          <span>Average rating from 2,400+ verified reviews</span>
+        </div>
+      </div>
+
+      <div class="why__text" data-slide-right>
+        <p class="section-label">Why choose Caterus</p>
+        <h2 class="h-display">Better than a Google search.</h2>
+        <p class="why__lead">We personally verify every caterer on our platform — food safety, insurance, ABN and quality checks. You get peace of mind and an unforgettable food experience.</p>
+
+        <ul class="why__list">
+          <li><span class="check">✓</span><div><strong>Every caterer is vetted</strong><p>Food safety certificates, public liability insurance, ABN checks and quality audits — every time, no exceptions.</p></div></li>
+          <li><span class="check">✓</span><div><strong>One clear price</strong><p>All payments via Stripe. The price you see is the price you pay — no hidden fees, no chasing quotes.</p></div></li>
+          <li><span class="check">✓</span><div><strong>Instant confirmation</strong><p>Book and receive email + SMS confirmation within hours. No waiting, no back-and-forth emails.</p></div></li>
+          <li><span class="check">✓</span><div><strong>We've got your back</strong><p>Something goes wrong? Our support team is available before, during and after your event.</p></div></li>
         </ul>
+
+        <a href="#search" class="btn btn--fill">Find a caterer now</a>
       </div>
-      <div class="roadmap-card next" id="caterers">
-        <p>Phase 2 · Scale</p>
-        <h2>Hybrid self-serve</h2>
-        <ul>
-          <li>Caterer accounts and menu editor</li>
-          <li>Availability accept or decline workflow</li>
-          <li>Reviews, loyalty credits, and reorder</li>
-          <li>Promoted listing and analytics tools</li>
+    </div>
+  </section>
+
+  <!-- ============ FOR CATERERS ============ -->
+  <section class="section for-cat" id="for-caterers">
+    <div class="container for-cat__inner">
+      <div class="for-cat__left" data-slide-left>
+        <p class="section-label">For catering professionals</p>
+        <h2 class="h-display">Grow your business with Caterus.</h2>
+        <p class="for-cat__desc">Join Melbourne's leading catering marketplace. We handle discovery, bookings and payments so you can focus on what you do best — creating exceptional food experiences.</p>
+
+        <ul class="perks">
+          <li><span class="perk__ico">🌐</span><div><strong>Reach new clients</strong><p>Discovered by thousands of corporate planners and event managers actively searching for caterers.</p></div></li>
+          <li><span class="perk__ico">💳</span><div><strong>Guaranteed payments</strong><p>Funds held by Caterus via Stripe Connect, released automatically after your event.</p></div></li>
+          <li><span class="perk__ico">📊</span><div><strong>Your own dashboard</strong><p>Track bookings, revenue, payout statements and client reviews in real time.</p></div></li>
         </ul>
+
+        <div class="for-cat__actions">
+          <a href="#" class="btn btn--fill" id="apply-btn">Apply to join →</a>
+          <p class="for-cat__note">Reviewed within 3 business days</p>
+        </div>
       </div>
-    </section>
+
+      <div class="for-cat__right" data-slide-right>
+        <div class="dash">
+          <div class="dash__chrome"><span></span><span></span><span></span><div class="dash__url">caterus.com.au/dashboard</div></div>
+          <div class="dash__body">
+            <div class="dash__head">
+              <div class="dash__logo"><span class="logo__dot"></span> Caterus</div>
+              <span class="dash__pill">Caterer Portal</span>
+            </div>
+            <div class="dash__kpis">
+              <div class="kpi"><span class="kpi__val">$14,200</span><span class="kpi__lbl">This month</span><span class="kpi__up">↑ 18%</span></div>
+              <div class="kpi"><span class="kpi__val">18</span><span class="kpi__lbl">Bookings</span><span class="kpi__up">↑ 5 new</span></div>
+              <div class="kpi"><span class="kpi__val">4.9★</span><span class="kpi__lbl">Rating</span><span class="kpi__up">Top 5%</span></div>
+            </div>
+            <p class="dash__title">Upcoming</p>
+            <div class="dash-row"><div><span class="dash-row__name">Corporate Lunch · 80 guests</span><span class="dash-row__when">Fri 20 Jun · Southbank CBD</span></div><span class="dash-badge dash-badge--ok">Confirmed</span></div>
+            <div class="dash-row"><div><span class="dash-row__name">Wedding Reception · 150 guests</span><span class="dash-row__when">Sat 28 Jun · Toorak</span></div><span class="dash-badge dash-badge--new">New</span></div>
+            <div class="dash-row"><div><span class="dash-row__name">Birthday Party · 45 guests</span><span class="dash-row__when">Sun 6 Jul · Carlton</span></div><span class="dash-badge dash-badge--ok">Confirmed</span></div>
+            <div class="dash-payout"><span>Next payout</span><strong>$3,850 on 25 Jun</strong><span>via Stripe</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="section faq" id="faq">
+    <div class="container faq__inner">
+      <div class="faq__left" data-reveal>
+        <p class="section-label">FAQ</p>
+        <h2 class="h-display">Common questions.</h2>
+        <p class="faq__note">Still have questions? <a href="mailto:hello@caterus.com.au" class="inline-link">Contact us</a> — we're happy to help.</p>
+        <a href="#search" class="btn btn--fill faq__btn">Find a caterer</a>
+      </div>
+      <div class="faq__items">
+        <details class="faq-d" data-reveal data-delay="0"><summary>How does Caterus vet caterers?<span class="faq-d__icon"></span></summary><p>Every application is reviewed by our team. We verify food safety certifications, public liability insurance, ABN registration and conduct quality checks. Only approved caterers are listed.</p></details>
+        <details class="faq-d" data-reveal data-delay="50"><summary>How much does it cost?<span class="faq-d__icon"></span></summary><p>Searching and browsing is completely free. You only pay when you confirm a booking. The price shown is always the final price — no hidden fees, no surprise charges.</p></details>
+        <details class="faq-d" data-reveal data-delay="100"><summary>Can I customise my menu?<span class="faq-d__icon"></span></summary><p>Yes. When building your order you can choose menu items, add dietary requirements (vegan, gluten-free, halal etc.), select add-ons and specify delivery or setup instructions — all before you pay.</p></details>
+        <details class="faq-d" data-reveal data-delay="150"><summary>How do payments work?<span class="faq-d__icon"></span></summary><p>All payments are processed securely via Stripe. You pay Caterus when you book. After the event is completed, we release payment to the caterer minus our commission. This protects both parties.</p></details>
+        <details class="faq-d" data-reveal data-delay="200"><summary>What if I need to cancel?<span class="faq-d__icon"></span></summary><p>Cancellation policies are shown on each caterer's profile. Generally, 14+ days before the event receives a full refund. For emergencies, contact our support — we'll do everything we can to help.</p></details>
+        <details class="faq-d" data-reveal data-delay="250"><summary>Which cities do you serve?<span class="faq-d__icon"></span></summary><p>We currently serve Melbourne, Sydney and Brisbane. We're expanding to Adelaide and Perth in 2026. Enter your suburb in the search to see available caterers near you.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CTA ============ -->
+  <section class="cta">
+    <div class="cta__img" aria-hidden="true"><img src="assets/food1.png" alt=""/><div class="cta__scrim"></div></div>
+    <div class="cta__body container" data-reveal>
+      <p class="section-label">Ready to get started?</p>
+      <h2 class="h-display cta__h">Find your perfect caterer today.</h2>
+      <p class="cta__lead">Join 12,000+ Australians who trust Caterus to find and book exceptional catering — every time.</p>
+      <div class="cta__btns">
+        <a href="#search" class="btn btn--fill">Search caterers</a>
+        <a href="#for-caterers" class="btn btn--line-light">List your business</a>
+      </div>
+      <p class="cta__seal">Vetted caterers · Stripe secured payments · Instant confirmation</p>
+    </div>
+  </section>
+
   </main>
 
-  <footer class="site-footer">
-    <div>
-      <strong>Caterus</strong>
-      <span>Managed catering marketplace for Melbourne events.</span>
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="footer__top container">
+      <div class="footer__brand">
+        <a href="#top" class="logo footer__logo" aria-label="Caterus"><span class="logo__dot"></span> Caterus</a>
+        <p>Australia's trusted catering marketplace — connecting clients with vetted professionals for any event.</p>
+        <address>📍 Melbourne, VIC, Australia<br/><a href="mailto:hello@caterus.com.au">hello@caterus.com.au</a></address>
+        <div class="footer__socials">
+          <a href="#" aria-label="Instagram"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+          <a href="#" aria-label="LinkedIn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+          <a href="#" aria-label="Facebook"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+        </div>
+      </div>
+
+      <div class="footer__nav">
+        <div class="footer__col">
+          <h4>For Clients</h4>
+          <ul><li><a href="#">Find a caterer</a></li><li><a href="#">Browse by cuisine</a></li><li><a href="#">Browse by occasion</a></li><li><a href="#">How it works</a></li><li><a href="#">Pricing guide</a></li></ul>
+        </div>
+        <div class="footer__col">
+          <h4>For Caterers</h4>
+          <ul><li><a href="#">Apply to join</a></li><li><a href="#">Vetting process</a></li><li><a href="#">Caterer dashboard</a></li><li><a href="#">Payments &amp; payouts</a></li></ul>
+        </div>
+        <div class="footer__col">
+          <h4>Company</h4>
+          <ul><li><a href="#">About us</a></li><li><a href="#">Blog</a></li><li><a href="#">Careers</a></li><li><a href="#">Contact</a></li><li><a href="#">Help centre</a></li></ul>
+        </div>
+        <div class="footer__col">
+          <h4>Legal</h4>
+          <ul><li><a href="#">Privacy policy</a></li><li><a href="#">Terms of service</a></li><li><a href="#">Cancellation policy</a></li></ul>
+          <div class="footer__seals"><span>🔒 Stripe Secured</span><span>🛡️ SSL Encrypted</span></div>
+        </div>
+      </div>
     </div>
-    <a class="icon-button secondary" href="#top">
-      <i data-lucide="arrow-up"></i>
-      <span>Back to top</span>
-    </a>
+
+    <div class="footer__bottom container">
+      <p>© 2026 Caterus Pty Ltd · ABN 00 000 000 000 · Melbourne, Victoria, Australia</p>
+      <p>Payments powered by <strong>Stripe</strong></p>
+    </div>
   </footer>
 
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <button class="btt" id="btt" aria-label="Back to top" hidden>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
+
   <script src="script.js"></script>
 </body>
 </html>
