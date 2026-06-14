@@ -103,7 +103,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-weight: var(--w-black); line-height: 1.04; letter-spacing: -0.02em; color: var(--ink);
   font-size: clamp(2rem, 4.6vw, 3.3rem);
 }
-.hl { color: var(--accent); }
+.hl { color: var(--accent); position: relative; }
+.hl::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0.05em; height: 0.08em; background: var(--accent); border-radius: 2px; transform: scaleX(0); transform-origin: left; animation: hlLine 0.7s var(--ease) 1s both; }
 
 /* ============ BUTTONS ============ */
 .btn {
@@ -149,8 +150,20 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 /* ============ HERO ============ */
 .hero { padding-top: clamp(8rem, 14vw, 11rem); padding-bottom: clamp(2.5rem, 5vw, 4rem); position: relative; }
-.hero::before { content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 90%; max-width: 900px; height: 460px; background: radial-gradient(ellipse at top, var(--accent-soft), transparent 70%); pointer-events: none; }
+.hero::before { content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 90%; max-width: 900px; height: 460px; background: radial-gradient(ellipse at top, var(--accent-soft), transparent 70%); pointer-events: none; animation: heroGlow 9s ease-in-out infinite alternate; }
 .hero__inner { position: relative; z-index: 1; text-align: center; max-width: 880px; }
+
+/* ---- Hero entrance + ambient motion ---- */
+@keyframes heroUp { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+@keyframes heroGlow { from { transform: translateX(-50%) scale(1); opacity: 0.85; } to { transform: translateX(-50%) scale(1.18); opacity: 1; } }
+@keyframes hlLine { to { transform: scaleX(1); } }
+.hero__inner > * { opacity: 0; animation: heroUp 0.9s var(--ease) both; }
+.hero__inner > .kicker { animation-delay: 0.05s; }
+.hero__inner > .hero__h1 { animation-delay: 0.16s; }
+.hero__inner > .hero__body { animation-delay: 0.3s; }
+.hero__inner > .search { animation-delay: 0.42s; }
+.hero__inner > .hero__proof { animation-delay: 0.54s; }
+.hero__media { opacity: 0; animation: heroUp 1s var(--ease) 0.62s both; }
 .kicker { display: inline-flex; align-items: center; gap: 0.55rem; font-size: 0.78rem; font-weight: var(--w-semi); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); border: 1px solid var(--line); border-radius: 100px; padding: 0.45rem 1rem; margin-bottom: 1.6rem; background: var(--surface); }
 .kicker__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse 2.4s infinite; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 var(--accent-soft); } 70% { box-shadow: 0 0 0 7px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
@@ -395,6 +408,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   [data-reveal], [data-slide-left], [data-slide-right] { opacity: 1; transform: none; }
+  .hero__inner > *, .hero__media { opacity: 1 !important; }
+  .hl::after { transform: scaleX(1); }
   html { scroll-behavior: auto; }
 }
 
