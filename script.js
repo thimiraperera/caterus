@@ -90,7 +90,7 @@
   const runCount = (el) => {
     const target = parseInt(el.getAttribute("data-count"), 10);
     const suffix = el.getAttribute("data-suffix") || "";
-    const dur = 1600, start = performance.now();
+    const dur = 3000, start = performance.now();
     const tick = (now) => {
       const p = Math.min((now - start) / dur, 1);
       const eased = 1 - Math.pow(1 - p, 3);
