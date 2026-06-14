@@ -7,6 +7,42 @@
   const $  = (sel, ctx = document) => ctx.querySelector(sel);
   const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---- Smooth momentum scrolling (Lenis) ---- */
+  let lenis = null;
+  if (window.Lenis && !reduceMotion) {
+    lenis = new window.Lenis({
+      duration: 1.15,
+      easing: (t) => 1 - Math.pow(1 - t, 3),   // easeOutCubic — glides to a stop
+      smoothWheel: true,
+      wheelMultiplier: 1,
+      touchMultiplier: 1.6,
+    });
+    const raf = (time) => { lenis.raf(time); requestAnimationFrame(raf); };
+    requestAnimationFrame(raf);
+  }
+
+  /* Smooth in-page navigation (clears the fixed nav with an offset) */
+  const scrollToEl = (target) => {
+    if (lenis) lenis.scrollTo(target, { offset: -84 });
+    else target.scrollIntoView({ behavior: "smooth" });
+  };
+  const scrollToTop = () => {
+    if (lenis) lenis.scrollTo(0);
+    else window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  $$('a[href^="#"]').forEach((a) => {
+    const href = a.getAttribute("href");
+    if (href.length <= 1) return;            // skip bare "#" links
+    a.addEventListener("click", (e) => {
+      const target = document.querySelector(href);
+      if (!target) return;
+      e.preventDefault();
+      scrollToEl(target);
+    });
+  });
+
   /* ---- Sticky nav + back-to-top ---- */
   const nav = $("#nav");
   const btt = $("#btt");
@@ -98,12 +134,12 @@
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       const t = $("#caterers");
-      if (t) t.scrollIntoView({ behavior: "smooth" });
+      if (t) scrollToEl(t);
     });
   }
 
   /* ---- Back to top ---- */
-  if (btt) btt.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+  if (btt) btt.addEventListener("click", scrollToTop);
 
   /* ---- Occasions: scroll-linked horizontal carousel ---- */
   const pin = $("#occ-pin");
@@ -130,15 +166,18 @@
     };
 
     const loop = () => {
-      currentX += (targetX - currentX) * 0.12;          // ease toward target
-      if (Math.abs(targetX - currentX) < 0.4) currentX = targetX;
+      // Eased follow → starts gently, glides to a slow stop
+      currentX += (targetX - currentX) * 0.085;
+      if (Math.abs(targetX - currentX) < 0.3) currentX = targetX;
       track.style.transform = `translate3d(${currentX}px,0,0)`;
-      running = Math.abs(targetX - currentX) > 0.01;
+      running = Math.abs(targetX - currentX) > 0.05;
       if (running) requestAnimationFrame(loop);
     };
     const kick = () => { if (!running) { running = true; requestAnimationFrame(loop); } };
+    const onMove = () => { updateTarget(); kick(); };
 
-    window.addEventListener("scroll", () => { updateTarget(); kick(); }, { passive: true });
+    if (lenis) lenis.on("scroll", onMove);
+    window.addEventListener("scroll", onMove, { passive: true });
     window.addEventListener("resize", measure);
     window.addEventListener("load", measure);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
