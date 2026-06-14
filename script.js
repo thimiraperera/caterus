@@ -1,5 +1,5 @@
 /* ============================================================
-   Caterus — interactions
+   Caterus - interactions
    ============================================================ */
 (function () {
   "use strict";
@@ -14,7 +14,7 @@
   if (window.Lenis && !reduceMotion) {
     lenis = new window.Lenis({
       duration: 1.15,
-      easing: (t) => 1 - Math.pow(1 - t, 3),   // easeOutCubic — glides to a stop
+      easing: (t) => 1 - Math.pow(1 - t, 3),   // easeOutCubic - glides to a stop
       smoothWheel: true,
       wheelMultiplier: 1,
       touchMultiplier: 1.6,
@@ -153,7 +153,7 @@
     const updateTarget = () => {
       const max = pin.offsetHeight - window.innerHeight;
       let prog = max > 0 ? Math.min(Math.max(-pin.getBoundingClientRect().top / max, 0), 1) : 0;
-      prog = prog * prog * (3 - 2 * prog);   // smoothstep — eases in at the start, out at the end
+      prog = prog * prog * (3 - 2 * prog);   // smoothstep - eases in at the start, out at the end
       targetX = -prog * overflow;
     };
 

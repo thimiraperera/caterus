@@ -1,5 +1,5 @@
 /* ============================================================
-   Caterus — light theme
+   Caterus - light theme
    Single typeface (Hanken Grotesk) · terracotta accent
    All colours are tokens; no raw hex outside :root.
    ============================================================ */
@@ -58,7 +58,7 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
-/* Smooth scroll (Lenis) — lib drives the wheel, so disable native smooth */
+/* Smooth scroll (Lenis) - lib drives the wheel, so disable native smooth */
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
