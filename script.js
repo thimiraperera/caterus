@@ -99,7 +99,7 @@
     };
     requestAnimationFrame(tick);
   };
-  const counters = $$(".stat__n");
+  const counters = $$("[data-count]");
   if (counters.length && "IntersectionObserver" in window) {
     const cio = new IntersectionObserver((entries, obs) => {
       entries.forEach((entry) => {
