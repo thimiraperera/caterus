@@ -141,6 +141,48 @@
   /* ---- Back to top ---- */
   if (btt) btt.addEventListener("click", scrollToTop);
 
+  /* ---- Contact modal ---- */
+  const modal = $("#contact-modal");
+  if (modal) {
+    const cform = $("#contact-form", modal);
+    const success = $(".cform__success", modal);
+    let lastFocus = null;
+
+    const onKey = (e) => { if (e.key === "Escape") closeModal(); };
+    const openModal = () => {
+      lastFocus = document.activeElement;
+      modal.classList.add("open");
+      modal.setAttribute("aria-hidden", "false");
+      if (lenis) lenis.stop(); else document.body.style.overflow = "hidden";
+      document.addEventListener("keydown", onKey);
+      const first = modal.querySelector("input, textarea");
+      setTimeout(() => first && first.focus(), 80);
+    };
+    function closeModal() {
+      modal.classList.remove("open");
+      modal.setAttribute("aria-hidden", "true");
+      if (lenis) lenis.start(); else document.body.style.overflow = "";
+      document.removeEventListener("keydown", onKey);
+      if (cform && success) { cform.hidden = false; success.hidden = true; cform.reset(); }
+      if (lastFocus) lastFocus.focus();
+    }
+
+    $$("[data-contact-open]").forEach((el) =>
+      el.addEventListener("click", (e) => { e.preventDefault(); openModal(); })
+    );
+    $$("[data-contact-close]", modal).forEach((el) => el.addEventListener("click", closeModal));
+
+    if (cform) {
+      cform.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!cform.checkValidity()) { cform.reportValidity(); return; }
+        // No backend yet - show confirmation (wire to API later)
+        cform.hidden = true;
+        if (success) success.hidden = false;
+      });
+    }
+  }
+
   /* ---- Occasions: scroll-linked horizontal carousel ---- */
   const pin = $("#occ-pin");
   const track = $("#occ-track");

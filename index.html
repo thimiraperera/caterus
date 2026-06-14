@@ -33,7 +33,7 @@
       </nav>
 
       <div class="nav__end">
-        <a href="#" class="nav__signin">Sign in</a>
+        <a href="#" class="nav__contact" data-contact-open>Contact</a>
         <a href="#search" class="btn btn--fill">Find a caterer</a>
       </div>
 
@@ -47,7 +47,7 @@
       <a href="#caterers">Caterers</a>
       <a href="#occasions">Occasions</a>
       <a href="#for-caterers">For caterers</a>
-      <a href="#" class="nav__signin">Sign in</a>
+      <a href="#" class="nav__contact" data-contact-open>Contact</a>
       <a href="#search" class="btn btn--fill">Find a caterer</a>
     </div>
   </header>
@@ -527,7 +527,7 @@
       <div class="faq__left" data-reveal>
         <p class="section-label">FAQ</p>
         <h2 class="h-display">Common questions.</h2>
-        <p class="faq__note">Still have questions? <a href="mailto:hello@caterus.com.au" class="inline-link">Contact us</a> - we're happy to help.</p>
+        <p class="faq__note">Still have questions? <a href="#" class="inline-link" data-contact-open>Contact us</a> - we're happy to help.</p>
         <a href="#search" class="btn btn--fill faq__btn">Find a caterer</a>
       </div>
       <div class="faq__items">
@@ -558,16 +558,34 @@
 
   </main>
 
-  <!-- ============ FOOTER (minimal) ============ -->
-  <footer class="footer">
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer" id="contact">
     <div class="container footer__inner">
-      <a href="#top" class="logo footer__logo" aria-label="Caterus"><span class="logo__dot"></span> Caterus</a>
+      <div class="footer__about">
+        <a href="#top" class="logo footer__logo" aria-label="Caterus"><span class="logo__dot"></span> Caterus</a>
+        <p class="footer__tag">Australia's trusted catering marketplace.</p>
+        <ul class="footer__contact">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+            <a href="mailto:hello@caterus.com.au">hello@caterus.com.au</a>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+            <a href="tel:+61390000000">+61 3 9000 0000</a>
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Level 5, 120 Collins St, Melbourne VIC 3000</span>
+          </li>
+        </ul>
+        <button type="button" class="btn btn--line btn--sm" data-contact-open>Message us</button>
+      </div>
       <nav class="footer__links" aria-label="Footer">
         <a href="#how-it-works">How it works</a>
         <a href="#caterers">Caterers</a>
         <a href="#occasions">Occasions</a>
         <a href="#for-caterers">For caterers</a>
-        <a href="mailto:hello@caterus.com.au">Contact</a>
+        <a href="#" data-contact-open>Contact</a>
       </nav>
       <div class="footer__socials">
         <a href="#" aria-label="Instagram"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
@@ -580,6 +598,36 @@
       <p>Payments powered by <strong>Stripe</strong></p>
     </div>
   </footer>
+
+  <!-- ============ CONTACT MODAL ============ -->
+  <div class="modal" id="contact-modal" aria-hidden="true">
+    <div class="modal__backdrop" data-contact-close></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="contact-title">
+      <button type="button" class="modal__close" data-contact-close aria-label="Close contact form">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <p class="section-label">Contact us</p>
+      <h2 id="contact-title" class="h-display">Let's talk catering.</h2>
+      <p class="modal__lede">Tell us about your event and we'll get back to you within one business day.</p>
+
+      <form class="cform" id="contact-form" novalidate>
+        <div class="cform__row">
+          <label>Name<input type="text" name="name" autocomplete="name" required/></label>
+          <label>Email<input type="email" name="email" autocomplete="email" required/></label>
+        </div>
+        <label>Phone <span>(optional)</span><input type="tel" name="phone" autocomplete="tel"/></label>
+        <label>Tell us about your event<textarea name="message" rows="4" required></textarea></label>
+        <button type="submit" class="btn btn--fill">Send message</button>
+      </form>
+      <p class="cform__success" hidden>Thanks - your message is on its way. We'll be in touch shortly.</p>
+
+      <div class="modal__contact">
+        <a href="mailto:hello@caterus.com.au">hello@caterus.com.au</a>
+        <span>·</span>
+        <a href="tel:+61390000000">+61 3 9000 0000</a>
+      </div>
+    </div>
+  </div>
 
   <button class="btt" id="btt" aria-label="Back to top" hidden>
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
