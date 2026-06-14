@@ -399,18 +399,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .cta__btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
 .cta__seal { color: var(--on-dark-dim); font-size: 0.82rem; margin-top: 1.5rem; }
 
-/* ============ FOOTER ============ */
-.footer { background: var(--bg-alt); border-top: 1px solid var(--line); color: var(--ink-soft); padding-top: clamp(3rem, 5vw, 4.5rem); }
-.footer__inner { display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem 3rem; flex-wrap: wrap; padding-bottom: 2.5rem; }
-.footer__about { display: flex; flex-direction: column; align-items: flex-start; gap: 0.9rem; max-width: 320px; }
+/* ============ FOOTER (minimal) ============ */
+.footer { background: var(--bg-alt); border-top: 1px solid var(--line); color: var(--ink-soft); padding-top: clamp(2.5rem, 4vw, 3.5rem); }
+.footer__inner { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem 2rem; flex-wrap: wrap; padding-bottom: 2rem; }
 .footer__logo { font-size: 1.3rem; color: var(--ink); }
-.footer__tag { font-size: 0.92rem; color: var(--ink-soft); }
-.footer__contact { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.2rem; }
-.footer__contact li { display: flex; align-items: center; gap: 0.6rem; font-size: 0.9rem; }
-.footer__contact svg { width: 16px; height: 16px; color: var(--accent); flex-shrink: 0; }
-.footer__contact a:hover { color: var(--accent); }
-.footer__about .btn { margin-top: 0.4rem; }
-.footer__links { display: flex; flex-direction: column; gap: 0.7rem; }
+.footer__links { display: flex; gap: 1.6rem; flex-wrap: wrap; }
 .footer__links a { font-size: 0.9rem; font-weight: var(--w-med); transition: color 0.5s; }
 .footer__links a:hover { color: var(--accent); }
 .footer__socials { display: flex; gap: 0.6rem; }
@@ -450,9 +443,17 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .cform input:focus, .cform textarea:focus { border-color: var(--accent); background: var(--surface); }
 .cform .btn { margin-top: 0.3rem; align-self: flex-start; padding-block: 0.68rem; }
 .cform__success { margin-top: 0.4rem; padding: 1rem 1.1rem; background: var(--accent-soft); color: var(--accent); border-radius: 12px; font-weight: var(--w-semi); }
-.modal__contact { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-top: 1.4rem; padding-top: 1.2rem; border-top: 1px solid var(--line); font-size: 0.9rem; color: var(--ink-soft); }
-.modal__contact a:hover { color: var(--accent); }
-.modal__contact span { color: var(--muted); }
+.modal__reach-cap { margin-top: 1.6rem; padding-top: 1.3rem; border-top: 1px solid var(--line); font-size: 0.78rem; font-weight: var(--w-semi); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.modal__reach { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.8rem; }
+.reach { display: flex; align-items: center; gap: 0.7rem; padding: 0.7rem 0.85rem; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); transition: border-color 0.5s var(--ease), background-color 0.5s var(--ease), transform 0.5s var(--ease); }
+.reach:hover { border-color: var(--accent); background: var(--surface); transform: translateY(-2px); }
+.reach__ico { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); flex-shrink: 0; transition: background-color 0.5s var(--ease), color 0.5s var(--ease); }
+.reach:hover .reach__ico { background: var(--accent); color: var(--on-accent); }
+.reach__ico svg { width: 18px; height: 18px; }
+.reach__txt { display: flex; flex-direction: column; min-width: 0; }
+.reach__txt small { font-size: 0.68rem; font-weight: var(--w-semi); letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+.reach__txt strong { font-size: 0.85rem; font-weight: var(--w-bold); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 480px) { .modal__reach { grid-template-columns: 1fr; } }
 @media (max-width: 480px) { .cform__row { grid-template-columns: 1fr; } }
 
 /* ============ BACK TO TOP ============ */
