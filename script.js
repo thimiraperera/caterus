@@ -182,5 +182,35 @@
     window.addEventListener("load", measure);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
     measure();
+
+    /* ---- Auto-scroll when hovering the left / right edge ---- */
+    const viewport = pin.querySelector(".occ-viewport");
+    const EDGE = 0.15;      // hot-zone = 15% of width on each side
+    const SPEED = 11;       // px per frame
+    let edgeDir = 0;        // -1 = left, +1 = right, 0 = none
+
+    if (viewport) {
+      viewport.addEventListener("mousemove", (e) => {
+        const r = viewport.getBoundingClientRect();
+        const x = e.clientX - r.left;
+        edgeDir = x < r.width * EDGE ? -1 : x > r.width * (1 - EDGE) ? 1 : 0;
+        viewport.style.cursor = edgeDir === 1 ? "e-resize" : edgeDir === -1 ? "w-resize" : "";
+      });
+      viewport.addEventListener("mouseleave", () => { edgeDir = 0; viewport.style.cursor = ""; });
+
+      const edgeLoop = () => {
+        if (edgeDir !== 0) {
+          const top = pin.getBoundingClientRect().top + window.scrollY;
+          const range = pin.offsetHeight - window.innerHeight;
+          let next = window.scrollY + edgeDir * SPEED;
+          next = Math.min(Math.max(next, top), top + range);   // stay within the pin
+          if (lenis) lenis.scrollTo(next, { immediate: true });
+          else window.scrollTo(0, next);
+          updateTarget(); kick();
+        }
+        requestAnimationFrame(edgeLoop);
+      };
+      requestAnimationFrame(edgeLoop);
+    }
   }
 })();
