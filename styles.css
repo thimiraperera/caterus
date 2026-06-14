@@ -93,9 +93,20 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .section { padding-block: clamp(4.5rem, 9vw, 8rem); position: relative; }
 
 .section-label {
-  display: inline-block; font-size: 0.74rem; font-weight: var(--w-semi); letter-spacing: 0.18em;
-  text-transform: uppercase; color: var(--accent); margin-bottom: 1.2rem;
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  font-size: 0.84rem; font-weight: var(--w-bold); letter-spacing: 0.01em;
+  color: var(--accent); margin-bottom: 1.3rem;
 }
+.section-label::before {
+  content: ""; width: 11px; height: 11px; flex-shrink: 0;
+  border: 2px solid currentColor; border-radius: 2px;
+  animation: labelSpin 7s linear infinite;
+}
+.section-label::after {
+  content: ""; width: 30px; height: 1px;
+  background: linear-gradient(90deg, currentColor, transparent);
+}
+@keyframes labelSpin { to { transform: rotate(360deg); } }
 .head { max-width: 640px; margin-bottom: clamp(2.2rem, 4vw, 3.4rem); }
 .head--row { max-width: none; display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
 
