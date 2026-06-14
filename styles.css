@@ -103,8 +103,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-weight: var(--w-black); line-height: 1.04; letter-spacing: -0.02em; color: var(--ink);
   font-size: clamp(2rem, 4.6vw, 3.3rem);
 }
-.hl { color: var(--accent); position: relative; }
-.hl::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0.05em; height: 0.08em; background: var(--accent); border-radius: 2px; transform: scaleX(0); transform-origin: left; animation: hlLine 0.7s var(--ease) 1s both; }
+.hl {
+  background: linear-gradient(90deg, var(--accent), var(--face-2), var(--accent));
+  background-size: 200% auto;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  animation: hlShimmer 4s linear infinite;
+}
+@keyframes hlShimmer { to { background-position: 200% center; } }
 
 /* ============ BUTTONS ============ */
 .btn {
@@ -156,7 +162,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* ---- Hero entrance + ambient motion ---- */
 @keyframes heroUp { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
 @keyframes heroGlow { from { transform: translateX(-50%) scale(1); opacity: 0.85; } to { transform: translateX(-50%) scale(1.18); opacity: 1; } }
-@keyframes hlLine { to { transform: scaleX(1); } }
+@keyframes orbFloat1 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(38px, 26px) scale(1.15); } }
+@keyframes orbFloat2 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-32px, 34px) scale(1.1); } }
+@keyframes orbFloat3 { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(22px, -28px) scale(1.2); } }
+@keyframes shotFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 .hero__inner > * { opacity: 0; animation: heroUp 0.9s var(--ease) both; }
 .hero__inner > .kicker { animation-delay: 0.05s; }
 .hero__inner > .hero__h1 { animation-delay: 0.16s; }
@@ -164,6 +173,16 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .hero__inner > .search { animation-delay: 0.42s; }
 .hero__inner > .hero__proof { animation-delay: 0.54s; }
 .hero__media { opacity: 0; animation: heroUp 1s var(--ease) 0.62s both; }
+
+/* floating colour orbs - continuous ambient motion behind the hero */
+.hero__orbs { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.hero__orbs span { position: absolute; border-radius: 50%; filter: blur(48px); will-change: transform; }
+.hero__orbs span:nth-child(1) { width: 340px; height: 340px; background: var(--accent); opacity: 0.16; top: -70px; left: 6%; animation: orbFloat1 16s ease-in-out infinite; }
+.hero__orbs span:nth-child(2) { width: 280px; height: 280px; background: var(--face-2); opacity: 0.2; top: 30px; right: 4%; animation: orbFloat2 21s ease-in-out infinite; }
+.hero__orbs span:nth-child(3) { width: 240px; height: 240px; background: var(--face-3); opacity: 0.14; bottom: -40px; left: 40%; animation: orbFloat3 18s ease-in-out infinite; }
+/* gentle perpetual float on the hero photos (offset phases) */
+.hero__shot--big { animation: shotFloat 7.5s ease-in-out infinite; }
+.hero__shot:not(.hero__shot--big) { animation: shotFloat 7.5s ease-in-out infinite; animation-delay: -3.75s; }
 .kicker { display: inline-flex; align-items: center; gap: 0.55rem; font-size: 0.78rem; font-weight: var(--w-semi); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); border: 1px solid var(--line); border-radius: 100px; padding: 0.45rem 1rem; margin-bottom: 1.6rem; background: var(--surface); }
 .kicker__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse 2.4s infinite; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 var(--accent-soft); } 70% { box-shadow: 0 0 0 7px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
@@ -409,7 +428,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   *, *::before, *::after { animation: none !important; transition: none !important; }
   [data-reveal], [data-slide-left], [data-slide-right] { opacity: 1; transform: none; }
   .hero__inner > *, .hero__media { opacity: 1 !important; }
-  .hl::after { transform: scaleX(1); }
+  .hl { -webkit-text-fill-color: var(--accent); color: var(--accent); }
   html { scroll-behavior: auto; }
 }
 
