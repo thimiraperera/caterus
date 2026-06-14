@@ -13,8 +13,6 @@ caterus/
 └── assets/                          # Images and media
 ```
 
-A backend will be added (e.g. a `server/` folder) to power authentication, listings, bookings, and payments.
-
 ## Running locally
 
 This is a static site. Open `index.html` directly in a browser, or serve it:
@@ -24,15 +22,3 @@ python -m http.server 8000
 ```
 
 Then visit `http://localhost:8000`.
-
-## Roadmap
-
-- [ ] Caterer listings and search
-- [ ] Booking flow
-- [ ] Payments (Stripe)
-- [ ] Admin dashboard (approvals, confirmations, payouts)
-- [ ] Backend API and database
-
-## License
-
-All rights reserved.
