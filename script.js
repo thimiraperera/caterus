@@ -152,7 +152,8 @@
 
     const updateTarget = () => {
       const max = pin.offsetHeight - window.innerHeight;
-      const prog = max > 0 ? Math.min(Math.max(-pin.getBoundingClientRect().top / max, 0), 1) : 0;
+      let prog = max > 0 ? Math.min(Math.max(-pin.getBoundingClientRect().top / max, 0), 1) : 0;
+      prog = prog * prog * (3 - 2 * prog);   // smoothstep — eases in at the start, out at the end
       targetX = -prog * overflow;
     };
 
