@@ -104,4 +104,44 @@
 
   /* ---- Back to top ---- */
   if (btt) btt.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+
+  /* ---- Occasions: scroll-linked horizontal carousel ---- */
+  const pin = $("#occ-pin");
+  const track = $("#occ-track");
+  const canPin = window.matchMedia("(min-width: 761px)").matches &&
+                 !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (pin && track && canPin) {
+    let overflow = 0, targetX = 0, currentX = 0, running = false;
+
+    const updateTarget = () => {
+      const max = pin.offsetHeight - window.innerHeight;
+      const prog = max > 0 ? Math.min(Math.max(-pin.getBoundingClientRect().top / max, 0), 1) : 0;
+      targetX = -prog * overflow;
+    };
+
+    const measure = () => {
+      overflow = Math.max(0, track.scrollWidth - window.innerWidth);
+      // Vertical scroll distance == horizontal overflow → natural 1:1 feel
+      pin.style.height = window.innerHeight + overflow + "px";
+      updateTarget();
+      currentX = targetX;
+      track.style.transform = `translate3d(${currentX}px,0,0)`;
+    };
+
+    const loop = () => {
+      currentX += (targetX - currentX) * 0.12;          // ease toward target
+      if (Math.abs(targetX - currentX) < 0.4) currentX = targetX;
+      track.style.transform = `translate3d(${currentX}px,0,0)`;
+      running = Math.abs(targetX - currentX) > 0.01;
+      if (running) requestAnimationFrame(loop);
+    };
+    const kick = () => { if (!running) { running = true; requestAnimationFrame(loop); } };
+
+    window.addEventListener("scroll", () => { updateTarget(); kick(); }, { passive: true });
+    window.addEventListener("resize", measure);
+    window.addEventListener("load", measure);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measure);
+    measure();
+  }
 })();
