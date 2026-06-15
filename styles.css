@@ -21,9 +21,9 @@
   --on-dark-dim:#b7b2a6;
 
   /* ---- Brand ---- */
-  --accent:       #c8502a;
-  --accent-hover: #b2461f;
-  --accent-soft:  rgba(200, 80, 42, 0.10);
+  --accent:       #75896d;
+  --accent-hover: #63745c;
+  --accent-soft:  rgba(117, 137, 109, 0.13);
 
   /* ---- Avatar faces ---- */
   --face-1: #c8502a;
