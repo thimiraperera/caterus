@@ -139,6 +139,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .link-arrow { font-weight: var(--w-semi); font-size: 0.92rem; color: var(--accent); display: inline-flex; align-items: center; gap: 0.4rem; transition: gap 0.5s var(--ease); }
 .link-arrow:hover { gap: 0.7rem; }
+.i-arrow { width: 1em; height: 1em; flex-shrink: 0; }
 .inline-link { color: var(--accent); border-bottom: 1.5px solid var(--accent-soft); }
 .tick { color: var(--accent); display: inline-flex; align-items: center; }
 .tick svg { width: 15px; height: 15px; }
@@ -322,8 +323,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .occ-card__body { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: 0.4rem; padding: 1.5rem; background: linear-gradient(to top, rgba(20, 18, 15, 0.92) 8%, rgba(20, 18, 15, 0.2) 55%, transparent 82%); }
 .occ-card__tag { font-size: 1.3rem; font-weight: var(--w-black); color: var(--on-dark); }
 .occ-card__body p { font-size: 0.88rem; color: var(--on-dark-dim); }
-.occ-card__link { font-size: 0.85rem; font-weight: var(--w-semi); color: var(--face-2); margin-top: 0.3rem; transition: letter-spacing 0.5s; }
-.occ-card:hover .occ-card__link { letter-spacing: 0.02em; }
+.occ-card__link { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; font-weight: var(--w-semi); color: var(--face-2); margin-top: 0.3rem; transition: gap 0.5s var(--ease); }
+.occ-card:hover .occ-card__link { gap: 0.6rem; }
 
 /* ============ STATS BAND ============ */
 .stats { background: var(--accent); color: var(--on-accent); padding-block: clamp(3rem, 5vw, 4.2rem); }
