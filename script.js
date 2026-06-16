@@ -268,4 +268,50 @@
       requestAnimationFrame(edgeLoop);
     }
   }
+
+  /* ---- Caterer page: booking panel ---- */
+  const bform = $("#booking-form");
+  if (bform) {
+    const guests = $("#bf-guests");
+    const pkg = $("#bf-package");
+    const totalEl = $("#bf-total");
+    const money = (n) => "$" + n.toLocaleString("en-AU");
+    const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
+
+    const recompute = () => {
+      const min = parseInt(guests.min || "0", 10);
+      const max = parseInt(guests.max || "999999", 10);
+      const g = clamp(parseInt(guests.value || "0", 10) || 0, 0, max);
+      const opt = pkg.selectedOptions[0];
+      const price = parseInt(opt.getAttribute("data-price") || "0", 10);
+      totalEl.textContent = money(g * price);
+    };
+
+    $$('[data-stepper] .stepper__btn').forEach((b) => {
+      b.addEventListener("click", () => {
+        const step = parseInt(b.getAttribute("data-step"), 10);
+        const min = parseInt(guests.min || "0", 10);
+        const max = parseInt(guests.max || "999999", 10);
+        guests.value = clamp((parseInt(guests.value || "0", 10) || 0) + step, min, max);
+        recompute();
+      });
+    });
+    guests.addEventListener("input", recompute);
+    guests.addEventListener("blur", () => {
+      const min = parseInt(guests.min || "0", 10);
+      const max = parseInt(guests.max || "999999", 10);
+      guests.value = clamp(parseInt(guests.value || min, 10) || min, min, max);
+      recompute();
+    });
+    pkg.addEventListener("change", recompute);
+    recompute();
+
+    bform.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!bform.checkValidity()) { bform.reportValidity(); return; }
+      bform.hidden = true;
+      const ok = $(".bf-success");
+      if (ok) ok.hidden = false;
+    });
+  }
 })();
