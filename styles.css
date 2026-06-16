@@ -193,7 +193,16 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .hero__inner > .hero__body { animation-delay: 0.3s; }
 .hero__inner > .search { animation-delay: 0.42s; }
 .hero__inner > .hero__proof { animation-delay: 0.54s; }
-.hero__inner > .hero__caterer { animation-delay: 0.62s; }
+.hero__inner > .hero__caterer { animation: heroUp 0.9s var(--ease) 0.62s both, chipShake 3.2s ease-in-out 1.6s infinite; }
+@keyframes chipShake {
+  0%, 80%, 100% { transform: rotate(0deg) translateX(0); }
+  83% { transform: rotate(-3deg) translateX(-3px); }
+  86% { transform: rotate(3deg) translateX(3px); }
+  89% { transform: rotate(-2.5deg) translateX(-2px); }
+  92% { transform: rotate(2.5deg) translateX(2px); }
+  95% { transform: rotate(-1.5deg); }
+  98% { transform: rotate(1.5deg); }
+}
 .hero__media { opacity: 0; animation: heroUp 1s var(--ease) 0.62s both; }
 
 /* floating colour orbs - continuous ambient motion behind the hero */
@@ -233,6 +242,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .hero__proof strong { color: var(--ink); }
 .stars { color: var(--accent); letter-spacing: 1px; }
 .hero__caterer {
+  position: relative; overflow: hidden;
   display: inline-flex; align-items: center; gap: 0.65rem; margin-top: 1.7rem;
   padding: 0.45rem 1.15rem 0.45rem 0.5rem;
   background: var(--accent-soft); border: 1.5px solid var(--accent-line); border-radius: 100px;
@@ -247,6 +257,13 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .hero__caterer-txt strong { color: var(--accent); font-weight: var(--w-bold); }
 .hero__caterer .i-arrow { color: var(--accent); transition: transform 0.5s var(--ease); }
 .hero__caterer:hover .i-arrow { transform: translateX(3px); }
+.hero__caterer::before {
+  content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 38%; pointer-events: none;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  transform: skewX(-20deg) translateX(-220%);
+  animation: chipShine 4s ease-in-out infinite;
+}
+@keyframes chipShine { 0% { transform: skewX(-20deg) translateX(-220%); } 55%, 100% { transform: skewX(-20deg) translateX(420%); } }
 
 .hero__media { display: grid; grid-template-columns: 1.7fr 1fr; gap: 1rem; margin-top: clamp(2.5rem, 5vw, 4rem); }
 .hero__shot { position: relative; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow-sm); }
