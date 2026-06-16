@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Page not found — Caterus</title>
+  <meta name="description" content="The page you're after isn't on the menu. Head back to Caterus to find and book vetted caterers."/>
+  <meta name="robots" content="noindex"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+
+  <!-- ============ NAV ============ -->
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="index.html" class="logo" aria-label="Caterus home"><span class="logo__dot"></span> Caterus</a>
+      <nav class="nav__links" aria-label="Primary">
+        <a href="index.html#how-it-works">How it works</a>
+        <a href="index.html#caterers">Caterers</a>
+        <a href="index.html#occasions">Occasions</a>
+        <a href="index.html#for-caterers">For caterers</a>
+      </nav>
+      <div class="nav__end">
+        <a href="#" class="nav__contact" data-contact-open>Contact</a>
+        <a href="index.html#search" class="btn btn--fill">Find a caterer</a>
+      </div>
+      <button class="nav__ham" id="ham" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
+    </div>
+    <div class="nav__mob" id="mob" hidden>
+      <a href="index.html#how-it-works">How it works</a>
+      <a href="index.html#caterers">Caterers</a>
+      <a href="index.html#occasions">Occasions</a>
+      <a href="index.html#for-caterers">For caterers</a>
+      <a href="#" class="nav__contact" data-contact-open>Contact</a>
+      <a href="index.html#search" class="btn btn--fill">Find a caterer</a>
+    </div>
+  </header>
+
+  <main class="notfound">
+    <div class="nf-orbs" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="container nf-inner">
+      <p class="section-label nf-label">Error 404</p>
+
+      <div class="nf-404" aria-hidden="true">
+        <span>4</span>
+        <span class="nf-plate">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m16 2-2.3 2.3a3 3 0 0 0 0 4.2l1.8 1.8a3 3 0 0 0 4.2 0L22 8"/><path d="M15 15 3.3 3.3a4.2 4.2 0 0 0 0 6l7.3 7.3c.7.7 2 .7 2.8 0L15 15Zm0 0 7 7"/><path d="m2.1 21.8 6.4-6.3"/><path d="m19 5-7 7"/></svg>
+        </span>
+        <span>4</span>
+      </div>
+
+      <h1 class="h-display nf-title">This table isn't set.</h1>
+      <p class="nf-text">We looked everywhere, but the page you're after isn't on the menu. It may have moved, sold out, or never existed.</p>
+
+      <div class="nf-cta">
+        <a href="index.html" class="btn btn--fill">Back to home</a>
+        <a href="index.html#caterers" class="btn btn--line">Browse caterers</a>
+      </div>
+
+      <p class="nf-links">
+        Popular:
+        <a href="index.html#how-it-works">How it works</a> ·
+        <a href="index.html#occasions">Occasions</a> ·
+        <a href="index.html#for-caterers">For caterers</a>
+      </p>
+    </div>
+  </main>
+
+  <!-- ============ FOOTER (minimal) ============ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <a href="index.html" class="logo footer__logo" aria-label="Caterus"><span class="logo__dot"></span> Caterus</a>
+      <nav class="footer__links" aria-label="Footer">
+        <a href="index.html#how-it-works">How it works</a>
+        <a href="index.html#caterers">Caterers</a>
+        <a href="index.html#occasions">Occasions</a>
+        <a href="index.html#for-caterers">For caterers</a>
+        <a href="#" data-contact-open>Contact</a>
+      </nav>
+      <div class="footer__socials">
+        <a href="#" aria-label="Instagram"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+        <a href="#" aria-label="LinkedIn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+        <a href="#" aria-label="Facebook"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+      </div>
+    </div>
+    <div class="container footer__bottom">
+      <p>© 2026 Caterus Pty Ltd · Melbourne, Victoria, Australia</p>
+      <p>Payments powered by <strong>Stripe</strong></p>
+    </div>
+  </footer>
+
+  <!-- ============ CONTACT MODAL ============ -->
+  <div class="modal" id="contact-modal" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-close></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="contact-title">
+      <button type="button" class="modal__close" data-modal-close aria-label="Close contact form">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <p class="section-label">Contact us</p>
+      <h2 id="contact-title" class="h-display">Let's talk catering.</h2>
+      <p class="modal__lede">Tell us about your event and we'll get back to you within one business day.</p>
+      <form class="cform" id="contact-form" novalidate>
+        <div class="cform__row">
+          <label>First name<input type="text" name="firstName" placeholder="Jane" autocomplete="given-name" required/></label>
+          <label><span class="cform__head">Last name <span class="cform__opt">(optional)</span></span><input type="text" name="lastName" placeholder="Doe" autocomplete="family-name"/></label>
+        </div>
+        <label>Email<input type="email" name="email" placeholder="jane@example.com" autocomplete="email" required/></label>
+        <label>Phone<input type="tel" name="phone" id="cf-phone" data-phone placeholder="0412 345 678" inputmode="numeric" maxlength="12" autocomplete="tel" required/></label>
+        <label>Tell us about your event<textarea name="message" rows="4" placeholder="e.g. Corporate lunch for 80 guests, Melbourne CBD, 20 June"></textarea></label>
+        <button type="submit" class="btn btn--fill">Send message</button>
+      </form>
+      <p class="cform__success" hidden>Thanks - your message is on its way. We'll be in touch shortly.</p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
+  <script src="script.js?v=3"></script>
+</body>
+</html>
