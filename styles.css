@@ -24,6 +24,7 @@
   --accent:       #75896d;
   --accent-hover: #63745c;
   --accent-soft:  rgba(117, 137, 109, 0.13);
+  --accent-line:  rgba(117, 137, 109, 0.38);
 
   /* ---- Avatar faces ---- */
   --face-1: #75896d;
@@ -231,9 +232,21 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .hero__proof p { font-size: 0.9rem; color: var(--ink-soft); }
 .hero__proof strong { color: var(--ink); }
 .stars { color: var(--accent); letter-spacing: 1px; }
-.hero__caterer { margin-top: 1.4rem; font-size: 0.9rem; color: var(--muted); }
-.hero__caterer a { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--accent); font-weight: var(--w-semi); border-bottom: 1.5px solid transparent; padding-bottom: 1px; transition: gap 0.5s var(--ease), border-color 0.5s var(--ease); }
-.hero__caterer a:hover { gap: 0.6rem; border-color: var(--accent); }
+.hero__caterer {
+  display: inline-flex; align-items: center; gap: 0.65rem; margin-top: 1.7rem;
+  padding: 0.45rem 1.15rem 0.45rem 0.5rem;
+  background: var(--accent-soft); border: 1.5px solid var(--accent-line); border-radius: 100px;
+  font-size: 0.92rem; font-weight: var(--w-med); color: var(--ink-soft); cursor: pointer;
+  transition: transform 0.5s var(--ease), box-shadow 0.5s var(--ease), border-color 0.5s var(--ease), background-color 0.5s var(--ease);
+}
+.hero__caterer:hover { transform: translateY(-2px); box-shadow: 0 14px 28px -16px var(--accent); border-color: var(--accent); background: var(--surface); }
+.hero__caterer-ico { position: relative; width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; flex-shrink: 0; }
+.hero__caterer-ico svg { width: 17px; height: 17px; }
+.hero__caterer-ico::after { content: ""; position: absolute; inset: 0; border-radius: 50%; animation: partnerPulse 2.6s ease-out infinite; }
+@keyframes partnerPulse { 0% { box-shadow: 0 0 0 0 var(--accent-line); } 70% { box-shadow: 0 0 0 9px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+.hero__caterer-txt strong { color: var(--accent); font-weight: var(--w-bold); }
+.hero__caterer .i-arrow { color: var(--accent); transition: transform 0.5s var(--ease); }
+.hero__caterer:hover .i-arrow { transform: translateX(3px); }
 
 .hero__media { display: grid; grid-template-columns: 1.7fr 1fr; gap: 1rem; margin-top: clamp(2.5rem, 5vw, 4rem); }
 .hero__shot { position: relative; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow-sm); }
