@@ -141,56 +141,59 @@
   /* ---- Back to top ---- */
   if (btt) btt.addEventListener("click", scrollToTop);
 
-  /* ---- Contact modal ---- */
-  const modal = $("#contact-modal");
-  if (modal) {
-    const cform = $("#contact-form", modal);
-    const success = $(".cform__success", modal);
-    let lastFocus = null;
+  /* ---- Modals (contact + caterer registration) ---- */
+  // Auto-space phone numbers as typed (e.g. 0412 345 678)
+  $$('input[data-phone]').forEach((el) => {
+    el.addEventListener("input", () => {
+      const d = el.value.replace(/\D/g, "").slice(0, 10);
+      el.value = [d.slice(0, 4), d.slice(4, 7), d.slice(7, 10)].filter(Boolean).join(" ");
+    });
+  });
 
-    const onKey = (e) => { if (e.key === "Escape") closeModal(); };
-    const openModal = () => {
+  const setupModal = (modal) => {
+    if (!modal) return null;
+    const form = modal.querySelector("form");
+    const success = modal.querySelector(".cform__success");
+    let lastFocus = null;
+    const onKey = (e) => { if (e.key === "Escape") close(); };
+    const open = () => {
       lastFocus = document.activeElement;
       modal.classList.add("open");
       modal.setAttribute("aria-hidden", "false");
       if (lenis) lenis.stop(); else document.body.style.overflow = "hidden";
       document.addEventListener("keydown", onKey);
-      const first = modal.querySelector("input, textarea");
+      const first = modal.querySelector("input, textarea, select");
       setTimeout(() => first && first.focus(), 80);
     };
-    function closeModal() {
+    function close() {
       modal.classList.remove("open");
       modal.setAttribute("aria-hidden", "true");
       if (lenis) lenis.start(); else document.body.style.overflow = "";
       document.removeEventListener("keydown", onKey);
-      if (cform && success) { cform.hidden = false; success.hidden = true; cform.reset(); }
+      if (form && success) { form.hidden = false; success.hidden = true; form.reset(); }
       if (lastFocus) lastFocus.focus();
     }
-
-    $$("[data-contact-open]").forEach((el) =>
-      el.addEventListener("click", (e) => { e.preventDefault(); openModal(); })
-    );
-    $$("[data-contact-close]", modal).forEach((el) => el.addEventListener("click", closeModal));
-
-    /* Auto-space the phone number as it's typed (e.g. 0412 345 678) */
-    const phone = $("#cf-phone", modal);
-    if (phone) {
-      phone.addEventListener("input", () => {
-        const d = phone.value.replace(/\D/g, "").slice(0, 10);
-        phone.value = [d.slice(0, 4), d.slice(4, 7), d.slice(7, 10)].filter(Boolean).join(" ");
-      });
-    }
-
-    if (cform) {
-      cform.addEventListener("submit", (e) => {
+    modal.querySelectorAll("[data-modal-close]").forEach((el) => el.addEventListener("click", close));
+    if (form) {
+      form.addEventListener("submit", (e) => {
         e.preventDefault();
-        if (!cform.checkValidity()) { cform.reportValidity(); return; }
+        if (!form.checkValidity()) { form.reportValidity(); return; }
         // No backend yet - show confirmation (wire to API later)
-        cform.hidden = true;
+        form.hidden = true;
         if (success) success.hidden = false;
       });
     }
-  }
+    return { open, close };
+  };
+
+  const contactModal = setupModal($("#contact-modal"));
+  const registerModal = setupModal($("#register-modal"));
+  $$("[data-contact-open]").forEach((el) =>
+    el.addEventListener("click", (e) => { e.preventDefault(); contactModal && contactModal.open(); })
+  );
+  $$("[data-register-open]").forEach((el) =>
+    el.addEventListener("click", (e) => { e.preventDefault(); registerModal && registerModal.open(); })
+  );
 
   /* ---- Occasions: scroll-linked horizontal carousel ---- */
   const pin = $("#occ-pin");
