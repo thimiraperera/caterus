@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title><%= caterer.business_name %> - Caterus</title>
+  <meta name="description" content="<%= caterer.business_name %> - <%= caterer.tagline || caterer.cuisine_type + ' catering' %> in <%= caterer.suburb %>, Melbourne. View menus, photos, reviews and book on Caterus."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/styles.css"/>
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+
+  <!-- ============ NAV ============ -->
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="/" class="logo" aria-label="Caterus home"><span class="logo__dot"></span> Caterus</a>
+      <nav class="nav__links" aria-label="Primary">
+        <a href="/#how-it-works">How it works</a>
+        <a href="/#caterers">Caterers</a>
+        <a href="/#occasions">Occasions</a>
+        <a href="/#for-caterers">For caterers</a>
+      </nav>
+      <div class="nav__end">
+        <a href="#" class="nav__contact" data-contact-open>Contact</a>
+        <a href="/#search" class="btn btn--fill">Find a caterer</a>
+      </div>
+      <button class="nav__ham" id="ham" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
+    </div>
+    <div class="nav__mob" id="mob" hidden>
+      <a href="/#how-it-works">How it works</a>
+      <a href="/#caterers">Caterers</a>
+      <a href="/#occasions">Occasions</a>
+      <a href="/#for-caterers">For caterers</a>
+      <a href="#" class="nav__contact" data-contact-open>Contact</a>
+      <a href="/#search" class="btn btn--fill">Find a caterer</a>
+    </div>
+  </header>
+
+  <main id="top" class="cat-page">
+    <div class="container">
+      <!-- Breadcrumb -->
+      <nav class="crumb" aria-label="Breadcrumb">
+        <a href="/">Home</a> <span aria-hidden="true">/</span>
+        <a href="/#caterers">Caterers</a> <span aria-hidden="true">/</span>
+        <span><%= caterer.business_name %></span>
+      </nav>
+
+      <!-- ============ GALLERY + HEADLINE ============ -->
+      <section class="cat-top">
+        <div class="cat-gallery">
+          <% if (caterer.featured_image) { %>
+          <a href="#photos" class="ph ph--featured" style="background-image:url('/<%= caterer.featured_image %>');background-size:cover;background-position:center" aria-label="Featured image">
+            <% if (caterer.is_featured) { %><span class="cat-gallery__badge">★ Top Rated</span><% } %>
+          </a>
+          <% } else { %>
+          <a href="#photos" class="ph ph--featured" aria-label="Featured image placeholder">
+            <span class="ph__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></span>
+            <span class="ph__label">Featured image</span>
+          </a>
+          <% } %>
+          <div class="cat-gallery__thumbs">
+            <% images.slice(0, 4).forEach((img, i) => { %>
+            <div class="ph" <% if (img.image_path) { %>style="background-image:url('/<%= img.image_path %>');background-size:cover;background-position:center"<% } %>>
+              <% if (!img.image_path) { %><span class="ph__label">Photo <%= i + 1 %></span><% } %>
+            </div>
+            <% }) %>
+            <% for (let i = images.length; i < 4; i++) { %>
+            <div class="ph"><span class="ph__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></span><span class="ph__label">Photo <%= i + 1 %></span></div>
+            <% } %>
+          </div>
+        </div>
+
+        <header class="cat-headline">
+          <p class="section-label"><%= caterer.cuisine_type || 'Catering' %></p>
+          <h1 class="h-display"><%= caterer.business_name %></h1>
+          <div class="cat-meta">
+            <span class="cat-rating"><strong><%= caterer.rating_avg %></strong> <span class="stars"><% for(let i=0;i<5;i++){%>★<%}%></span> <a href="#reviews">(<%= caterer.review_count %> reviews)</a></span>
+            <span class="cat-loc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> <%= caterer.suburb %>, Melbourne</span>
+          </div>
+          <p class="cat-lead"><%= caterer.tagline || '' %></p>
+          <div class="cat-tags"><% caterer.tags.forEach(t => { %><span><%= t %></span><% }) %></div>
+
+          <ul class="cat-facts">
+            <li><span class="cat-facts__k">From</span><span class="cat-facts__v">$<%= caterer.price_from %> <small>/ person</small></span></li>
+            <li><span class="cat-facts__k">Capacity</span><span class="cat-facts__v"><%= caterer.min_guests %> – <%= caterer.max_guests %> <small>guests</small></span></li>
+            <li><span class="cat-facts__k">Notice</span><span class="cat-facts__v"><%= caterer.min_notice_days %>+ <small>days</small></span></li>
+            <li><span class="cat-facts__k">Response</span><span class="cat-facts__v"><%= caterer.response_time %></span></li>
+          </ul>
+
+          <div class="cat-headline__cta">
+            <a href="#booking" class="btn btn--fill">Check availability</a>
+            <a href="#" class="btn btn--line" data-contact-open>Message caterer</a>
+          </div>
+        </header>
+      </section>
+
+      <!-- Trust strip -->
+      <div class="cat-trust">
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg> Vetted by Caterus</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Food safety certified</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18"/></svg> ABN registered</span>
+      </div>
+
+      <!-- ============ BODY: content + booking ============ -->
+      <div class="cat-body">
+        <div class="cat-content">
+
+          <!-- About -->
+          <section class="cat-block">
+            <h2 class="cat-block__h">About <%= caterer.business_name %></h2>
+            <% if (caterer.description) { %>
+              <% caterer.description.split('\n').forEach(p => { %>
+                <% if (p.trim()) { %><p><%= p %></p><% } %>
+              <% }) %>
+            <% } %>
+            <% if (caterer.specialties && caterer.specialties.length) { %>
+            <ul class="cat-specialties">
+              <% caterer.specialties.forEach(s => { %><li><%= s %></li><% }) %>
+            </ul>
+            <% } %>
+          </section>
+
+          <!-- What's included -->
+          <% if (caterer.inclusions && caterer.inclusions.length) { %>
+          <section class="cat-block">
+            <h2 class="cat-block__h">What's included</h2>
+            <ul class="cat-incl">
+              <% caterer.inclusions.forEach(inc => { %>
+              <li><span class="cat-incl__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><div><strong><%= inc.title %></strong><p><%= inc.description || '' %></p></div></li>
+              <% }) %>
+            </ul>
+          </section>
+          <% } %>
+
+          <!-- Menu / packages -->
+          <% if (menus.length) { %>
+          <section class="cat-block" id="menu">
+            <h2 class="cat-block__h">Menus & packages</h2>
+            <p class="cat-block__sub">Per-head pricing. Choose a package below or in the booking panel.</p>
+            <div class="pkg-grid">
+              <% menus.forEach(menu => { %>
+              <article class="pkg<%= menu.is_featured ? ' pkg--featured' : '' %>">
+                <% if (menu.is_featured) { %><span class="pkg__tag">Most popular</span><% } %>
+                <div class="pkg__head"><h3><%= menu.name %></h3><span class="pkg__price">$<%= menu.price_per_head %><small>/pp</small></span></div>
+                <% if (menu.description) { %><p class="pkg__desc"><%= menu.description %></p><% } %>
+                <% if (menu.items && menu.items.length) { %>
+                <ul class="pkg__items"><% menu.items.forEach(item => { %><li><%= item.name %><%= item.is_vegetarian ? ' (v)' : '' %></li><% }) %></ul>
+                <% } %>
+              </article>
+              <% }) %>
+            </div>
+          </section>
+          <% } %>
+
+          <!-- ============ REVIEWS ============ -->
+          <section class="cat-block" id="reviews">
+            <div class="rev-head">
+              <h2 class="cat-block__h">Ratings & reviews</h2>
+            </div>
+            <div class="rev-summary">
+              <div class="rev-score">
+                <strong><%= caterer.rating_avg %></strong>
+                <span class="stars"><% for(let i=0;i<5;i++){%>★<%}%></span>
+                <span class="rev-score__count"><%= caterer.review_count %> reviews</span>
+              </div>
+              <div class="rev-bars">
+                <% [5,4,3,2,1].forEach(star => { %>
+                <% const count = reviewStats.distribution[star] || 0; %>
+                <% const pct = reviewStats.total > 0 ? Math.round((count / reviewStats.total) * 100) : 0; %>
+                <div class="rev-bar"><span><%= star %></span><span class="rev-bar__track"><span style="width:<%= pct %>%"></span></span><span><%= count %></span></div>
+                <% }) %>
+              </div>
+            </div>
+            <div class="rev-list">
+              <% reviews.forEach(rev => { %>
+              <article class="rev-card">
+                <header><span class="rev-av"><%= rev.reviewer_initials || '??' %></span><div><strong><%= rev.reviewer_name %></strong><span class="rev-meta"><%= rev.event_type || '' %> · <%= rev.event_date || '' %></span></div><span class="rev-stars stars"><% for(let i=0;i<rev.rating;i++){%>★<%}%></span></header>
+                <p>"<%= rev.comment %>"</p>
+              </article>
+              <% }) %>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- ============ BOOKING PANEL ============ -->
+        <aside class="cat-booking" id="booking">
+          <div class="booking-card">
+            <p class="booking-card__price">from <strong>$<%= caterer.price_from %></strong> <span>/ person</span></p>
+            <form class="booking-form" id="booking-form" novalidate>
+              <input type="hidden" name="caterer_id" value="<%= caterer.id %>">
+              <label class="bf-field">Event date
+                <input type="date" name="event_date" required/>
+              </label>
+              <div class="bf-field">Guests
+                <div class="stepper" data-stepper>
+                  <button type="button" class="stepper__btn" data-step="-10" aria-label="Decrease guests">−</button>
+                  <input type="number" name="guest_count" id="bf-guests" value="50" min="<%= caterer.min_guests %>" max="<%= caterer.max_guests %>" step="10" inputmode="numeric"/>
+                  <button type="button" class="stepper__btn" data-step="10" aria-label="Increase guests">+</button>
+                </div>
+              </div>
+              <label class="bf-field">Package
+                <select name="menu_id" id="bf-package">
+                  <% menus.forEach(menu => { %>
+                  <option value="<%= menu.id %>" data-price="<%= menu.price_per_head %>"<%= menu.is_featured ? ' selected' : '' %>><%= menu.name %> - $<%= menu.price_per_head %>/pp</option>
+                  <% }) %>
+                </select>
+              </label>
+              <fieldset class="bf-diet">
+                <legend>Dietary requirements</legend>
+                <label><input type="checkbox" name="dietary_requirements" value="vegetarian"/> Vegetarian</label>
+                <label><input type="checkbox" name="dietary_requirements" value="vegan"/> Vegan</label>
+                <label><input type="checkbox" name="dietary_requirements" value="gluten-free"/> Gluten-free</label>
+                <label><input type="checkbox" name="dietary_requirements" value="halal"/> Halal</label>
+                <label><input type="checkbox" name="dietary_requirements" value="nut-free"/> Nut-free</label>
+              </fieldset>
+
+              <div class="bf-field">
+                <label>Your name *
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                    <input type="text" name="customer_first_name" placeholder="First name" required/>
+                    <input type="text" name="customer_last_name" placeholder="Last name"/>
+                  </div>
+                </label>
+              </div>
+              <label class="bf-field">Email *<input type="email" name="customer_email" placeholder="you@email.com" required/></label>
+              <label class="bf-field">Phone<input type="tel" name="customer_phone" placeholder="0412 345 678"/></label>
+              <label class="bf-field">Special requests<textarea name="special_requests" rows="2" placeholder="Any notes for the caterer…"></textarea></label>
+
+              <div class="booking-total">
+                <span>Estimated total <small>(inc. GST)</small></span>
+                <strong id="bf-total">$2,310</strong>
+              </div>
+
+              <button type="submit" class="btn btn--fill bf-submit">Book & Pay</button>
+              <p class="bf-note">Secure payment via Stripe · Free cancellation 14+ days before</p>
+            </form>
+            <div class="bf-success" hidden>
+              <span class="bf-success__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+              <strong>Booking confirmed!</strong>
+              <p>You'll receive a confirmation email shortly.</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <a href="/" class="logo footer__logo" aria-label="Caterus"><span class="logo__dot"></span> Caterus</a>
+      <nav class="footer__links" aria-label="Footer">
+        <a href="/#how-it-works">How it works</a>
+        <a href="/#caterers">Caterers</a>
+        <a href="/#occasions">Occasions</a>
+        <a href="/#for-caterers">For caterers</a>
+      </nav>
+    </div>
+    <div class="container footer__bottom">
+      <p>© 2026 Caterus Pty Ltd · Melbourne, Victoria, Australia</p>
+      <p>Payments powered by <strong>Stripe</strong></p>
+    </div>
+  </footer>
+
+  <button class="btt" id="btt" aria-label="Back to top" hidden>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+  </button>
+
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
+  <script src="/script.js?v=3"></script>
+  <script>
+  // Dynamic booking form calculations
+  (function() {
+    const form = document.getElementById('booking-form');
+    if (!form) return;
+    const guestsInput = form.querySelector('[name="guest_count"]');
+    const packageSelect = form.querySelector('[name="menu_id"]');
+    const totalEl = document.getElementById('bf-total');
+
+    function updateTotal() {
+      const guests = parseInt(guestsInput.value) || 50;
+      const opt = packageSelect.options[packageSelect.selectedIndex];
+      const price = parseFloat(opt.dataset.price) || 0;
+      const subtotal = guests * price;
+      const gst = subtotal * 0.10;
+      const total = subtotal + gst;
+      totalEl.textContent = '$' + total.toLocaleString('en-AU', {minimumFractionDigits: 0});
+    }
+    guestsInput.addEventListener('input', updateTotal);
+    packageSelect.addEventListener('change', updateTotal);
+    // Stepper buttons
+    form.querySelectorAll('[data-step]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const step = parseInt(btn.dataset.step);
+        const min = parseInt(guestsInput.min) || 10;
+        const max = parseInt(guestsInput.max) || 1000;
+        let val = parseInt(guestsInput.value) + step;
+        val = Math.max(min, Math.min(max, val));
+        guestsInput.value = val;
+        updateTotal();
+      });
+    });
+    updateTotal();
+
+    // Form submission — API call
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = form.querySelector('.bf-submit');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Processing…';
+
+      const data = Object.fromEntries(new FormData(form));
+      // Gather dietary checkboxes
+      const diets = [];
+      form.querySelectorAll('[name="dietary_requirements"]:checked').forEach(cb => diets.push(cb.value));
+      data.dietary_requirements = diets;
+
+      try {
+        const res = await fetch('/api/bookings/create-checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const result = await res.json();
+        if (result.success && result.url) {
+          window.location.href = result.url;
+        } else {
+          alert(result.error || 'Something went wrong.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Book & Pay';
+        }
+      } catch (err) {
+        alert('Network error. Please try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Book & Pay';
+      }
+    });
+  })();
+  </script>
+</body>
+</html>

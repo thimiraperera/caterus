@@ -1,0 +1,9 @@
+<header class="admin-topbar">
+  <h1 class="topbar-title"><%= typeof title !== 'undefined' ? title : 'Dashboard' %></h1>
+  <div class="topbar-right">
+    <a href="/" class="topbar-link" target="_blank">View Site →</a>
+    <% if (admin) { %>
+    <div class="topbar-avatar"><%= admin.name ? admin.name.charAt(0).toUpperCase() : 'A' %></div>
+    <% } %>
+  </div>
+</header>

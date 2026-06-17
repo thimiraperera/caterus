@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Booking Confirmed — Caterus</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .success-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+    .success-card { background: #fff; border: 1px solid rgba(29,27,23,0.12); border-radius: 24px; padding: 48px; max-width: 540px; width: 100%; text-align: center; box-shadow: 0 20px 48px -16px rgba(29,27,23,0.18); }
+    .success-icon { width: 72px; height: 72px; border-radius: 50%; background: rgba(117,137,109,0.15); color: #75896d; display: inline-grid; place-items: center; margin-bottom: 20px; }
+    .success-icon svg { width: 36px; height: 36px; }
+    .success-card h1 { font-size: 1.6rem; font-weight: 800; margin: 0 0 8px; }
+    .success-card .ref { font-size: 1.1rem; font-weight: 700; color: #75896d; margin: 8px 0 20px; }
+    .success-card p { color: #57544c; line-height: 1.6; margin: 0 0 16px; }
+    .success-details { text-align: left; border: 1px solid rgba(29,27,23,0.1); border-radius: 12px; padding: 20px; margin: 24px 0; }
+    .success-details .row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(29,27,23,0.08); font-size: 0.92rem; }
+    .success-details .row:last-child { border: none; font-weight: 600; font-size: 1rem; }
+    .success-details .label { color: #8a857a; }
+    .success-card .btn { display: inline-flex; align-items: center; gap: 6px; padding: 14px 32px; background: #75896d; color: #fff; border-radius: 100px; font-weight: 600; text-decoration: none; margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="success-page">
+    <div class="success-card">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h1>Booking Confirmed!</h1>
+      <% if (booking) { %>
+        <div class="ref"><%= booking.reference %></div>
+        <p>Thank you, <%= booking.customer_first_name %>! Your catering booking has been confirmed. You'll receive a confirmation email shortly.</p>
+        <div class="success-details">
+          <div class="row"><span class="label">Caterer</span><span><%= booking.caterer_name || 'Your caterer' %></span></div>
+          <div class="row"><span class="label">Menu</span><span><%= booking.menu_name || 'Selected package' %></span></div>
+          <div class="row"><span class="label">Event date</span><span><%= formatDate(booking.event_date) %></span></div>
+          <div class="row"><span class="label">Guests</span><span><%= booking.guest_count %></span></div>
+          <div class="row"><span class="label">Total paid</span><span><%= formatCurrency(booking.total) %></span></div>
+        </div>
+      <% } else { %>
+        <p>Your booking has been processed. Check your email for details.</p>
+      <% } %>
+      <a href="/" class="btn">← Back to Caterus</a>
+    </div>
+  </div>
+</body>
+</html>

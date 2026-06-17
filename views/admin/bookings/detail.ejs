@@ -1,0 +1,68 @@
+<div class="detail-grid">
+  <div class="detail-main">
+    <div class="form-section">
+      <h3 class="form-section__title">Booking <%= booking.reference %></h3>
+      <div class="detail-info">
+        <div class="info-row"><span class="info-label">Status</span><span class="info-value"><span class="badge badge-<%= booking.status %>"><%= booking.status %></span></span></div>
+        <div class="info-row"><span class="info-label">Payment</span><span class="info-value"><span class="badge badge-<%= booking.payment_status %>"><%= booking.payment_status %></span></span></div>
+        <div class="info-row"><span class="info-label">Customer</span><span class="info-value"><%= booking.customer_first_name %> <%= booking.customer_last_name || '' %></span></div>
+        <div class="info-row"><span class="info-label">Email</span><span class="info-value"><a href="mailto:<%= booking.customer_email %>"><%= booking.customer_email %></a></span></div>
+        <div class="info-row"><span class="info-label">Phone</span><span class="info-value"><%= booking.customer_phone || '-' %></span></div>
+        <div class="info-row"><span class="info-label">Caterer</span><span class="info-value"><%= booking.caterer_name || 'N/A' %></span></div>
+        <div class="info-row"><span class="info-label">Menu</span><span class="info-value"><%= booking.menu_name || 'N/A' %></span></div>
+        <div class="info-row"><span class="info-label">Event Date</span><span class="info-value"><%= formatDate(booking.event_date) %></span></div>
+        <div class="info-row"><span class="info-label">Guests</span><span class="info-value"><%= booking.guest_count %></span></div>
+        <div class="info-row"><span class="info-label">Price/Head</span><span class="info-value"><%= formatCurrency(booking.price_per_head) %></span></div>
+        <div class="info-row"><span class="info-label">Subtotal</span><span class="info-value"><%= formatCurrency(booking.subtotal) %></span></div>
+        <div class="info-row"><span class="info-label">GST</span><span class="info-value"><%= formatCurrency(booking.gst) %></span></div>
+        <div class="info-row"><span class="info-label">Total</span><span class="info-value" style="font-size:1.1rem"><%= formatCurrency(booking.total) %></span></div>
+        <div class="info-row"><span class="info-label">Commission (<%= booking.commission_rate %>%)</span><span class="info-value"><%= formatCurrency(booking.commission_amount) %></span></div>
+        <div class="info-row"><span class="info-label">Caterer Payout</span><span class="info-value"><%= formatCurrency(booking.caterer_payout) %></span></div>
+      </div>
+      <% if (booking.dietary_requirements) { %>
+      <div style="margin-top:16px"><strong>Dietary Requirements:</strong><p><%= booking.dietary_requirements %></p></div>
+      <% } %>
+      <% if (booking.special_requests) { %>
+      <div style="margin-top:12px"><strong>Special Requests:</strong><p><%= booking.special_requests %></p></div>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="detail-sidebar">
+    <div class="form-section">
+      <h3 class="form-section__title">Update Status</h3>
+      <form method="POST" action="/admin/bookings/<%= booking.id %>/status?_method=PUT">
+        <select name="status" class="form-control" style="margin-bottom:12px">
+          <option value="pending" <%= booking.status === 'pending' ? 'selected' : '' %>>Pending</option>
+          <option value="confirmed" <%= booking.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+          <option value="assigned" <%= booking.status === 'assigned' ? 'selected' : '' %>>Assigned</option>
+          <option value="completed" <%= booking.status === 'completed' ? 'selected' : '' %>>Completed</option>
+          <option value="cancelled" <%= booking.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+        </select>
+        <button type="submit" class="btn btn-primary btn-sm" style="width:100%">Update Status</button>
+      </form>
+    </div>
+
+    <div class="form-section">
+      <h3 class="form-section__title">Admin Notes</h3>
+      <form method="POST" action="/admin/bookings/<%= booking.id %>/notes?_method=PUT">
+        <textarea name="admin_notes" class="form-control" rows="4"><%= booking.admin_notes || '' %></textarea>
+        <button type="submit" class="btn btn-secondary btn-sm" style="width:100%;margin-top:8px">Save Notes</button>
+      </form>
+    </div>
+
+    <% if (payments.length > 0) { %>
+    <div class="form-section">
+      <h3 class="form-section__title">Payments</h3>
+      <% payments.forEach(p => { %>
+      <div class="info-row" style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)">
+        <span><%= formatCurrency(p.amount) %></span>
+        <span class="badge badge-<%= p.status %>"><%= p.status %></span>
+      </div>
+      <% }) %>
+    </div>
+    <% } %>
+
+    <a href="/admin/bookings" class="btn btn-secondary" style="width:100%">← Back to Bookings</a>
+  </div>
+</div>

@@ -1,0 +1,37 @@
+<div class="form-section">
+  <h3 class="form-section__title">Vetting Checklist — <%= caterer.business_name %></h3>
+  <form method="POST" action="/admin/caterers/<%= caterer.id %>/vetting">
+    <div class="checklist-item<%= vetting && vetting.food_safety_cert ? ' checked' : '' %>">
+      <label class="checkbox"><input type="checkbox" name="food_safety_cert" value="on" <%= vetting && vetting.food_safety_cert ? 'checked' : '' %>></label>
+      <div><strong>Food Safety Certificate</strong><br>
+        <div class="form-group" style="margin-top:8px"><label class="form-label">Expiry Date</label><input type="date" name="food_safety_expiry" class="form-control" value="<%= vetting && vetting.food_safety_expiry ? vetting.food_safety_expiry.slice(0,10) : '' %>"></div>
+      </div>
+    </div>
+    <div class="checklist-item<%= vetting && vetting.public_liability ? ' checked' : '' %>">
+      <label class="checkbox"><input type="checkbox" name="public_liability" value="on" <%= vetting && vetting.public_liability ? 'checked' : '' %>></label>
+      <div><strong>Public Liability Insurance</strong><br>
+        <div class="form-row" style="margin-top:8px">
+          <div class="form-group"><label class="form-label">Amount</label><input type="text" name="liability_amount" class="form-control" value="<%= vetting ? vetting.liability_amount || '' : '' %>" placeholder="e.g. $20M"></div>
+          <div class="form-group"><label class="form-label">Expiry</label><input type="date" name="liability_expiry" class="form-control" value="<%= vetting && vetting.liability_expiry ? vetting.liability_expiry.slice(0,10) : '' %>"></div>
+        </div>
+      </div>
+    </div>
+    <div class="checklist-item<%= vetting && vetting.abn_verified ? ' checked' : '' %>">
+      <label class="checkbox"><input type="checkbox" name="abn_verified" value="on" <%= vetting && vetting.abn_verified ? 'checked' : '' %>></label>
+      <div><strong>ABN Verified</strong></div>
+    </div>
+    <div class="checklist-item<%= vetting && vetting.quality_check ? ' checked' : '' %>">
+      <label class="checkbox"><input type="checkbox" name="quality_check" value="on" <%= vetting && vetting.quality_check ? 'checked' : '' %>></label>
+      <div><strong>Quality Check Passed</strong><br>
+        <div class="form-group" style="margin-top:8px"><textarea name="quality_notes" class="form-control" placeholder="Notes…"><%= vetting ? vetting.quality_notes || '' : '' %></textarea></div>
+      </div>
+    </div>
+    <% if (vetting && vetting.approved_at) { %>
+    <p style="color:var(--accent);font-weight:600;margin:16px 0">✓ Approved by <%= vetting.approved_by_name || 'Admin' %> on <%= vetting.approved_at %></p>
+    <% } %>
+    <div style="display:flex;gap:12px;margin-top:20px">
+      <button type="submit" class="btn btn-primary">Save Vetting</button>
+      <a href="/admin/caterers/<%= caterer.id %>/edit" class="btn btn-secondary">Back to Caterer</a>
+    </div>
+  </form>
+</div>

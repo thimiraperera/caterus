@@ -1,0 +1,103 @@
+<div style="display:flex;gap:12px;margin-bottom:24px">
+  <a href="/admin/caterers/<%= caterer.id %>/menus" class="btn btn-secondary btn-sm">Menus</a>
+  <a href="/admin/caterers/<%= caterer.id %>/vetting" class="btn btn-secondary btn-sm">Vetting</a>
+  <form method="POST" action="/admin/caterers/<%= caterer.id %>?_method=DELETE" style="margin-left:auto" onsubmit="return confirm('Delete this caterer permanently?')">
+    <button type="submit" class="btn btn-danger btn-sm">Delete Caterer</button>
+  </form>
+</div>
+
+<form method="POST" action="/admin/caterers/<%= caterer.id %>?_method=PUT" enctype="multipart/form-data">
+  <div class="form-section">
+    <h3 class="form-section__title">Business Details</h3>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Business Name *</label><input type="text" name="business_name" class="form-control" value="<%= caterer.business_name %>" required></div>
+      <div class="form-group"><label class="form-label">Cuisine Type</label><input type="text" name="cuisine_type" class="form-control" value="<%= caterer.cuisine_type || '' %>"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Tagline</label><input type="text" name="tagline" class="form-control" value="<%= caterer.tagline || '' %>"></div>
+    <div class="form-group"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="4"><%= caterer.description || '' %></textarea></div>
+  </div>
+
+  <div class="form-section">
+    <h3 class="form-section__title">Location & Contact</h3>
+    <div class="form-row-3">
+      <div class="form-group"><label class="form-label">Suburb</label><input type="text" name="suburb" class="form-control" value="<%= caterer.suburb || '' %>"></div>
+      <div class="form-group"><label class="form-label">Postcode</label><input type="text" name="postcode" class="form-control" value="<%= caterer.postcode || '' %>"></div>
+      <div class="form-group"><label class="form-label">ABN</label><input type="text" name="abn" class="form-control" value="<%= caterer.abn || '' %>"></div>
+    </div>
+    <div class="form-row-3">
+      <div class="form-group"><label class="form-label">Contact Name</label><input type="text" name="contact_name" class="form-control" value="<%= caterer.contact_name || '' %>"></div>
+      <div class="form-group"><label class="form-label">Email</label><input type="email" name="contact_email" class="form-control" value="<%= caterer.contact_email || '' %>"></div>
+      <div class="form-group"><label class="form-label">Phone</label><input type="text" name="contact_phone" class="form-control" value="<%= caterer.contact_phone || '' %>"></div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h3 class="form-section__title">Capacity & Pricing</h3>
+    <div class="form-row-3">
+      <div class="form-group"><label class="form-label">Price From ($)</label><input type="number" name="price_from" class="form-control" step="0.01" value="<%= caterer.price_from || '' %>"></div>
+      <div class="form-group"><label class="form-label">Min Guests</label><input type="number" name="min_guests" class="form-control" value="<%= caterer.min_guests || 20 %>"></div>
+      <div class="form-group"><label class="form-label">Max Guests</label><input type="number" name="max_guests" class="form-control" value="<%= caterer.max_guests || 500 %>"></div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h3 class="form-section__title">Tags</h3>
+    <div class="form-group"><label class="form-label">Tags (comma-separated)</label><input type="text" name="tags" class="form-control" value="<%= caterer.tags ? caterer.tags.join(', ') : '' %>"></div>
+    <div class="form-group"><label class="form-label">Specialties (comma-separated)</label><input type="text" name="specialties" class="form-control" value="<%= caterer.specialties ? caterer.specialties.join(', ') : '' %>"></div>
+  </div>
+
+  <div class="form-section">
+    <h3 class="form-section__title">Inclusions</h3>
+    <div class="inclusions-list">
+      <% if (caterer.inclusions) { caterer.inclusions.forEach(inc => { %>
+      <div class="form-row" style="margin-bottom:8px">
+        <input type="text" name="inclusion_titles" class="form-control" value="<%= inc.title %>">
+        <input type="text" name="inclusion_descriptions" class="form-control" value="<%= inc.description || '' %>">
+      </div>
+      <% }) } %>
+    </div>
+    <button type="button" class="btn btn-secondary btn-sm add-inclusion-btn">+ Add Inclusion</button>
+  </div>
+
+  <div class="form-section">
+    <h3 class="form-section__title">Featured Image</h3>
+    <% if (caterer.featured_image) { %><img src="/<%= caterer.featured_image %>" style="max-width:200px;border-radius:8px;margin-bottom:12px" alt=""><br><% } %>
+    <input type="file" name="featured_image" accept="image/*" class="form-control">
+  </div>
+
+  <div class="form-section">
+    <h3 class="form-section__title">Gallery</h3>
+    <div class="image-grid">
+      <% images.forEach(img => { %>
+      <div class="img-thumb">
+        <img src="/<%= img.image_path %>" alt="<%= img.alt_text || '' %>">
+        <form method="POST" action="/admin/caterers/<%= caterer.id %>/images/<%= img.id %>?_method=DELETE"><button type="submit" class="img-delete">✕</button></form>
+      </div>
+      <% }) %>
+    </div>
+    <form method="POST" action="/admin/caterers/<%= caterer.id %>/images" enctype="multipart/form-data" style="margin-top:12px">
+      <input type="file" name="images" accept="image/*" multiple class="form-control">
+      <button type="submit" class="btn btn-secondary btn-sm" style="margin-top:8px">Upload</button>
+    </form>
+  </div>
+
+  <div class="form-section">
+    <h3 class="form-section__title">Publishing</h3>
+    <label class="toggle"><input type="checkbox" name="is_published" value="on" <%= caterer.is_published ? 'checked' : '' %>><span class="toggle-track"></span><span class="toggle-label">Published</span></label><br><br>
+    <label class="toggle"><input type="checkbox" name="is_featured" value="on" <%= caterer.is_featured ? 'checked' : '' %>><span class="toggle-track"></span><span class="toggle-label">Featured</span></label>
+    <div class="form-group" style="margin-top:16px">
+      <label class="form-label">Status</label>
+      <select name="status" class="form-control">
+        <option value="draft" <%= caterer.status === 'draft' ? 'selected' : '' %>>Draft</option>
+        <option value="pending" <%= caterer.status === 'pending' ? 'selected' : '' %>>Pending</option>
+        <option value="active" <%= caterer.status === 'active' ? 'selected' : '' %>>Active</option>
+        <option value="suspended" <%= caterer.status === 'suspended' ? 'selected' : '' %>>Suspended</option>
+      </select>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:12px">
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+    <a href="/admin/caterers" class="btn btn-secondary">Back</a>
+  </div>
+</form>

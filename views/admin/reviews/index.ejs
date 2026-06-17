@@ -1,0 +1,31 @@
+<div class="filter-bar">
+  <div class="filter-tabs">
+    <a href="/admin/reviews?status=pending" class="filter-tab<%= currentStatus === 'pending' ? ' active' : '' %>">Pending</a>
+    <a href="/admin/reviews?status=approved" class="filter-tab<%= currentStatus === 'approved' ? ' active' : '' %>">Approved</a>
+    <a href="/admin/reviews?status=rejected" class="filter-tab<%= currentStatus === 'rejected' ? ' active' : '' %>">Rejected</a>
+  </div>
+</div>
+
+<% if (reviews.length === 0) { %>
+<div class="empty-state"><p>No reviews to show.</p></div>
+<% } else { %>
+<% reviews.forEach(r => { %>
+<div class="review-card">
+  <div class="review-avatar"><%= r.reviewer_initials || '??' %></div>
+  <div class="review-body">
+    <div class="review-meta"><strong><%= r.reviewer_name %></strong> · <%= r.caterer_name || 'Unknown caterer' %> · <%= r.event_type || '' %> · <%= r.event_date || '' %></div>
+    <div class="review-stars"><% for(let i = 0; i < r.rating; i++) { %>★<% } %><% for(let i = r.rating; i < 5; i++) { %>☆<% } %></div>
+    <p class="review-text"><%= r.comment %></p>
+    <div class="actions" style="margin-top:8px">
+      <% if (r.status !== 'approved') { %>
+      <form method="POST" action="/admin/reviews/<%= r.id %>/status?_method=PUT" style="display:inline"><input type="hidden" name="status" value="approved"><button type="submit" class="btn btn-primary btn-sm">Approve</button></form>
+      <% } %>
+      <% if (r.status !== 'rejected') { %>
+      <form method="POST" action="/admin/reviews/<%= r.id %>/status?_method=PUT" style="display:inline"><input type="hidden" name="status" value="rejected"><button type="submit" class="btn btn-danger btn-sm">Reject</button></form>
+      <% } %>
+    </div>
+  </div>
+</div>
+<% }) %>
+<%- include('../../partials/pagination', { baseUrl: `/admin/reviews?status=${currentStatus}`, page, totalPages }) %>
+<% } %>

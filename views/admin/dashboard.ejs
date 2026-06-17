@@ -1,0 +1,59 @@
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-card__label">Total Revenue</div>
+    <div class="stat-card__value"><%= formatCurrency(bookingStats.totalRevenue || 0) %></div>
+    <div class="stat-card__trend">This month: <%= formatCurrency(bookingStats.monthlyRevenue || 0) %></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__label">Bookings</div>
+    <div class="stat-card__value"><%= bookingStats.totalBookings || 0 %></div>
+    <div class="stat-card__trend"><%= bookingStats.monthlyCount || 0 %> this month</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__label">Active Caterers</div>
+    <div class="stat-card__value"><%= catererStats.activeCaterers || 0 %></div>
+    <div class="stat-card__trend"><%= catererStats.avgRating || 0 %> avg rating</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__label">Reviews</div>
+    <div class="stat-card__value"><%= reviewStats.total || 0 %></div>
+    <div class="stat-card__trend"><%= reviewStats.pending || 0 %> pending</div>
+  </div>
+</div>
+
+<% if (newEnquiries > 0 || newApplications > 0) { %>
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px">
+  <% if (newEnquiries > 0) { %><a href="/admin/enquiries" class="badge badge-pending" style="font-size:0.82rem;padding:8px 16px"><%= newEnquiries %> new enquir<%= newEnquiries > 1 ? 'ies' : 'y' %></a><% } %>
+  <% if (newApplications > 0) { %><a href="/admin/applications" class="badge badge-new" style="font-size:0.82rem;padding:8px 16px"><%= newApplications %> new application<%= newApplications > 1 ? 's' : '' %></a><% } %>
+</div>
+<% } %>
+
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Recent Bookings</h2>
+    <a href="/admin/bookings" class="btn btn-secondary btn-sm">View all</a>
+  </div>
+  <% if (recentBookings.length === 0) { %>
+  <div class="empty-state"><p>No bookings yet</p></div>
+  <% } else { %>
+  <div class="admin-table-wrap" style="border:none;box-shadow:none">
+    <table class="admin-table">
+      <thead>
+        <tr><th>Reference</th><th>Customer</th><th>Caterer</th><th>Date</th><th>Total</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <% recentBookings.forEach(b => { %>
+        <tr>
+          <td><a href="/admin/bookings/<%= b.id %>"><strong><%= b.reference %></strong></a></td>
+          <td><%= b.customer_first_name %> <%= b.customer_last_name || '' %></td>
+          <td><%= b.caterer_name || 'N/A' %></td>
+          <td><%= formatDate(b.event_date) %></td>
+          <td><strong><%= formatCurrency(b.total) %></strong></td>
+          <td><span class="badge badge-<%= b.status %>"><%= b.status %></span></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+</div>

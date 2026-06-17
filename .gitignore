@@ -1,39 +1,22 @@
 # Dependencies
 node_modules/
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
 
-# Environment & secrets
+# Environment
 .env
 .env.local
-.env.*.local
-*.pem
 
-# Build output
-dist/
-build/
-.next/
-out/
+# Uploads
+public/assets/uploads/*
+!public/assets/uploads/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
 
 # Logs
 *.log
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
-# OS files
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# Editor / IDE
+# IDE
 .vscode/
 .idea/
-*.swp
-*.swo
-
-# Misc
-.cache/
-coverage/
-tmp/

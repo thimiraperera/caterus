@@ -1,0 +1,32 @@
+<div class="stat-grid" style="margin-bottom:24px">
+  <div class="stat-card"><div class="stat-card__label">Pending</div><div class="stat-card__value"><%= formatCurrency(stats.pendingTotal || 0) %></div></div>
+  <div class="stat-card"><div class="stat-card__label">Completed</div><div class="stat-card__value"><%= formatCurrency(stats.completedTotal || 0) %></div></div>
+  <div class="stat-card"><div class="stat-card__label">This Month</div><div class="stat-card__value"><%= formatCurrency(stats.monthlyTotal || 0) %></div></div>
+</div>
+
+<% if (payouts.length === 0) { %>
+<div class="empty-state"><p>No payouts yet.</p></div>
+<% } else { %>
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead><tr><th>Caterer</th><th>Booking</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+      <% payouts.forEach(p => { %>
+      <tr>
+        <td><%= p.caterer_name || 'N/A' %></td>
+        <td><%= p.booking_reference || '-' %></td>
+        <td><strong><%= formatCurrency(p.amount) %></strong></td>
+        <td><%= p.payout_date || '-' %></td>
+        <td><span class="badge badge-<%= p.status %>"><%= p.status %></span></td>
+        <td class="actions">
+          <% if (p.status === 'pending') { %>
+          <form method="POST" action="/admin/payouts/<%= p.id %>/status?_method=PUT" style="display:inline"><input type="hidden" name="status" value="completed"><button type="submit" class="btn btn-primary btn-sm">Mark Paid</button></form>
+          <% } %>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<%- include('../../partials/pagination', { baseUrl: '/admin/payouts', page, totalPages }) %>
+<% } %>

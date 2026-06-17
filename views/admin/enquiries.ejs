@@ -1,0 +1,28 @@
+<% if (enquiries.length === 0) { %>
+<div class="empty-state"><p>No enquiries.</p></div>
+<% } else { %>
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead><tr><th>Name</th><th>Email</th><th>Caterer</th><th>Message</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+    <tbody>
+      <% enquiries.forEach(e => { %>
+      <tr>
+        <td><%= e.first_name %> <%= e.last_name || '' %></td>
+        <td><a href="mailto:<%= e.email %>"><%= e.email %></a></td>
+        <td><%= e.caterer_name || 'General' %></td>
+        <td style="max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><%= e.message || '-' %></td>
+        <td><%= formatDate(e.created_at) %></td>
+        <td><span class="badge badge-<%= e.status %>"><%= e.status %></span></td>
+        <td class="actions">
+          <% if (e.status === 'new') { %>
+          <form method="POST" action="/admin/enquiries/<%= e.id %>/status?_method=PUT" style="display:inline"><input type="hidden" name="status" value="read"><button type="submit" class="btn btn-secondary btn-sm">Mark Read</button></form>
+          <% } %>
+          <form method="POST" action="/admin/enquiries/<%= e.id %>/status?_method=PUT" style="display:inline"><input type="hidden" name="status" value="closed"><button type="submit" class="btn btn-secondary btn-sm">Close</button></form>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<%- include('../partials/pagination', { baseUrl: '/admin/enquiries', page, totalPages }) %>
+<% } %>

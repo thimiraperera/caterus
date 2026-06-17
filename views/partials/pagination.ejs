@@ -1,0 +1,19 @@
+<% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+<div class="pagination">
+  <% if (page > 1) { %>
+    <a href="<%= baseUrl %>?page=<%= page - 1 %>" class="pg-btn">← Prev</a>
+  <% } %>
+  <% for (let i = 1; i <= totalPages; i++) { %>
+    <% if (i === page) { %>
+      <span class="pg-btn pg-active"><%= i %></span>
+    <% } else if (Math.abs(i - page) <= 2 || i === 1 || i === totalPages) { %>
+      <a href="<%= baseUrl %>?page=<%= i %>" class="pg-btn"><%= i %></a>
+    <% } else if (Math.abs(i - page) === 3) { %>
+      <span class="pg-dots">…</span>
+    <% } %>
+  <% } %>
+  <% if (page < totalPages) { %>
+    <a href="<%= baseUrl %>?page=<%= page + 1 %>" class="pg-btn">Next →</a>
+  <% } %>
+</div>
+<% } %>
