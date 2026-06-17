@@ -1,8 +1,9 @@
 -- ============================================================
 -- Caterus — Full Database Schema
 -- ============================================================
-CREATE DATABASE IF NOT EXISTS caterus CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE caterus;
+-- NOTE: On cPanel, create the database via cPanel UI first,
+-- then import this file into that database via phpMyAdmin.
+-- ============================================================
 
 -- ──────────────────────────────────────────────────────────────
 -- ADMINS

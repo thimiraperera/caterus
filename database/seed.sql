@@ -1,7 +1,7 @@
 -- ============================================================
 -- Caterus — Seed Data
+-- Import into your database via phpMyAdmin after schema.sql
 -- ============================================================
-USE caterus;
 
 -- ── Admin ──
 INSERT INTO admins (email, password_hash, name, role) VALUES
