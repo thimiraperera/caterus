@@ -208,22 +208,64 @@ module.exports = {
     } catch (err) { console.error(err); req.flash('error', 'Failed to disable 2FA.'); res.redirect('/admin/settings/profile'); }
   },
 
-  /* Erase test data - keeps admins, caterers, menus, settings, faqs, seo */
+  /* Erase test data - keeps admins, settings, faqs */
   async eraseTestData(req, res) {
     try {
       await db.query('SET FOREIGN_KEY_CHECKS = 0');
-      const tables = ['booking_addons', 'payments', 'bookings', 'reviews', 'payouts', 'contact_enquiries', 'caterer_applications', 'sessions'];
+      const tables = [
+        'booking_addons', 'payments', 'bookings', 'reviews', 'payouts',
+        'contact_enquiries', 'caterer_applications', 'sessions',
+        'caterer_images', 'caterer_tags', 'caterer_occasions', 'caterer_specialties',
+        'caterer_inclusions', 'vetting_checklists', 'menu_items', 'menus', 'addons',
+        'caterers',
+      ];
       for (const t of tables) {
         await db.query(`TRUNCATE TABLE \`${t}\``);
       }
       await db.query('SET FOREIGN_KEY_CHECKS = 1');
-      req.flash('success', 'Test data erased. Caterers, settings, FAQs and admin accounts are untouched.');
+      req.flash('success', 'All test data erased. Admin accounts and settings are untouched.');
       res.redirect('/admin/settings/general');
     } catch (err) {
       console.error(err);
       req.flash('error', 'Erase failed: ' + err.message);
       res.redirect('/admin/settings/general');
     }
+  },
+
+  /* Occasions list management */
+  async occasions(req, res) {
+    const raw = await Settings.get('occasions_list').catch(() => null);
+    let occasions = [];
+    try { occasions = raw ? JSON.parse(raw) : []; } catch (_) {}
+    if (!occasions.length) {
+      occasions = ['Wedding', 'Corporate', 'Birthday', 'Christmas', 'Conference', 'Cocktail Party', 'Gala Dinner', 'School Event', 'Funeral', 'Other'];
+      await Settings.set('occasions_list', JSON.stringify(occasions), 'general');
+    }
+    res.render('admin/settings/occasions', { title: 'Occasions', currentPage: 'settings-occasions', occasions });
+  },
+
+  async addOccasion(req, res) {
+    const raw = await Settings.get('occasions_list').catch(() => null);
+    let occasions = [];
+    try { occasions = raw ? JSON.parse(raw) : []; } catch (_) {}
+    const name = (req.body.name || '').trim();
+    if (name && !occasions.includes(name)) {
+      occasions.push(name);
+      await Settings.set('occasions_list', JSON.stringify(occasions), 'general');
+    }
+    req.flash('success', `Occasion "${name}" added.`);
+    res.redirect('/admin/settings/occasions');
+  },
+
+  async deleteOccasion(req, res) {
+    const raw = await Settings.get('occasions_list').catch(() => null);
+    let occasions = [];
+    try { occasions = raw ? JSON.parse(raw) : []; } catch (_) {}
+    const name = req.body.name || '';
+    occasions = occasions.filter(o => o !== name);
+    await Settings.set('occasions_list', JSON.stringify(occasions), 'general');
+    req.flash('success', `Occasion "${name}" removed.`);
+    res.redirect('/admin/settings/occasions');
   },
 
   /* Backup: download DB as SQL */

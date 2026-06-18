@@ -130,10 +130,10 @@
 
     <div class="form-section" style="border-color:rgba(220,53,69,0.3)">
       <h3 class="form-section__title" style="color:#dc3545">Erase Test Data</h3>
-      <p style="font-size:0.88rem;color:var(--muted);margin-bottom:16px">Deletes all bookings, payments, reviews, enquiries, applications and sessions. <strong>Does not</strong> delete caterers, admins, menus, FAQs or settings.</p>
+      <p style="font-size:0.88rem;color:var(--muted);margin-bottom:16px">Deletes <strong>all</strong> caterers, menus, bookings, payments, reviews, enquiries, and applications. <strong>Does not</strong> delete admin accounts, settings, or FAQs.</p>
       <form method="POST" action="/admin/settings/erase-test-data">
-        <button type="submit" class="btn btn-danger" onclick="return confirm('This will permanently delete all test bookings, payments, reviews, enquiries, and applications. Admin accounts and settings are safe. Continue?')">
-          Erase Test Data
+        <button type="submit" class="btn btn-danger" onclick="return confirm('This will permanently delete ALL caterers, menus, bookings, reviews, enquiries and applications. Admin accounts and settings are safe. Continue?')">
+          Erase All Test Data
         </button>
       </form>
     </div>

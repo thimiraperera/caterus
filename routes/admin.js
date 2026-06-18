@@ -107,6 +107,11 @@ router.post('/settings/2fa/disable',      settingsController.disable2fa);
 /* Erase test data */
 router.post('/settings/erase-test-data',  settingsController.eraseTestData);
 
+/* Occasions */
+router.get('/settings/occasions',         settingsController.occasions);
+router.post('/settings/occasions',        settingsController.addOccasion);
+router.post('/settings/occasions/delete', settingsController.deleteOccasion);
+
 /* Backup */
 router.get('/settings/backup/db',         settingsController.backupDb);
 router.get('/settings/backup/media',      settingsController.backupMedia);

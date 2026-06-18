@@ -1,5 +1,6 @@
 /* Admin Caterer Controller */
 const Caterer        = require('../../models/Caterer');
+const Settings       = require('../../models/Settings');
 const { slugify }    = require('../../utils/helpers');
 const convertToWebp  = require('../../utils/convertToWebp');
 const path           = require('path');
@@ -75,8 +76,14 @@ module.exports = {
     try {
       const caterer = await Caterer.findById(req.params.id);
       if (!caterer) { req.flash('error', 'Caterer not found.'); return res.redirect('/admin/caterers'); }
-      const images = await Caterer.getImages(caterer.id);
-      res.render('admin/caterers/edit', { title: `Edit: ${caterer.business_name}`, currentPage: 'caterers', caterer, images });
+      const [images, occasionsRaw] = await Promise.all([
+        Caterer.getImages(caterer.id),
+        Settings.get('occasions_list').catch(() => null),
+      ]);
+      const DEFAULT_OCCASIONS = ['Wedding', 'Corporate', 'Birthday', 'Christmas', 'Conference', 'Cocktail Party', 'Gala Dinner', 'School Event', 'Funeral', 'Other'];
+      let allOccasions = DEFAULT_OCCASIONS;
+      try { if (occasionsRaw) allOccasions = JSON.parse(occasionsRaw); } catch (_) {}
+      res.render('admin/caterers/edit', { title: `Edit: ${caterer.business_name}`, currentPage: 'caterers', caterer, images, allOccasions });
     } catch (err) {
       console.error(err);
       req.flash('error', 'Failed to load caterer.');

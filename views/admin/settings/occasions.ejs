@@ -1,0 +1,40 @@
+<div class="settings-grid">
+
+  <div class="settings-col">
+    <div class="form-section">
+      <h3 class="form-section__title">Add Occasion</h3>
+      <p style="font-size:0.88rem;color:var(--muted);margin-bottom:16px">Occasions appear as checkboxes on every caterer edit page.</p>
+      <form method="POST" action="/admin/settings/occasions">
+        <div class="form-row" style="align-items:flex-end">
+          <div class="form-group" style="flex:1;margin-bottom:0">
+            <label class="form-label">Occasion Name</label>
+            <input type="text" name="name" class="form-control" placeholder="e.g. Hen's Party" required autocomplete="off">
+          </div>
+          <button type="submit" class="btn btn-primary" style="white-space:nowrap">Add Occasion</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="settings-col">
+    <div class="form-section">
+      <h3 class="form-section__title">Current Occasions (<%= occasions.length %>)</h3>
+      <% if (occasions.length === 0) { %>
+      <p style="font-size:0.88rem;color:var(--muted)">No occasions yet. Add one on the left.</p>
+      <% } else { %>
+      <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px">
+        <% occasions.forEach(occ => { %>
+        <li style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm)">
+          <span style="font-size:0.9rem"><%= occ %></span>
+          <form method="POST" action="/admin/settings/occasions/delete" style="margin:0">
+            <input type="hidden" name="name" value="<%= occ %>">
+            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Remove occasion &quot;<%= occ %>&quot;?')">Remove</button>
+          </form>
+        </li>
+        <% }) %>
+      </ul>
+      <% } %>
+    </div>
+  </div>
+
+</div>

@@ -1,8 +1,10 @@
 <%- include('../../partials/caterer-actions', { caterer, currentAction: 'edit' }) %>
 
+<!-- ── Main details form ─────────────────────────────── -->
 <form method="POST" action="/admin/caterers/<%= caterer.id %>?_method=PUT" enctype="multipart/form-data">
   <div class="caterer-grid">
 
+    <!-- LEFT: core details -->
     <div class="caterer-col">
       <div class="form-section">
         <h3 class="form-section__title">Business Details</h3>
@@ -16,9 +18,16 @@
 
       <div class="form-section">
         <h3 class="form-section__title">Location & Contact</h3>
-        <div class="form-row-3">
-          <div class="form-group"><label class="form-label">Suburb</label><input type="text" name="suburb" class="form-control" value="<%= caterer.suburb || '' %>"></div>
-          <div class="form-group"><label class="form-label">Postcode</label><input type="text" name="postcode" class="form-control" value="<%= caterer.postcode || '' %>"></div>
+        <div class="form-row-3" style="position:relative">
+          <div class="form-group" style="position:relative">
+            <label class="form-label">Suburb</label>
+            <input type="text" name="suburb" id="suburb-input" class="form-control" value="<%= caterer.suburb || '' %>" autocomplete="off" placeholder="Start typing...">
+            <ul id="suburb-suggestions" class="suburb-suggest"></ul>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Postcode</label>
+            <input type="text" name="postcode" id="postcode-input" class="form-control" value="<%= caterer.postcode || '' %>">
+          </div>
           <div class="form-group"><label class="form-label">ABN</label><input type="text" name="abn" class="form-control" value="<%= caterer.abn || '' %>"></div>
         </div>
         <div class="form-row-3">
@@ -40,28 +49,9 @@
           <div class="form-group"><label class="form-label">Response Time</label><input type="text" name="response_time" class="form-control" value="<%= caterer.response_time || '~2 hours' %>"></div>
         </div>
       </div>
-
-      <div class="form-section">
-        <h3 class="form-section__title">Tags & Categories</h3>
-        <div class="form-group"><label class="form-label">Tags (comma-separated)</label><input type="text" name="tags" class="form-control" value="<%= caterer.tags ? caterer.tags.join(', ') : '' %>"></div>
-        <div class="form-group"><label class="form-label">Specialties (comma-separated)</label><input type="text" name="specialties" class="form-control" value="<%= caterer.specialties ? caterer.specialties.join(', ') : '' %>"></div>
-      </div>
-
-      <div class="form-section">
-        <h3 class="form-section__title">Inclusions</h3>
-        <p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px">Title + short description for each inclusion.</p>
-        <div class="inclusions-list">
-          <% if (caterer.inclusions) { caterer.inclusions.forEach(inc => { %>
-          <div class="form-row" style="margin-bottom:8px">
-            <input type="text" name="inclusion_titles" class="form-control" value="<%= inc.title %>" placeholder="Title">
-            <input type="text" name="inclusion_descriptions" class="form-control" value="<%= inc.description || '' %>" placeholder="Description">
-          </div>
-          <% }) } %>
-        </div>
-        <button type="button" class="btn btn-secondary btn-sm add-inclusion-btn">+ Add Inclusion</button>
-      </div>
     </div>
 
+    <!-- RIGHT: publishing + occasions + tags + inclusions -->
     <div class="caterer-col">
       <div class="form-section">
         <h3 class="form-section__title">Featured Image</h3>
@@ -79,24 +69,24 @@
           <label class="toggle"><input type="checkbox" name="is_featured" value="on" <%= caterer.is_featured ? 'checked' : '' %>><span class="toggle-track"></span><span class="toggle-label">Featured</span></label>
           <% if (caterer.is_unlisted) { %>
           <p style="font-size:0.82rem;color:var(--muted)">
-            <span class="badge badge-unlisted">Unlisted</span> Page is live but hidden from listings and noindex. <a href="/admin/caterers/<%= caterer.id %>/relist?_method=PUT" onclick="event.preventDefault();fetch(this.href,{method:'POST'}).then(()=>location.reload())">Relist</a>
+            <span class="badge badge-unlisted">Unlisted</span> Page is live but hidden from listings and noindex.
+            <a href="#" onclick="event.preventDefault();fetch('/admin/caterers/<%= caterer.id %>/relist',{method:'POST'}).then(()=>location.reload())">Relist</a>
           </p>
           <% } %>
         </div>
         <div class="form-group">
           <label class="form-label">Status</label>
           <select name="status" class="form-control">
-            <option value="draft"      <%= caterer.status === 'draft'      ? 'selected' : '' %>>Draft</option>
-            <option value="pending"    <%= caterer.status === 'pending'    ? 'selected' : '' %>>Pending</option>
-            <option value="active"     <%= caterer.status === 'active'     ? 'selected' : '' %>>Active</option>
-            <option value="suspended"  <%= caterer.status === 'suspended'  ? 'selected' : '' %>>Suspended</option>
+            <option value="draft"     <%=caterer.status==='draft'     ?'selected':''%>>Draft</option>
+            <option value="pending"   <%=caterer.status==='pending'   ?'selected':''%>>Pending</option>
+            <option value="active"    <%=caterer.status==='active'    ?'selected':''%>>Active</option>
+            <option value="suspended" <%=caterer.status==='suspended' ?'selected':''%>>Suspended</option>
           </select>
         </div>
       </div>
 
       <div class="form-section">
         <h3 class="form-section__title">Occasions</h3>
-        <% const allOccasions = ['Wedding','Corporate','Birthday','Christmas','Conference','Cocktail Party','Gala Dinner','School Event','Funeral','Other']; %>
         <div style="display:flex;flex-wrap:wrap;gap:8px">
           <% allOccasions.forEach(occ => { %>
           <label style="display:flex;align-items:center;gap:6px;font-size:0.88rem;cursor:pointer">
@@ -105,6 +95,27 @@
           </label>
           <% }) %>
         </div>
+        <p style="font-size:0.78rem;color:var(--muted);margin-top:10px"><a href="/admin/settings/occasions" target="_blank">Manage occasion types</a></p>
+      </div>
+
+      <div class="form-section">
+        <h3 class="form-section__title">Tags & Categories</h3>
+        <div class="form-group"><label class="form-label">Tags <span style="color:var(--muted);font-weight:400">(comma-separated)</span></label><input type="text" name="tags" class="form-control" value="<%= caterer.tags ? caterer.tags.join(', ') : '' %>"></div>
+        <div class="form-group"><label class="form-label">Specialties <span style="color:var(--muted);font-weight:400">(comma-separated)</span></label><input type="text" name="specialties" class="form-control" value="<%= caterer.specialties ? caterer.specialties.join(', ') : '' %>"></div>
+      </div>
+
+      <div class="form-section">
+        <h3 class="form-section__title">Inclusions</h3>
+        <p style="font-size:0.82rem;color:var(--muted);margin-bottom:12px">Title + short description for each inclusion.</p>
+        <div class="inclusions-list">
+          <% if (caterer.inclusions) { caterer.inclusions.forEach(inc => { %>
+          <div class="form-row" style="margin-bottom:8px">
+            <input type="text" name="inclusion_titles" class="form-control" value="<%= inc.title %>" placeholder="Title">
+            <input type="text" name="inclusion_descriptions" class="form-control" value="<%= inc.description || '' %>" placeholder="Description">
+          </div>
+          <% }) } %>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm add-inclusion-btn">+ Add Inclusion</button>
       </div>
 
       <div style="display:flex;gap:12px;margin-top:4px">
@@ -115,45 +126,167 @@
   </div>
 </form>
 
-<!-- Gallery - separate forms, outside main form -->
-<div class="form-section" style="margin-top:20px">
-  <h3 class="form-section__title">Gallery</h3>
-  <% if (images.length > 0) { %>
-  <div class="image-grid" style="margin-bottom:16px">
-    <% images.forEach(img => { %>
-    <div class="img-thumb">
-      <img src="/<%= img.image_path %>" alt="<%= img.alt_text || '' %>">
-      <form method="POST" action="/admin/caterers/<%= caterer.id %>/images/<%= img.id %>?_method=DELETE">
-        <button type="submit" class="img-delete">✕</button>
+<!-- ── Gallery + SEO grid (separate forms) ─────────────── -->
+<div class="caterer-grid" style="margin-top:20px">
+
+  <!-- Gallery -->
+  <div class="caterer-col">
+    <div class="form-section">
+      <h3 class="form-section__title">Gallery</h3>
+      <% if (images.length > 0) { %>
+      <div class="image-grid" style="margin-bottom:16px">
+        <% images.forEach(img => { %>
+        <div class="img-thumb">
+          <img src="/<%= img.image_path %>" alt="<%= img.alt_text || '' %>">
+          <form method="POST" action="/admin/caterers/<%= caterer.id %>/images/<%= img.id %>?_method=DELETE">
+            <button type="submit" class="img-delete">&#10005;</button>
+          </form>
+        </div>
+        <% }) %>
+      </div>
+      <% } %>
+      <form method="POST" action="/admin/caterers/<%= caterer.id %>/images" enctype="multipart/form-data">
+        <input type="file" name="images" accept="image/*" multiple class="form-control">
+        <button type="submit" class="btn btn-secondary btn-sm" style="margin-top:8px">Upload Images</button>
+        <p class="form-hint">Multiple files supported. Auto-converted to WebP.</p>
       </form>
     </div>
-    <% }) %>
   </div>
-  <% } %>
-  <form method="POST" action="/admin/caterers/<%= caterer.id %>/images" enctype="multipart/form-data">
-    <input type="file" name="images" accept="image/*" multiple class="form-control">
-    <button type="submit" class="btn btn-secondary btn-sm" style="margin-top:8px">Upload Images</button>
-    <p class="form-hint">Multiple files supported. Auto-converted to WebP.</p>
-  </form>
+
+  <!-- SEO -->
+  <div class="caterer-col">
+    <div class="form-section" id="caterer-seo">
+      <h3 class="form-section__title">SEO</h3>
+      <p style="font-size:0.88rem;color:var(--muted);margin-bottom:16px">Leave blank to use the business name and tagline automatically.</p>
+      <form method="POST" action="/admin/caterers/<%= caterer.id %>/seo">
+        <div class="form-group">
+          <label class="form-label">Meta Title</label>
+          <input type="text" name="meta_title" class="form-control" value="<%= caterer.meta_title || '' %>" placeholder="<%= caterer.business_name %> | Caterus" maxlength="70">
+          <p class="form-hint">50-60 characters ideal</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Meta Description</label>
+          <textarea name="meta_description" class="form-control" rows="4" maxlength="160" placeholder="Short description for search results..."><%= caterer.meta_description || '' %></textarea>
+          <p class="form-hint">150-160 characters ideal</p>
+        </div>
+        <button type="submit" class="btn btn-primary">Save SEO</button>
+      </form>
+    </div>
+  </div>
+
 </div>
 
-<!-- SEO -->
-<div class="form-section" id="caterer-seo" style="margin-top:0">
-  <h3 class="form-section__title">SEO</h3>
-  <p style="font-size:0.88rem;color:var(--muted);margin-bottom:16px">Leave blank to use the business name and tagline automatically.</p>
-  <form method="POST" action="/admin/caterers/<%= caterer.id %>/seo">
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Meta Title</label>
-        <input type="text" name="meta_title" class="form-control" value="<%= caterer.meta_title || '' %>" placeholder="<%= caterer.business_name %> | Caterus" maxlength="70">
-        <p class="form-hint">50-60 characters ideal</p>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Meta Description</label>
-        <textarea name="meta_description" class="form-control" rows="3" maxlength="160" placeholder="Short description for search results..."><%= caterer.meta_description || '' %></textarea>
-        <p class="form-hint">150-160 characters ideal</p>
-      </div>
-    </div>
-    <button type="submit" class="btn btn-primary">Save SEO</button>
-  </form>
-</div>
+<style>
+.suburb-suggest {
+  position:absolute; top:100%; left:0; right:0; z-index:200;
+  background:var(--surface); border:1px solid var(--line); border-top:none;
+  border-radius:0 0 var(--radius-sm) var(--radius-sm);
+  max-height:200px; overflow-y:auto; margin:0; padding:0; list-style:none;
+  box-shadow:var(--shadow-sm);
+}
+.suburb-suggest li {
+  padding:8px 12px; cursor:pointer; font-size:0.88rem;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.suburb-suggest li:hover, .suburb-suggest li.active { background:var(--surface-2); }
+.suburb-suggest li span.pc { color:var(--muted); font-size:0.8rem; }
+</style>
+
+<script>
+(function() {
+  /* Melbourne suburb list: [name, postcode] */
+  const SUBURBS = [
+    ['Abbotsford','3067'],['Albert Park','3206'],['Alphington','3078'],['Altona','3018'],
+    ['Altona Meadows','3028'],['Altona North','3025'],['Armadale','3143'],['Ascot Vale','3032'],
+    ['Ashburton','3147'],['Ashwood','3147'],['Aspendale','3195'],['Auburn','3123'],
+    ['Avondale Heights','3034'],['Balaclava','3183'],['Balwyn','3103'],['Balwyn North','3104'],
+    ['Beaumaris','3193'],['Bentleigh','3204'],['Bentleigh East','3165'],['Box Hill','3128'],
+    ['Box Hill North','3129'],['Box Hill South','3128'],['Brighton','3186'],['Brighton East','3187'],
+    ['Brunswick','3056'],['Brunswick East','3057'],['Brunswick West','3055'],['Bulleen','3105'],
+    ['Bundoora','3083'],['Burwood','3125'],['Burwood East','3151'],['Camberwell','3124'],
+    ['Canterbury','3126'],['Carlton','3053'],['Carlton North','3054'],['Carnegie','3163'],
+    ['Caulfield','3162'],['Caulfield North','3161'],['Caulfield South','3162'],['CBD','3000'],
+    ['Chelsea','3196'],['Cheltenham','3192'],['Chirnside Park','3116'],['Coburg','3058'],
+    ['Coburg North','3058'],['Collingwood','3066'],['Cremorne','3121'],['Dandenong','3175'],
+    ['Docklands','3008'],['Doncaster','3108'],['Doncaster East','3109'],['Elsternwick','3185'],
+    ['Eltham','3095'],['Elwood','3184'],['Essendon','3040'],['Essendon North','3041'],
+    ['Fairfield','3078'],['Fitzroy','3065'],['Fitzroy North','3068'],['Flemington','3031'],
+    ['Footscray','3011'],['Forest Hill','3131'],['Glen Iris','3146'],['Glen Waverley','3150'],
+    ['Glenroy','3046'],['Glenhuntly','3163'],['Glenferrie','3122'],['Greensborough','3088'],
+    ['Hallam','3803'],['Hampton','3188'],['Hampton East','3188'],['Hawthorn','3122'],
+    ['Hawthorn East','3123'],['Heidelberg','3084'],['Heidelberg Heights','3081'],
+    ['Highett','3190'],['Hoppers Crossing','3029'],['Ivanhoe','3079'],['Kensington','3031'],
+    ['Keilor','3036'],['Keilor East','3033'],['Kew','3101'],['Kew East','3102'],
+    ['Kilsyth','3137'],['Knox','3152'],['Lalor','3075'],['Laverton','3028'],
+    ['Lilydale','3140'],['Macleod','3085'],['Malvern','3144'],['Malvern East','3145'],
+    ['McKinnon','3204'],['Melbourne CBD','3000'],['Mentone','3194'],['Mernda','3754'],
+    ['Middle Park','3206'],['Mill Park','3082'],['Mitcham','3132'],['Mont Albert','3127'],
+    ['Moonee Ponds','3039'],['Moorabbin','3189'],['Mordialloc','3195'],['Mount Waverley','3149'],
+    ['Mulgrave','3170'],['Niddrie','3042'],['Noble Park','3174'],['Northcote','3070'],
+    ['North Melbourne','3051'],['Notting Hill','3168'],['Nunawading','3131'],
+    ['Oakleigh','3166'],['Oakleigh East','3166'],['Oakleigh South','3167'],
+    ['Ormond','3204'],['Pakenham','3810'],['Pascoe Vale','3044'],['Port Melbourne','3207'],
+    ['Prahran','3181'],['Preston','3072'],['Reservoir','3073'],['Richmond','3121'],
+    ['Ringwood','3134'],['Ringwood East','3135'],['Rosanna','3084'],['Rowville','3178'],
+    ['Sandringham','3191'],['South Melbourne','3205'],['South Yarra','3141'],
+    ['Southbank','3006'],['Spotswood','3015'],['Springvale','3171'],['St Albans','3021'],
+    ['St Kilda','3182'],['St Kilda East','3183'],['St Kilda West','3182'],['Strathmore','3041'],
+    ['Sunshine','3020'],['Surrey Hills','3127'],['Templestowe','3106'],['Templestowe Lower','3107'],
+    ['Thornbury','3071'],['Toorak','3142'],['Tullamarine','3043'],['Vermont','3133'],
+    ['Vermont South','3133'],['Viewbank','3084'],['Wantirna','3152'],['Wantirna South','3152'],
+    ['Warrandyte','3113'],['Werribee','3030'],['Wheelers Hill','3150'],
+    ['Williams Landing','3027'],['Williamstown','3016'],['Windsor','3181'],
+    ['Yarraville','3013'],['Yarra Glen','3775'],['Yarra Junction','3797'],
+  ];
+
+  const suburbInput  = document.getElementById('suburb-input');
+  const postcodeInput = document.getElementById('postcode-input');
+  const suggestions  = document.getElementById('suburb-suggestions');
+  let activeIdx = -1;
+
+  function showSuggestions(val) {
+    const q = val.toLowerCase().trim();
+    suggestions.innerHTML = '';
+    activeIdx = -1;
+    if (!q || q.length < 2) return;
+    const matches = SUBURBS.filter(([s]) => s.toLowerCase().startsWith(q)).slice(0, 8);
+    if (!matches.length) return;
+    matches.forEach(([suburb, pc]) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span>${suburb}</span><span class="pc">${pc}</span>`;
+      li.addEventListener('mousedown', e => {
+        e.preventDefault();
+        suburbInput.value  = suburb;
+        postcodeInput.value = pc;
+        suggestions.innerHTML = '';
+      });
+      suggestions.appendChild(li);
+    });
+  }
+
+  suburbInput.addEventListener('input', () => showSuggestions(suburbInput.value));
+
+  suburbInput.addEventListener('keydown', e => {
+    const items = suggestions.querySelectorAll('li');
+    if (!items.length) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); activeIdx = Math.min(activeIdx+1, items.length-1); items.forEach((li,i) => li.classList.toggle('active', i===activeIdx)); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); activeIdx = Math.max(activeIdx-1, 0); items.forEach((li,i) => li.classList.toggle('active', i===activeIdx)); }
+    else if (e.key === 'Enter' && activeIdx >= 0) { e.preventDefault(); items[activeIdx].dispatchEvent(new MouseEvent('mousedown')); }
+    else if (e.key === 'Escape') { suggestions.innerHTML = ''; }
+  });
+
+  document.addEventListener('click', e => {
+    if (!suburbInput.contains(e.target)) suggestions.innerHTML = '';
+  });
+})();
+
+/* Add inclusion row */
+document.querySelector('.add-inclusion-btn').addEventListener('click', function() {
+  const row = document.createElement('div');
+  row.className = 'form-row';
+  row.style.marginBottom = '8px';
+  row.innerHTML = '<input type="text" name="inclusion_titles" class="form-control" placeholder="Title">' +
+                  '<input type="text" name="inclusion_descriptions" class="form-control" placeholder="Description">';
+  this.closest('.form-section').querySelector('.inclusions-list').appendChild(row);
+});
+</script>

@@ -9,16 +9,16 @@
     <% } %>
     <% menus.forEach(menu => { %>
     <div class="form-section">
-      <form method="POST" action="/admin/menus/<%= menu.id %>?_method=PUT">
-        <div class="card-header" style="margin-bottom:14px">
-          <h3 class="card-title" style="font-size:0.95rem"><%= menu.name %> &middot; $<%= menu.price_per_head %>/pp</h3>
-          <div class="actions">
-            <button type="submit" class="btn btn-primary btn-sm">Save</button>
-            <form method="POST" action="/admin/menus/<%= menu.id %>?_method=DELETE" style="display:inline">
-              <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this menu?')">Delete</button>
-            </form>
-          </div>
+      <div class="card-header" style="margin-bottom:14px">
+        <h3 class="card-title" style="font-size:0.95rem"><%= menu.name %> &middot; $<%= menu.price_per_head %>/pp</h3>
+        <div class="actions">
+          <button type="submit" form="menu-edit-<%= menu.id %>" class="btn btn-primary btn-sm">Save</button>
+          <form method="POST" action="/admin/menus/<%= menu.id %>?_method=DELETE" style="display:inline">
+            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this menu?')">Delete</button>
+          </form>
         </div>
+      </div>
+      <form id="menu-edit-<%= menu.id %>" method="POST" action="/admin/menus/<%= menu.id %>?_method=PUT">
         <div class="form-row">
           <div class="form-group"><label class="form-label">Name</label><input type="text" name="name" class="form-control" value="<%= menu.name %>"></div>
           <div class="form-group"><label class="form-label">Price/Head ($)</label><input type="number" name="price_per_head" class="form-control" step="0.01" value="<%= menu.price_per_head %>"></div>
@@ -37,8 +37,8 @@
     <% }) %>
   </div>
 
-  <!-- RIGHT: Add new menu -->
-  <div class="caterer-col">
+  <!-- RIGHT: Add new menu (sticky) -->
+  <div class="caterer-col" style="position:sticky;top:20px;align-self:start">
     <div class="form-section">
       <h3 class="form-section__title">Add New Menu</h3>
       <form method="POST" action="/admin/caterers/<%= caterer.id %>/menus">
