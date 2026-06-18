@@ -6,6 +6,7 @@ require('dotenv').config();
 const express       = require('express');
 const path          = require('path');
 const session       = require('express-session');
+const FileStore     = require('session-file-store')(session);
 const flash         = require('connect-flash');
 const cookieParser  = require('cookie-parser');
 const morgan        = require('morgan');
@@ -43,11 +44,17 @@ app.set('layout extractStyles', true);
 
 /* ---- Sessions ---- */
 app.use(session({
+  store: new FileStore({
+    path: path.join(__dirname, 'sessions'),
+    ttl: 86400,
+    retries: 1,
+    logFn: () => {},
+  }),
   secret: process.env.SESSION_SECRET || 'caterus-fallback-secret',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    maxAge: 24 * 60 * 60 * 1000,
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
   },
