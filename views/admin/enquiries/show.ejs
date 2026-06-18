@@ -1,0 +1,71 @@
+<div style="max-width:720px">
+  <div style="margin-bottom:20px;display:flex;align-items:center;gap:12px">
+    <a href="/admin/enquiries" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:6px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Enquiries
+    </a>
+    <span class="badge badge-<%= enquiry.status %>"><%= enquiry.status %></span>
+  </div>
+
+  <div class="card" style="margin-bottom:20px">
+    <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <h2 class="card-title" style="margin:0">
+        <%= enquiry.first_name %> <%= enquiry.last_name || '' %>
+      </h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <% if (enquiry.status !== 'read') { %>
+        <form method="POST" action="/admin/enquiries/<%= enquiry.id %>/status?_method=PUT" style="display:inline">
+          <input type="hidden" name="status" value="read">
+          <button type="submit" class="btn btn-secondary btn-sm">Mark Read</button>
+        </form>
+        <% } %>
+        <% if (enquiry.status !== 'closed') { %>
+        <form method="POST" action="/admin/enquiries/<%= enquiry.id %>/status?_method=PUT" style="display:inline">
+          <input type="hidden" name="status" value="closed">
+          <button type="submit" class="btn btn-secondary btn-sm">Close Enquiry</button>
+        </form>
+        <% } %>
+      </div>
+    </div>
+
+    <div style="padding:24px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
+        <div>
+          <p style="font-size:0.78rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em">From</p>
+          <p style="font-weight:600;margin-bottom:4px"><%= enquiry.first_name %> <%= enquiry.last_name || '' %></p>
+          <a href="mailto:<%= enquiry.email %>" style="color:var(--accent);font-size:0.9rem"><%= enquiry.email %></a>
+          <% if (enquiry.phone) { %>
+          <p style="margin-top:4px;font-size:0.9rem"><a href="tel:<%= enquiry.phone %>"><%= enquiry.phone %></a></p>
+          <% } %>
+        </div>
+        <div>
+          <p style="font-size:0.78rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em">Details</p>
+          <p style="margin-bottom:4px;font-size:0.9rem"><strong>Received:</strong> <%= formatDate(enquiry.created_at) %></p>
+          <% if (enquiry.caterer_name) { %>
+          <p style="font-size:0.9rem"><strong>Caterer:</strong> <%= enquiry.caterer_name %></p>
+          <% } else { %>
+          <p style="font-size:0.9rem;color:var(--muted)">General enquiry</p>
+          <% } %>
+        </div>
+      </div>
+
+      <div>
+        <p style="font-size:0.78rem;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.05em">Message</p>
+        <div style="background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-sm);padding:18px 20px;font-size:0.95rem;line-height:1.65;white-space:pre-wrap"><%= enquiry.message || '(no message)' %></div>
+      </div>
+
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line);display:flex;gap:12px;align-items:center">
+        <a href="mailto:<%= enquiry.email %>?subject=Re: Your enquiry" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Reply by Email
+        </a>
+        <% if (enquiry.phone) { %>
+        <a href="tel:<%= enquiry.phone %>" class="btn btn-secondary" style="display:inline-flex;align-items:center;gap:8px">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+          Call
+        </a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>

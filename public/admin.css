@@ -29,6 +29,11 @@ a { color: var(--accent); text-decoration: none; } a:hover { color: var(--accent
 /* ── Sidebar ── */
 .sidebar-logo { padding: 20px 20px 12px; }
 .sidebar-logo a { color: #fff; font-weight: 800; font-size: 1.15rem; display: flex; align-items: center; gap: 6px; }
+/* Logo theme switching */
+[data-theme="dark"]  .sidebar-logo--light { display: none !important; }
+[data-theme="dark"]  .sidebar-logo--dark  { display: block !important; }
+[data-theme="light"] .sidebar-logo--dark  { display: none !important; }
+[data-theme="light"] .sidebar-logo--light { display: block !important; }
 .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block; }
 .logo-badge { font-size: 0.6rem; font-weight: 700; background: var(--accent); color: var(--on-accent); padding: 2px 8px; border-radius: 100px; margin-left: 6px; text-transform: uppercase; letter-spacing: 0.06em; }
 .sidebar-close { display: none; background: none; border: none; color: #999; font-size: 1.2rem; cursor: pointer; }

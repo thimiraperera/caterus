@@ -1,0 +1,86 @@
+<%
+/* fe-phone-picker partial (frontend, no admin CSS vars)
+   Locals: currentCountry, placeholder, inputId
+*/
+const FPP_COUNTRIES = [
+  {c:'+61',f:'🇦🇺',n:'Australia'},{c:'+64',f:'🇳🇿',n:'New Zealand'},{c:'+1',f:'🇺🇸',n:'United States'},
+  {c:'+1',f:'🇨🇦',n:'Canada'},{c:'+44',f:'🇬🇧',n:'United Kingdom'},{c:'+353',f:'🇮🇪',n:'Ireland'},
+  {c:'+91',f:'🇮🇳',n:'India'},{c:'+65',f:'🇸🇬',n:'Singapore'},{c:'+60',f:'🇲🇾',n:'Malaysia'},
+  {c:'+63',f:'🇵🇭',n:'Philippines'},{c:'+62',f:'🇮🇩',n:'Indonesia'},{c:'+66',f:'🇹🇭',n:'Thailand'},
+  {c:'+84',f:'🇻🇳',n:'Vietnam'},{c:'+86',f:'🇨🇳',n:'China'},{c:'+81',f:'🇯🇵',n:'Japan'},
+  {c:'+82',f:'🇰🇷',n:'South Korea'},{c:'+852',f:'🇭🇰',n:'Hong Kong'},{c:'+971',f:'🇦🇪',n:'UAE'},
+  {c:'+966',f:'🇸🇦',n:'Saudi Arabia'},{c:'+27',f:'🇿🇦',n:'South Africa'},{c:'+234',f:'🇳🇬',n:'Nigeria'},
+  {c:'+20',f:'🇪🇬',n:'Egypt'},{c:'+49',f:'🇩🇪',n:'Germany'},{c:'+33',f:'🇫🇷',n:'France'},
+  {c:'+39',f:'🇮🇹',n:'Italy'},{c:'+34',f:'🇪🇸',n:'Spain'},{c:'+31',f:'🇳🇱',n:'Netherlands'},
+  {c:'+41',f:'🇨🇭',n:'Switzerland'},{c:'+46',f:'🇸🇪',n:'Sweden'},{c:'+47',f:'🇳🇴',n:'Norway'},
+  {c:'+48',f:'🇵🇱',n:'Poland'},{c:'+7',f:'🇷🇺',n:'Russia'},{c:'+90',f:'🇹🇷',n:'Turkey'},
+  {c:'+92',f:'🇵🇰',n:'Pakistan'},{c:'+880',f:'🇧🇩',n:'Bangladesh'},{c:'+94',f:'🇱🇰',n:'Sri Lanka'},
+  {c:'+55',f:'🇧🇷',n:'Brazil'},{c:'+52',f:'🇲🇽',n:'Mexico'},{c:'+54',f:'🇦🇷',n:'Argentina'},
+];
+const fppSel = FPP_COUNTRIES.find(x => x.c === currentCountry) || FPP_COUNTRIES[0];
+const fppId = 'fpp_' + (inputId || 'ph') + '_' + Math.floor(Math.random()*9999);
+%>
+<div style="position:relative;flex-shrink:0">
+  <button type="button" id="<%= fppId %>-btn"
+    style="height:48px;padding:0 10px;border:1px solid rgba(255,255,255,0.18);border-radius:10px;background:rgba(255,255,255,0.08);color:inherit;cursor:pointer;display:flex;align-items:center;gap:5px;font-size:0.88rem;white-space:nowrap"
+    onclick="fppToggle('<%= fppId %>')">
+    <span id="<%= fppId %>-flag" style="font-size:1rem"><%= fppSel.f %></span>
+    <span id="<%= fppId %>-code" style="font-weight:500"><%= fppSel.c %></span>
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
+  <div id="<%= fppId %>-drop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;z-index:9999;background:#fff;border:1px solid #e0dbd2;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.18);width:260px;overflow:hidden">
+    <div style="padding:8px">
+      <input type="text" id="<%= fppId %>-search" placeholder="Search..." autocomplete="off"
+        style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:6px;font-size:0.85rem;color:#333;box-sizing:border-box"
+        oninput="fppFilter('<%= fppId %>')">
+    </div>
+    <div id="<%= fppId %>-list" style="max-height:200px;overflow-y:auto">
+      <% FPP_COUNTRIES.forEach(function(ct) { %>
+      <div class="fpp-opt" data-code="<%= ct.c %>" data-name="<%= ct.n.toLowerCase() %>" data-flag="<%= ct.f %>"
+        style="display:flex;align-items:center;gap:10px;padding:8px 14px;cursor:pointer;font-size:0.88rem;color:#333"
+        onmouseenter="this.style.background='#f5f2ee'" onmouseleave="this.style.background=''"
+        onclick="fppSelect('<%= fppId %>', '<%= ct.c %>', '<%= ct.f %>', this)">
+        <span style="font-size:1rem"><%= ct.f %></span>
+        <span style="flex:1"><%= ct.n %></span>
+        <span style="color:#999;font-size:0.82rem"><%= ct.c %></span>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+</div>
+<input type="hidden" name="phone_country" id="<%= fppId %>-hidden" value="<%= currentCountry %>">
+<input type="tel" name="phone" id="<%= inputId %>"
+  style="flex:1;height:48px;padding:0 14px;border:1px solid rgba(255,255,255,0.18);border-radius:10px;background:rgba(255,255,255,0.08);color:inherit;font-size:1rem"
+  placeholder="<%= placeholder %>" autocomplete="tel" required>
+
+<script>
+(function() {
+  if (window._fppInit) return;
+  window._fppInit = true;
+  window.fppToggle = function(id) {
+    var drop = document.getElementById(id + '-drop');
+    var open = drop.style.display !== 'none';
+    document.querySelectorAll('.fpp-drop-open').forEach(function(d) { d.style.display='none'; d.classList.remove('fpp-drop-open'); });
+    if (!open) { drop.style.display='block'; drop.classList.add('fpp-drop-open'); document.getElementById(id+'-search').focus(); }
+  };
+  window.fppFilter = function(id) {
+    var q = document.getElementById(id+'-search').value.toLowerCase();
+    document.querySelectorAll('#'+id+'-list .fpp-opt').forEach(function(el) {
+      el.style.display = (el.dataset.name.includes(q) || el.dataset.code.includes(q)) ? '' : 'none';
+    });
+  };
+  window.fppSelect = function(id, code, flag) {
+    document.getElementById(id+'-flag').textContent = flag;
+    document.getElementById(id+'-code').textContent = code;
+    document.getElementById(id+'-hidden').value = code;
+    document.getElementById(id+'-drop').style.display = 'none';
+    document.getElementById(id+'-search').value = '';
+    document.querySelectorAll('#'+id+'-list .fpp-opt').forEach(function(o) { o.style.display=''; });
+  };
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('[id$="-btn"]') && !e.target.closest('.fpp-drop-open')) {
+      document.querySelectorAll('.fpp-drop-open').forEach(function(d) { d.style.display='none'; d.classList.remove('fpp-drop-open'); });
+    }
+  });
+})();
+</script>

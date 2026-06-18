@@ -8,6 +8,9 @@ const pageController = require('../controllers/pageController');
 // Home — rendered dynamically with caterers from DB
 router.get('/', pageController.home);
 
+// Caterers listing with filters
+router.get('/caterers', pageController.caterersList);
+
 // Dynamic caterer profile (data from DB)
 router.get('/caterer/:slug', pageController.caterer);
 

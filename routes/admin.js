@@ -4,6 +4,7 @@ const router  = express.Router();
 const multer  = require('multer');
 const { requireAdmin } = require('../middleware/adminAuth');
 const upload = require('../middleware/upload');
+const Settings = require('../models/Settings');
 
 const authController        = require('../controllers/admin/authController');
 const dashboardController   = require('../controllers/admin/dashboardController');
@@ -28,6 +29,19 @@ router.get('/logout', authController.logout);
 
 /* All routes below require admin */
 router.use(requireAdmin);
+
+/* Inject logos into all admin views */
+router.use(async (req, res, next) => {
+  try {
+    const [light, dark] = await Promise.all([
+      Settings.get('logo_path').catch(() => null),
+      Settings.get('logo_path_dark').catch(() => null),
+    ]);
+    res.locals.adminLogoLight = light || '';
+    res.locals.adminLogoDark  = dark  || '';
+  } catch (_) {}
+  next();
+});
 
 /* Dashboard */
 router.get('/', dashboardController.index);
@@ -72,6 +86,7 @@ router.put('/payouts/:id/status',      payoutController.updateStatus);
 
 /* Enquiries */
 router.get('/enquiries',               enquiryController.index);
+router.get('/enquiries/:id',           enquiryController.show);
 router.put('/enquiries/:id/status',    enquiryController.updateStatus);
 
 /* Applications */
@@ -112,6 +127,13 @@ router.post('/settings/erase-test-data',  settingsController.eraseTestData);
 router.get('/settings/occasions',         settingsController.occasions);
 router.post('/settings/occasions',        settingsController.addOccasion);
 router.post('/settings/occasions/delete', settingsController.deleteOccasion);
+
+/* Contact & Social */
+router.get('/settings/contact',           settingsController.contact);
+router.post('/settings/contact',          settingsController.updateContact);
+
+/* Dark logo */
+router.post('/settings/logo-dark',        upload.single('logo_dark'), settingsController.uploadLogoDark);
 
 /* Backup */
 router.get('/settings/backup/db',         settingsController.backupDb);

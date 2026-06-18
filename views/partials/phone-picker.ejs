@@ -1,0 +1,141 @@
+<%
+/* phone-picker partial
+   Required locals: fieldName, phoneName, currentCountry, currentPhone, placeholder
+*/
+const PP_COUNTRIES = [
+  {c:'+61',f:'🇦🇺',n:'Australia'},
+  {c:'+64',f:'🇳🇿',n:'New Zealand'},
+  {c:'+1', f:'🇺🇸',n:'United States'},
+  {c:'+1', f:'🇨🇦',n:'Canada'},
+  {c:'+44',f:'🇬🇧',n:'United Kingdom'},
+  {c:'+353',f:'🇮🇪',n:'Ireland'},
+  {c:'+91',f:'🇮🇳',n:'India'},
+  {c:'+65',f:'🇸🇬',n:'Singapore'},
+  {c:'+60',f:'🇲🇾',n:'Malaysia'},
+  {c:'+63',f:'🇵🇭',n:'Philippines'},
+  {c:'+62',f:'🇮🇩',n:'Indonesia'},
+  {c:'+66',f:'🇹🇭',n:'Thailand'},
+  {c:'+84',f:'🇻🇳',n:'Vietnam'},
+  {c:'+86',f:'🇨🇳',n:'China'},
+  {c:'+81',f:'🇯🇵',n:'Japan'},
+  {c:'+82',f:'🇰🇷',n:'South Korea'},
+  {c:'+852',f:'🇭🇰',n:'Hong Kong'},
+  {c:'+971',f:'🇦🇪',n:'UAE'},
+  {c:'+966',f:'🇸🇦',n:'Saudi Arabia'},
+  {c:'+974',f:'🇶🇦',n:'Qatar'},
+  {c:'+968',f:'🇴🇲',n:'Oman'},
+  {c:'+965',f:'🇰🇼',n:'Kuwait'},
+  {c:'+973',f:'🇧🇭',n:'Bahrain'},
+  {c:'+27',f:'🇿🇦',n:'South Africa'},
+  {c:'+234',f:'🇳🇬',n:'Nigeria'},
+  {c:'+254',f:'🇰🇪',n:'Kenya'},
+  {c:'+212',f:'🇲🇦',n:'Morocco'},
+  {c:'+20',f:'🇪🇬',n:'Egypt'},
+  {c:'+49',f:'🇩🇪',n:'Germany'},
+  {c:'+33',f:'🇫🇷',n:'France'},
+  {c:'+39',f:'🇮🇹',n:'Italy'},
+  {c:'+34',f:'🇪🇸',n:'Spain'},
+  {c:'+31',f:'🇳🇱',n:'Netherlands'},
+  {c:'+32',f:'🇧🇪',n:'Belgium'},
+  {c:'+41',f:'🇨🇭',n:'Switzerland'},
+  {c:'+43',f:'🇦🇹',n:'Austria'},
+  {c:'+46',f:'🇸🇪',n:'Sweden'},
+  {c:'+47',f:'🇳🇴',n:'Norway'},
+  {c:'+45',f:'🇩🇰',n:'Denmark'},
+  {c:'+358',f:'🇫🇮',n:'Finland'},
+  {c:'+48',f:'🇵🇱',n:'Poland'},
+  {c:'+351',f:'🇵🇹',n:'Portugal'},
+  {c:'+30',f:'🇬🇷',n:'Greece'},
+  {c:'+36',f:'🇭🇺',n:'Hungary'},
+  {c:'+420',f:'🇨🇿',n:'Czechia'},
+  {c:'+40',f:'🇷🇴',n:'Romania'},
+  {c:'+380',f:'🇺🇦',n:'Ukraine'},
+  {c:'+7', f:'🇷🇺',n:'Russia'},
+  {c:'+90',f:'🇹🇷',n:'Turkey'},
+  {c:'+972',f:'🇮🇱',n:'Israel'},
+  {c:'+92',f:'🇵🇰',n:'Pakistan'},
+  {c:'+880',f:'🇧🇩',n:'Bangladesh'},
+  {c:'+94',f:'🇱🇰',n:'Sri Lanka'},
+  {c:'+977',f:'🇳🇵',n:'Nepal'},
+  {c:'+55',f:'🇧🇷',n:'Brazil'},
+  {c:'+52',f:'🇲🇽',n:'Mexico'},
+  {c:'+54',f:'🇦🇷',n:'Argentina'},
+  {c:'+56',f:'🇨🇱',n:'Chile'},
+  {c:'+57',f:'🇨🇴',n:'Colombia'},
+];
+const ppSel = PP_COUNTRIES.find(x => x.c === currentCountry) || PP_COUNTRIES[0];
+const ppId = 'pp_' + fieldName.replace(/[^a-z0-9]/gi,'_') + '_' + Math.floor(Math.random()*9999);
+%>
+<div class="phone-picker" id="<%= ppId %>-wrap" style="display:flex;gap:8px;position:relative">
+  <div style="position:relative;flex-shrink:0">
+    <button type="button" class="form-control" id="<%= ppId %>-btn"
+      style="display:flex;align-items:center;gap:6px;width:110px;cursor:pointer;text-align:left;padding:0 10px;white-space:nowrap"
+      onclick="ppToggle('<%= ppId %>')">
+      <span id="<%= ppId %>-flag" style="font-size:1.1rem"><%= ppSel.f %></span>
+      <span id="<%= ppId %>-code" style="font-size:0.88rem;font-weight:500"><%= ppSel.c %></span>
+      <svg style="margin-left:auto;flex-shrink:0;opacity:0.5" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div id="<%= ppId %>-drop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;z-index:999;background:var(--surface,#fff);border:1px solid var(--line,#e0dbd2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.12);width:260px;overflow:hidden">
+      <div style="padding:8px">
+        <input type="text" id="<%= ppId %>-search" class="form-control" placeholder="Search country..." autocomplete="off" style="font-size:0.85rem"
+          oninput="ppFilter('<%= ppId %>')">
+      </div>
+      <div id="<%= ppId %>-list" style="max-height:200px;overflow-y:auto">
+        <% PP_COUNTRIES.forEach(function(country) { %>
+        <div class="pp-option" data-code="<%= country.c %>" data-name="<%= country.n.toLowerCase() %>" data-flag="<%= country.f %>"
+          style="display:flex;align-items:center;gap:10px;padding:8px 14px;cursor:pointer;font-size:0.88rem"
+          onmouseenter="this.style.background='var(--accent-soft,#f0ede8)'"
+          onmouseleave="this.style.background=''"
+          onclick="ppSelect('<%= ppId %>', '<%= country.c %>', '<%= country.f %>', this)">
+          <span style="font-size:1.05rem"><%= country.f %></span>
+          <span style="flex:1"><%= country.n %></span>
+          <span style="color:var(--muted,#999);font-size:0.82rem"><%= country.c %></span>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+  <input type="hidden" name="<%= fieldName %>" id="<%= ppId %>-hidden" value="<%= currentCountry %>">
+  <input type="tel" name="<%= phoneName %>" class="form-control" value="<%= currentPhone %>" placeholder="<%= placeholder %>" style="flex:1">
+</div>
+
+<script>
+(function() {
+  function ppToggle(id) {
+    const drop = document.getElementById(id + '-drop');
+    const isOpen = drop.style.display !== 'none';
+    document.querySelectorAll('.pp-drop-open').forEach(function(d) {
+      d.style.display = 'none'; d.classList.remove('pp-drop-open');
+    });
+    if (!isOpen) {
+      drop.style.display = 'block';
+      drop.classList.add('pp-drop-open');
+      document.getElementById(id + '-search').focus();
+    }
+  }
+  function ppFilter(id) {
+    const q = document.getElementById(id + '-search').value.toLowerCase();
+    document.querySelectorAll('#' + id + '-list .pp-option').forEach(function(el) {
+      el.style.display = (el.dataset.name.includes(q) || el.dataset.code.includes(q)) ? '' : 'none';
+    });
+  }
+  function ppSelect(id, code, flag, el) {
+    document.getElementById(id + '-flag').textContent = flag;
+    document.getElementById(id + '-code').textContent = code;
+    document.getElementById(id + '-hidden').value = code;
+    document.getElementById(id + '-drop').style.display = 'none';
+    document.getElementById(id + '-search').value = '';
+    document.querySelectorAll('#' + id + '-list .pp-option').forEach(function(o) { o.style.display = ''; });
+  }
+  window.ppToggle  = window.ppToggle  || ppToggle;
+  window.ppFilter  = window.ppFilter  || ppFilter;
+  window.ppSelect  = window.ppSelect  || ppSelect;
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.phone-picker')) {
+      document.querySelectorAll('.pp-drop-open').forEach(function(d) {
+        d.style.display = 'none'; d.classList.remove('pp-drop-open');
+      });
+    }
+  });
+})();
+</script>

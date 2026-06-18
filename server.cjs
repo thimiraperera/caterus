@@ -126,15 +126,25 @@ app.use('/admin', adminRoutes);
 app.use('/api',   apiRoutes);
 app.use('/',      pageRoutes);   // catch-all last
 
-const Settings = require('./models/Settings');
-async function getLogoForError() { try { return await Settings.get('logo_path'); } catch (_) { return null; } }
+const db = require('./config/database');
+async function getErrorPageData() {
+  try {
+    const [rows] = await db.query("SELECT setting_key, setting_value FROM settings WHERE setting_group IN ('general','contact')");
+    const s = {};
+    rows.forEach(r => { s[r.setting_key] = r.setting_value; });
+    let socialLinks = [];
+    try { socialLinks = JSON.parse(s.social_links || '[]'); } catch (_) {}
+    return { siteLogo: s.logo_path || '', contactEmail: s.contact_email || '', contactPhone: s.contact_phone || '', contactPhoneCountry: s.contact_phone_country || '', footerTagline: s.footer_tagline || 'Caterus Pty Ltd · Melbourne, Victoria, Australia', socialLinks };
+  } catch { return { siteLogo: '', contactEmail: '', contactPhone: '', contactPhoneCountry: '', footerTagline: 'Caterus Pty Ltd · Melbourne, Victoria, Australia', socialLinks: [] }; }
+}
+const SOCIAL_ICONS = { facebook:'', instagram:'', linkedin:'', twitter:'', youtube:'', tiktok:'', pinterest:'' };
 
 /* ---- 404 handler ---- */
 app.use(async (req, res) => {
   res.status(404);
   if (req.accepts('html')) {
-    const siteLogo = await getLogoForError();
-    res.render('404', { layout: false, siteLogo: siteLogo || '' });
+    const data = await getErrorPageData();
+    res.render('404', { layout: false, ...data, SOCIAL_ICONS });
   } else {
     res.json({ error: 'Not found' });
   }
@@ -146,8 +156,8 @@ app.use(async (err, req, res, _next) => {
   const status = err.status || 500;
   res.status(status);
   if (req.accepts('html')) {
-    const siteLogo = await getLogoForError();
-    res.render('404', { layout: false, siteLogo: siteLogo || '' });
+    const data = await getErrorPageData();
+    res.render('404', { layout: false, ...data, SOCIAL_ICONS });
   } else {
     res.json({ error: process.env.NODE_ENV === 'production' ? 'Server error' : err.message });
   }

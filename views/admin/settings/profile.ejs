@@ -37,23 +37,13 @@
         </div>
         <div class="form-group">
           <label class="form-label">Phone Number</label>
-          <div style="display:flex;gap:8px">
-            <select name="phone_country" class="form-control" style="width:170px;flex-shrink:0">
-              <% const phoneCodes = [
-                ['+61','🇦🇺 AU +61'], ['+64','🇳🇿 NZ +64'], ['+1','🇺🇸 US/CA +1'],
-                ['+44','🇬🇧 UK +44'], ['+91','🇮🇳 IN +91'], ['+65','🇸🇬 SG +65'],
-                ['+60','🇲🇾 MY +60'], ['+63','🇵🇭 PH +63'], ['+62','🇮🇩 ID +62'],
-                ['+66','🇹🇭 TH +66'], ['+81','🇯🇵 JP +81'], ['+82','🇰🇷 KR +82'],
-                ['+86','🇨🇳 CN +86'], ['+971','🇦🇪 AE +971'], ['+27','🇿🇦 ZA +27'],
-                ['+49','🇩🇪 DE +49'], ['+33','🇫🇷 FR +33'], ['+39','🇮🇹 IT +39'],
-                ['+34','🇪🇸 ES +34'], ['+55','🇧🇷 BR +55'],
-              ]; %>
-              <% phoneCodes.forEach(function(c) { %>
-                <option value="<%= c[0] %>" <%=(adminProfile && adminProfile.phone_country===c[0])||(!adminProfile||!adminProfile.phone_country)&&c[0]==='+61'?'selected':''%>><%= c[1] %></option>
-              <% }) %>
-            </select>
-            <input type="tel" name="phone" class="form-control" value="<%= adminProfile && adminProfile.phone ? adminProfile.phone : '' %>" placeholder="0412 345 678">
-          </div>
+          <%- include('../../partials/phone-picker', {
+            fieldName: 'phone_country',
+            phoneName: 'phone',
+            currentCountry: adminProfile && adminProfile.phone_country ? adminProfile.phone_country : '+61',
+            currentPhone:   adminProfile && adminProfile.phone ? adminProfile.phone : '',
+            placeholder: '0412 345 678',
+          }) %>
         </div>
         <button type="submit" class="btn btn-primary">Save Profile</button>
       </form>

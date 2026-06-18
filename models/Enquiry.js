@@ -24,6 +24,15 @@ module.exports = {
     );
     return result.insertId;
   },
+  async findById(id) {
+    const [rows] = await db.query(
+      `SELECT e.*, c.business_name AS caterer_name
+       FROM contact_enquiries e
+       LEFT JOIN caterers c ON e.caterer_id = c.id
+       WHERE e.id = ?`, [id]
+    );
+    return rows[0] || null;
+  },
   async updateStatus(id, status) {
     await db.query('UPDATE contact_enquiries SET status = ? WHERE id = ?', [status, id]);
   },

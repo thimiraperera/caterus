@@ -17,15 +17,17 @@ try { unzipper  = require('unzipper'); } catch (_) {}
 
 module.exports = {
   async general(req, res) {
-    const [settings, captchaSettings, logoSetting] = await Promise.all([
+    const [settings, captchaSettings, logoSetting, logoDarkSetting] = await Promise.all([
       Settings.getByGroup('general'),
       Settings.getByGroup('captcha'),
       Settings.get('logo_path').catch(() => null),
+      Settings.get('logo_path_dark').catch(() => null),
     ]);
     res.render('admin/settings/general', {
       title: 'Settings', currentPage: 'settings-general',
       settings: { ...settings, ...captchaSettings },
       logoPath: logoSetting || '',
+      logoDarkPath: logoDarkSetting || '',
     });
   },
 
@@ -117,6 +119,49 @@ module.exports = {
       req.flash('success', 'Logo uploaded.');
       res.redirect('/admin/settings/general');
     } catch (err) { console.error(err); req.flash('error', 'Logo upload failed.'); res.redirect('/admin/settings/general'); }
+  },
+
+  async uploadLogoDark(req, res) {
+    try {
+      if (!req.file) { req.flash('error', 'No file selected.'); return res.redirect('/admin/settings/general'); }
+      const logoPath = await convertToWebp(req.file.path, { maxWidth: 800, maxHeight: 400, quality: 90, fit: 'inside' });
+      await Settings.set('logo_path_dark', logoPath, 'general');
+      req.flash('success', 'Dark logo uploaded.');
+      res.redirect('/admin/settings/general');
+    } catch (err) { console.error(err); req.flash('error', 'Dark logo upload failed.'); res.redirect('/admin/settings/general'); }
+  },
+
+  async contact(req, res) {
+    try {
+      const settings = await Settings.getByGroup('contact');
+      let socialLinks = [];
+      try { socialLinks = JSON.parse(settings.social_links || '[]'); } catch (_) {}
+      res.render('admin/settings/contact', {
+        title: 'Contact & Social', currentPage: 'settings-contact',
+        settings, socialLinks,
+      });
+    } catch (err) { console.error(err); req.flash('error', 'Failed to load contact settings.'); res.redirect('/admin'); }
+  },
+
+  async updateContact(req, res) {
+    try {
+      const { contact_email, contact_phone, contact_phone_country, footer_tagline, email_logo_type, social_platforms, social_urls } = req.body;
+      const platforms = Array.isArray(social_platforms) ? social_platforms : (social_platforms ? [social_platforms] : []);
+      const urls      = Array.isArray(social_urls)      ? social_urls      : (social_urls      ? [social_urls]      : []);
+      const socialLinks = platforms
+        .map((p, i) => ({ platform: p, url: urls[i] || '' }))
+        .filter(s => s.platform && s.url);
+      await Settings.setMultiple({
+        contact_email:        contact_email || '',
+        contact_phone:        contact_phone || '',
+        contact_phone_country: contact_phone_country || '+61',
+        footer_tagline:       footer_tagline || '',
+        email_logo_type:      email_logo_type || 'light',
+        social_links:         JSON.stringify(socialLinks),
+      }, 'contact');
+      req.flash('success', 'Contact & social settings saved.');
+      res.redirect('/admin/settings/contact');
+    } catch (err) { console.error(err); req.flash('error', 'Failed to save.'); res.redirect('/admin/settings/contact'); }
   },
 
   async testSmtp(req, res) {

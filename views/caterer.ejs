@@ -282,9 +282,14 @@
         <a href="/#occasions">Occasions</a>
         <a href="/#for-caterers">For caterers</a>
       </nav>
+      <% if (socialLinks && socialLinks.length) { %>
+      <div class="footer__socials">
+        <% socialLinks.forEach(function(s) { if (!SOCIAL_ICONS[s.platform]) return; %><a href="<%= s.url %>" aria-label="<%= s.platform %>" target="_blank" rel="noopener"><%- SOCIAL_ICONS[s.platform] %></a><% }) %>
+      </div>
+      <% } %>
     </div>
     <div class="container footer__bottom">
-      <p>© 2026 Caterus Pty Ltd · Melbourne, Victoria, Australia</p>
+      <p>&copy; <%= new Date().getFullYear() %> <%= footerTagline %></p>
       <p>Payments powered by <strong>Stripe</strong></p>
     </div>
   </footer>

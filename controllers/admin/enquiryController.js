@@ -18,6 +18,14 @@ module.exports = {
       });
     } catch (err) { console.error(err); req.flash('error', 'Failed to load enquiries.'); res.redirect('/admin'); }
   },
+  async show(req, res) {
+    try {
+      const enquiry = await Enquiry.findById(req.params.id);
+      if (!enquiry) { req.flash('error', 'Enquiry not found.'); return res.redirect('/admin/enquiries'); }
+      if (enquiry.status === 'new') await Enquiry.updateStatus(enquiry.id, 'read');
+      res.render('admin/enquiries/show', { title: 'Enquiry', currentPage: 'enquiries', enquiry, formatDate });
+    } catch (err) { console.error(err); req.flash('error', 'Failed to load enquiry.'); res.redirect('/admin/enquiries'); }
+  },
   async updateStatus(req, res) {
     try {
       await Enquiry.updateStatus(req.params.id, req.body.status);
