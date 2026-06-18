@@ -18,7 +18,8 @@
 
       <div class="form-section">
         <h3 class="form-section__title">Location & Contact</h3>
-        <div class="form-row-3" style="position:relative">
+        <!-- 50/50 layout: three rows of two -->
+        <div class="form-row" style="position:relative">
           <div class="form-group" style="position:relative">
             <label class="form-label">Suburb</label>
             <input type="text" name="suburb" id="suburb-input" class="form-control" value="<%= caterer.suburb || '' %>" autocomplete="off" placeholder="Start typing...">
@@ -28,11 +29,13 @@
             <label class="form-label">Postcode</label>
             <input type="text" name="postcode" id="postcode-input" class="form-control" value="<%= caterer.postcode || '' %>">
           </div>
-          <div class="form-group"><label class="form-label">ABN</label><input type="text" name="abn" class="form-control" value="<%= caterer.abn || '' %>"></div>
         </div>
-        <div class="form-row-3">
+        <div class="form-row">
           <div class="form-group"><label class="form-label">Contact Name</label><input type="text" name="contact_name" class="form-control" value="<%= caterer.contact_name || '' %>"></div>
           <div class="form-group"><label class="form-label">Email</label><input type="email" name="contact_email" class="form-control" value="<%= caterer.contact_email || '' %>"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">ABN</label><input type="text" name="abn" class="form-control" value="<%= caterer.abn || '' %>"></div>
           <div class="form-group">
             <label class="form-label">Phone</label>
             <%- include('../../partials/phone-picker', {
@@ -67,16 +70,8 @@
       </div>
     </div>
 
-    <!-- RIGHT: publishing + occasions + tags + inclusions + save -->
+    <!-- RIGHT: publishing (top) + featured image + gallery + occasions + tags + inclusions + save -->
     <div class="caterer-col">
-      <div class="form-section">
-        <h3 class="form-section__title">Featured Image</h3>
-        <% if (caterer.featured_image) { %>
-          <img src="/<%= caterer.featured_image %>" style="width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-bottom:12px" alt="">
-        <% } %>
-        <input type="file" name="featured_image" accept="image/*" class="form-control">
-        <p class="form-hint">Auto-resized and converted to WebP on upload.</p>
-      </div>
 
       <div class="form-section">
         <h3 class="form-section__title">Publishing</h3>
@@ -99,6 +94,36 @@
             <option value="suspended" <%=caterer.status==='suspended' ?'selected':''%>>Suspended</option>
           </select>
         </div>
+      </div>
+
+      <div class="form-section">
+        <h3 class="form-section__title">Featured Image</h3>
+        <% if (caterer.featured_image) { %>
+          <img src="/<%= caterer.featured_image %>" style="width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-bottom:12px" alt="">
+        <% } %>
+        <input type="file" name="featured_image" accept="image/*" class="form-control">
+        <p class="form-hint">Auto-resized and converted to WebP on upload.</p>
+      </div>
+
+      <div class="form-section">
+        <h3 class="form-section__title">Gallery</h3>
+        <% if (images.length > 0) { %>
+        <div class="image-grid" style="margin-bottom:16px">
+          <% images.forEach(img => { %>
+          <div class="img-thumb">
+            <img src="/<%= img.image_path %>" alt="<%= img.alt_text || '' %>">
+            <form method="POST" action="/admin/caterers/<%= caterer.id %>/images/<%= img.id %>?_method=DELETE">
+              <button type="submit" class="img-delete">&#10005;</button>
+            </form>
+          </div>
+          <% }) %>
+        </div>
+        <% } %>
+        <form method="POST" action="/admin/caterers/<%= caterer.id %>/images" enctype="multipart/form-data">
+          <input type="file" name="images" accept="image/*" multiple class="form-control">
+          <button type="submit" class="btn btn-secondary btn-sm" style="margin-top:8px">Upload Images</button>
+          <p class="form-hint">Multiple files supported. Auto-converted to WebP.</p>
+        </form>
       </div>
 
       <div class="form-section">
@@ -137,40 +162,17 @@
       <div class="form-section" style="display:flex;justify-content:flex-end;padding:16px 20px">
         <button type="submit" class="btn btn-primary">Save Changes</button>
       </div>
+
     </div>
 
   </form>
 
-  <!-- Gallery (Row 2, Col 1) -->
-  <div class="caterer-col">
-    <div class="form-section">
-      <h3 class="form-section__title">Gallery</h3>
-      <% if (images.length > 0) { %>
-      <div class="image-grid" style="margin-bottom:16px">
-        <% images.forEach(img => { %>
-        <div class="img-thumb">
-          <img src="/<%= img.image_path %>" alt="<%= img.alt_text || '' %>">
-          <form method="POST" action="/admin/caterers/<%= caterer.id %>/images/<%= img.id %>?_method=DELETE">
-            <button type="submit" class="img-delete">&#10005;</button>
-          </form>
-        </div>
-        <% }) %>
-      </div>
-      <% } %>
-      <form method="POST" action="/admin/caterers/<%= caterer.id %>/images" enctype="multipart/form-data">
-        <input type="file" name="images" accept="image/*" multiple class="form-control">
-        <button type="submit" class="btn btn-secondary btn-sm" style="margin-top:8px">Upload Images</button>
-        <p class="form-hint">Multiple files supported. Auto-converted to WebP.</p>
-      </form>
-    </div>
-  </div>
-
-  <!-- SEO (Row 2, Col 2) -->
-  <div class="caterer-col">
+  <!-- SEO — full width, spans both columns -->
+  <div style="grid-column:1/-1">
     <div class="form-section" id="caterer-seo">
       <h3 class="form-section__title">SEO</h3>
       <p style="font-size:0.88rem;color:var(--muted);margin-bottom:16px">Leave blank to use the business name and tagline automatically.</p>
-      <form method="POST" action="/admin/caterers/<%= caterer.id %>/seo">
+      <form method="POST" action="/admin/caterers/<%= caterer.id %>/seo" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
         <div class="form-group">
           <label class="form-label">Meta Title</label>
           <input type="text" name="meta_title" class="form-control" value="<%= caterer.meta_title || '' %>" placeholder="<%= caterer.business_name %> | Caterus" maxlength="70">
@@ -178,10 +180,12 @@
         </div>
         <div class="form-group">
           <label class="form-label">Meta Description</label>
-          <textarea name="meta_description" class="form-control" rows="4" maxlength="160" placeholder="Short description for search results..."><%= caterer.meta_description || '' %></textarea>
+          <textarea name="meta_description" class="form-control" rows="3" maxlength="160" placeholder="Short description for search results..."><%= caterer.meta_description || '' %></textarea>
           <p class="form-hint">150-160 characters ideal</p>
         </div>
-        <button type="submit" class="btn btn-primary">Save SEO</button>
+        <div style="grid-column:1/-1;display:flex;justify-content:flex-end">
+          <button type="submit" class="btn btn-primary">Save SEO</button>
+        </div>
       </form>
     </div>
   </div>
