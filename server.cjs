@@ -6,7 +6,7 @@ require('dotenv').config();
 const express       = require('express');
 const path          = require('path');
 const session       = require('express-session');
-const FileStore     = require('session-file-store')(session);
+const MySQLStore    = require('express-mysql-session')(session);
 const flash         = require('connect-flash');
 const cookieParser  = require('cookie-parser');
 const morgan        = require('morgan');
@@ -44,21 +44,29 @@ app.set('layout', 'layouts/admin');
 app.set('layout extractScripts', true);
 app.set('layout extractStyles', true);
 
-/* ---- Sessions ---- */
+/* ---- Sessions (MySQL-backed — works across Passenger instances) ---- */
+const sessionStore = new MySQLStore({
+  host:               process.env.DB_HOST     || 'localhost',
+  port:               process.env.DB_PORT     || 3306,
+  user:               process.env.DB_USER     || 'root',
+  password:           process.env.DB_PASSWORD || '',
+  database:           process.env.DB_NAME     || 'caterus',
+  createDatabaseTable: true,
+  schema: {
+    tableName:        'sessions',
+    columnNames: { session_id: 'session_id', expires: 'expires', data: 'data' },
+  },
+});
+
 app.use(session({
-  store: new FileStore({
-    path: path.join(__dirname, 'sessions'),
-    ttl: 86400,
-    retries: 1,
-    logFn: () => {},
-  }),
+  store:  sessionStore,
   secret: process.env.SESSION_SECRET || 'caterus-fallback-secret',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 24 * 60 * 60 * 1000,
+    maxAge:   24 * 60 * 60 * 1000,
     httpOnly: true,
-    secure: false,
+    secure:   false,
   },
 }));
 
