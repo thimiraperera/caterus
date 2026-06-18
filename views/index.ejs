@@ -40,7 +40,6 @@
         <a href="#caterers">Caterers</a>
         <a href="#occasions">Occasions</a>
         <a href="#for-caterers">For caterers</a>
-        <a href="/caterers">Find a Caterer</a>
       </nav>
 
       <div class="nav__end">
@@ -58,7 +57,6 @@
       <a href="#caterers">Caterers</a>
       <a href="#occasions">Occasions</a>
       <a href="#for-caterers">For caterers</a>
-      <a href="/caterers">Find a Caterer</a>
       <a href="#" class="nav__contact" data-contact-open>Contact</a>
       <a href="/caterers" class="btn btn--fill">Find a caterer</a>
     </div>
@@ -83,9 +81,10 @@
 
       <!-- Search form -->
       <form class="search" id="search-form" role="search" novalidate>
-        <div class="search__field">
+        <div class="search__field" style="position:relative">
           <label for="s-loc">Suburb</label>
           <input id="s-loc" type="text" placeholder="e.g. Melbourne CBD" autocomplete="off"/>
+          <ul id="s-loc-suggestions" style="position:absolute;top:100%;left:0;right:0;z-index:200;background:#fff;border:1px solid #e0dbd2;border-top:none;border-radius:0 0 8px 8px;max-height:200px;overflow-y:auto;margin:0;padding:0;list-style:none;box-shadow:0 8px 20px rgba(0,0,0,.1);display:none"></ul>
         </div>
         <div class="search__field">
           <label for="s-occ">Occasion</label>
@@ -538,6 +537,22 @@
         <a href="/caterers">Find a Caterer</a>
         <a href="#" data-contact-open>Contact</a>
       </nav>
+      <% if (contactEmail || contactPhone) { %>
+      <div class="footer__contact-info" style="display:flex;flex-direction:column;gap:6px;font-size:0.88rem">
+        <% if (contactEmail) { %>
+        <a href="mailto:<%= contactEmail %>" style="color:inherit;opacity:0.75;text-decoration:none;display:flex;align-items:center;gap:6px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          <%= contactEmail %>
+        </a>
+        <% } %>
+        <% if (contactPhone) { %>
+        <a href="tel:<%= (contactPhoneCountry||'') + contactPhone.replace(/\s/g,'') %>" style="color:inherit;opacity:0.75;text-decoration:none;display:flex;align-items:center;gap:6px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+          <%= contactPhoneCountry %> <%= contactPhone %>
+        </a>
+        <% } %>
+      </div>
+      <% } %>
       <% if (socialLinks && socialLinks.length) { %>
       <div class="footer__socials">
         <% socialLinks.forEach(function(s) { if (!SOCIAL_ICONS[s.platform]) return; %><a href="<%= s.url %>" aria-label="<%= s.platform %>" target="_blank" rel="noopener"><%- SOCIAL_ICONS[s.platform] %></a><% }) %>
@@ -553,7 +568,7 @@
   <!-- ============ CONTACT MODAL ============ -->
   <div class="modal" id="contact-modal" aria-hidden="true">
     <div class="modal__backdrop" data-modal-close></div>
-    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="contact-title">
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="contact-title" data-lenis-prevent>
       <button type="button" class="modal__close" data-modal-close aria-label="Close contact form">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
@@ -571,10 +586,8 @@
           <div style="display:flex;gap:6px"><%- include('partials/fe-phone-picker', { currentCountry: '+61', placeholder: '0412 345 678', inputId: 'cf-phone' }) %></div>
         </label>
         <label>Tell us about your event<textarea name="message" rows="4" placeholder="e.g. Corporate lunch for 80 guests, Melbourne CBD, 20 June"></textarea></label>
-        <% if (captchaType === 'recaptcha_v2') { %>
-        <div class="g-recaptcha" data-sitekey="<%= captchaSiteKey %>" style="margin-bottom:12px"></div>
-        <% } else if (captchaType === 'hcaptcha') { %>
-        <div class="h-captcha" data-sitekey="<%= captchaSiteKey %>" style="margin-bottom:12px"></div>
+        <% if (captchaType === 'recaptcha_v2' || captchaType === 'hcaptcha') { %>
+        <div id="captcha-contact" data-captcha-widget style="margin-bottom:12px"></div>
         <% } %>
         <button type="submit" class="btn btn--fill">Send message</button>
       </form>
@@ -601,7 +614,7 @@
   <!-- ============ CATERER REGISTRATION MODAL ============ -->
   <div class="modal" id="register-modal" aria-hidden="true">
     <div class="modal__backdrop" data-modal-close></div>
-    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="register-title">
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="register-title" data-lenis-prevent>
       <button type="button" class="modal__close" data-modal-close aria-label="Close registration form">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
@@ -629,10 +642,8 @@
           </select>
         </label>
         <label>Primary service area <span class="cform__opt">(optional)</span><input type="text" name="area" placeholder="e.g. Melbourne CBD &amp; inner suburbs"/></label>
-        <% if (captchaType === 'recaptcha_v2') { %>
-        <div class="g-recaptcha" data-sitekey="<%= captchaSiteKey %>" style="margin-bottom:12px"></div>
-        <% } else if (captchaType === 'hcaptcha') { %>
-        <div class="h-captcha" data-sitekey="<%= captchaSiteKey %>" style="margin-bottom:12px"></div>
+        <% if (captchaType === 'recaptcha_v2' || captchaType === 'hcaptcha') { %>
+        <div id="captcha-register" data-captcha-widget style="margin-bottom:12px"></div>
         <% } %>
         <button type="submit" class="btn btn--fill">Submit application</button>
       </form>
@@ -665,11 +676,25 @@
   <script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
   <script src="/script.js?v=4"></script>
   <% if (captchaType === 'recaptcha_v2') { %>
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <script src="https://www.google.com/recaptcha/api.js?onload=_onRecaptchaLoad&render=explicit" async defer></script>
   <script>
+  var _captchaReady = false, _captchaPending = [];
+  function _onRecaptchaLoad() {
+    _captchaReady = true;
+    _captchaPending.forEach(function(fn) { fn(); });
+    _captchaPending = [];
+  }
+  document.querySelectorAll('.modal').forEach(function(modal) {
+    modal.addEventListener('modal:open', function() {
+      var el = modal.querySelector('[data-captcha-widget]');
+      if (!el || el._rendered) return;
+      el._rendered = true;
+      function doRender() { grecaptcha.render(el, { sitekey: '<%= captchaSiteKey %>' }); }
+      if (_captchaReady) doRender(); else _captchaPending.push(doRender);
+    });
+  });
   window.captchaGetToken = function() {
-    var token = typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : '';
-    return Promise.resolve(token);
+    return Promise.resolve(typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : '');
   };
   </script>
   <% } else if (captchaType === 'recaptcha_v3') { %>
@@ -685,11 +710,18 @@
   };
   </script>
   <% } else if (captchaType === 'hcaptcha') { %>
-  <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+  <script src="https://js.hcaptcha.com/1/api.js?render=explicit" async defer></script>
   <script>
+  document.querySelectorAll('.modal').forEach(function(modal) {
+    modal.addEventListener('modal:open', function() {
+      var el = modal.querySelector('[data-captcha-widget]');
+      if (!el || el._rendered) return;
+      el._rendered = true;
+      if (typeof hcaptcha !== 'undefined') hcaptcha.render(el, { sitekey: '<%= captchaSiteKey %>' });
+    });
+  });
   window.captchaGetToken = function() {
-    var token = typeof hcaptcha !== 'undefined' ? hcaptcha.getResponse() : '';
-    return Promise.resolve(token);
+    return Promise.resolve(typeof hcaptcha !== 'undefined' ? hcaptcha.getResponse() : '');
   };
   </script>
   <% } %>

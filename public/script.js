@@ -144,6 +144,57 @@
     });
   }
 
+  /* ---- Suburb autocomplete for homepage search ---- */
+  const sLocInput = $("#s-loc");
+  const sLocDrop  = $("#s-loc-suggestions");
+  if (sLocInput && sLocDrop) {
+    let sLocTimer;
+    let sLocActive = -1;
+
+    const hideDrop = () => { sLocDrop.style.display = "none"; sLocDrop.innerHTML = ""; sLocActive = -1; };
+
+    const fetchSuggestions = (q) => {
+      clearTimeout(sLocTimer);
+      if (!q || q.length < 2) { hideDrop(); return; }
+      sLocTimer = setTimeout(() => {
+        fetch("/api/suggestions?type=suburb&q=" + encodeURIComponent(q))
+          .then((r) => r.json())
+          .then((data) => {
+            const list = (data.suggestions || data || []).slice(0, 8);
+            if (!list.length) { hideDrop(); return; }
+            sLocDrop.innerHTML = list.map((s) =>
+              `<li style="padding:9px 14px;cursor:pointer;font-size:0.9rem;border-bottom:1px solid #f0ede8">${s}</li>`
+            ).join("");
+            sLocDrop.style.display = "block";
+            sLocActive = -1;
+            sLocDrop.querySelectorAll("li").forEach((li, i) => {
+              li.addEventListener("mousedown", (e) => {
+                e.preventDefault();
+                sLocInput.value = li.textContent;
+                hideDrop();
+              });
+              li.addEventListener("mouseover", () => {
+                sLocDrop.querySelectorAll("li").forEach((x, j) => x.style.background = j === i ? "var(--accent-soft,#eef0eb)" : "");
+                sLocActive = i;
+              });
+            });
+          })
+          .catch(() => {});
+      }, 220);
+    };
+
+    sLocInput.addEventListener("input", () => fetchSuggestions(sLocInput.value.trim()));
+    sLocInput.addEventListener("keydown", (e) => {
+      const items = sLocDrop.querySelectorAll("li");
+      if (!items.length) return;
+      if (e.key === "ArrowDown") { e.preventDefault(); sLocActive = Math.min(sLocActive + 1, items.length - 1); items.forEach((li, i) => li.style.background = i === sLocActive ? "var(--accent-soft,#eef0eb)" : ""); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); sLocActive = Math.max(sLocActive - 1, 0); items.forEach((li, i) => li.style.background = i === sLocActive ? "var(--accent-soft,#eef0eb)" : ""); }
+      else if (e.key === "Enter" && sLocActive >= 0) { e.preventDefault(); sLocInput.value = items[sLocActive].textContent; hideDrop(); }
+      else if (e.key === "Escape") hideDrop();
+    });
+    document.addEventListener("click", (e) => { if (!sLocInput.contains(e.target) && !sLocDrop.contains(e.target)) hideDrop(); });
+  }
+
   /* ---- Homepage caterers grid pagination ---- */
   const catGrid  = $("#cat-grid");
   const catPager = $("#cat-pager");
@@ -264,15 +315,18 @@
       lastFocus = document.activeElement;
       modal.classList.add("open");
       modal.setAttribute("aria-hidden", "false");
-      if (lenis) lenis.stop(); else document.body.style.overflow = "hidden";
+      // data-lenis-prevent on .modal__dialog handles scroll when Lenis is active;
+      // fall back to body overflow lock otherwise.
+      if (!lenis) document.body.style.overflow = "hidden";
       document.addEventListener("keydown", onKey);
+      modal.dispatchEvent(new Event("modal:open"));
       const first = modal.querySelector("input, textarea, select");
       setTimeout(() => first && first.focus(), 80);
     };
     function close() {
       modal.classList.remove("open");
       modal.setAttribute("aria-hidden", "true");
-      if (lenis) lenis.start(); else document.body.style.overflow = "";
+      if (!lenis) document.body.style.overflow = "";
       document.removeEventListener("keydown", onKey);
       if (form && success) { form.hidden = false; success.hidden = true; form.reset(); }
       if (lastFocus) lastFocus.focus();

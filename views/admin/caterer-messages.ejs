@@ -5,9 +5,12 @@
   </div>
 </div>
 
-<div class="filter-bar" style="gap:10px;flex-wrap:wrap">
+<div class="filter-bar" style="gap:10px;flex-wrap:wrap;align-items:center">
   <input type="text" id="cm-caterer" class="form-control" placeholder="Caterer..." style="flex:1;min-width:140px;max-width:200px" value="<%= caterer_search %>">
   <input type="text" id="cm-from"    class="form-control" placeholder="From (name or email)..." style="flex:1;min-width:160px;max-width:240px" value="<%= from_search %>">
+  <input type="date" id="cm-date-from" class="form-control" style="min-width:130px" value="<%= date_from %>">
+  <span style="color:var(--muted);font-size:0.8rem;white-space:nowrap">to</span>
+  <input type="date" id="cm-date-to" class="form-control" style="min-width:130px" value="<%= date_to %>">
   <select id="cm-status" class="form-control" style="max-width:160px">
     <option value="" <%=status===''?'selected':''%>>All statuses</option>
     <option value="new"    <%=status==='new'?'selected':''%>>New</option>
@@ -38,9 +41,13 @@
     var params = new URLSearchParams();
     var cat = getVal('cm-caterer');
     var frm = getVal('cm-from');
+    var df  = getVal('cm-date-from');
+    var dt  = getVal('cm-date-to');
     var st  = getVal('cm-status');
     if (cat) params.set('caterer_search', cat);
     if (frm) params.set('from_search', frm);
+    if (df)  params.set('date_from', df);
+    if (dt)  params.set('date_to', dt);
     if (st)  params.set('status', st);
     params.set('per_page', currentPerPage);
     if (extra.page) params.set('page', extra.page);
@@ -56,6 +63,8 @@
 
   document.getElementById('cm-caterer').addEventListener('input', schedule);
   document.getElementById('cm-from').addEventListener('input', schedule);
+  document.getElementById('cm-date-from').addEventListener('change', function() { load(); });
+  document.getElementById('cm-date-to').addEventListener('change', function() { load(); });
   document.getElementById('cm-status').addEventListener('change', function() { load(); });
   document.getElementById('cm-per-page').addEventListener('change', function() {
     currentPerPage = this.value; load();

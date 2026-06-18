@@ -8,15 +8,19 @@ module.exports = {
     try {
       const page     = Math.max(1, parseInt(req.query.page) || 1);
       const per_page = parseInt(req.query.per_page) || 20;
-      const status        = req.query.status || '';
+      const status         = req.query.status || '';
       const caterer_search = req.query.caterer_search || '';
-      const from_search   = req.query.from_search || '';
+      const from_search    = req.query.from_search || '';
+      const date_from      = req.query.date_from || '';
+      const date_to        = req.query.date_to || '';
 
       const { enquiries, total, totalPages } = await Enquiry.findAll({
         hasCaterer: true,
         status: status || undefined,
         caterer_search: caterer_search || undefined,
         search: from_search || undefined,
+        date_from: date_from || undefined,
+        date_to: date_to || undefined,
         page,
         limit: per_page,
       });
@@ -25,6 +29,8 @@ module.exports = {
       if (status)         qp.push('status=' + encodeURIComponent(status));
       if (caterer_search) qp.push('caterer_search=' + encodeURIComponent(caterer_search));
       if (from_search)    qp.push('from_search=' + encodeURIComponent(from_search));
+      if (date_from)      qp.push('date_from=' + encodeURIComponent(date_from));
+      if (date_to)        qp.push('date_to=' + encodeURIComponent(date_to));
       qp.push('per_page=' + per_page);
       const queryExtra = qp.join('&');
 
@@ -41,7 +47,7 @@ module.exports = {
         title: 'Caterer Messages',
         currentPage: 'caterer-messages',
         enquiries, total, page, totalPages, per_page,
-        status, caterer_search, from_search, queryExtra, formatDate,
+        status, caterer_search, from_search, date_from, date_to, queryExtra, formatDate,
       });
     } catch (err) {
       console.error('Caterer messages error:', err);

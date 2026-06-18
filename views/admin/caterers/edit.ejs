@@ -1,8 +1,8 @@
 <%- include('../../partials/caterer-actions', { caterer, currentAction: 'edit' }) %>
 
-<!-- ── Main details form ─────────────────────────────── -->
-<form method="POST" action="/admin/caterers/<%= caterer.id %>?_method=PUT" enctype="multipart/form-data">
-  <div class="caterer-grid">
+<div class="caterer-grid">
+  <!-- form uses display:contents so both columns are direct grid children -->
+  <form method="POST" action="/admin/caterers/<%= caterer.id %>?_method=PUT" enctype="multipart/form-data" style="display:contents">
 
     <!-- LEFT: core details -->
     <div class="caterer-col">
@@ -67,7 +67,7 @@
       </div>
     </div>
 
-    <!-- RIGHT: publishing + occasions + tags + inclusions -->
+    <!-- RIGHT: publishing + occasions + tags + inclusions + save -->
     <div class="caterer-col">
       <div class="form-section">
         <h3 class="form-section__title">Featured Image</h3>
@@ -139,13 +139,9 @@
       </div>
     </div>
 
-  </div>
-</form>
+  </form>
 
-<!-- ── Gallery + SEO grid (separate forms) ─────────────── -->
-<div class="caterer-grid" style="margin-top:20px">
-
-  <!-- Gallery -->
+  <!-- Gallery (Row 2, Col 1) -->
   <div class="caterer-col">
     <div class="form-section">
       <h3 class="form-section__title">Gallery</h3>
@@ -169,7 +165,7 @@
     </div>
   </div>
 
-  <!-- SEO -->
+  <!-- SEO (Row 2, Col 2) -->
   <div class="caterer-col">
     <div class="form-section" id="caterer-seo">
       <h3 class="form-section__title">SEO</h3>
@@ -210,7 +206,6 @@
 
 <script>
 (function() {
-  /* Melbourne suburb list: [name, postcode] */
   const SUBURBS = [
     ['Abbotsford','3067'],['Albert Park','3206'],['Alphington','3078'],['Altona','3018'],
     ['Altona Meadows','3028'],['Altona North','3025'],['Armadale','3143'],['Ascot Vale','3032'],
@@ -222,42 +217,33 @@
     ['Bundoora','3083'],['Burwood','3125'],['Burwood East','3151'],['Camberwell','3124'],
     ['Canterbury','3126'],['Carlton','3053'],['Carlton North','3054'],['Carnegie','3163'],
     ['Caulfield','3162'],['Caulfield North','3161'],['Caulfield South','3162'],['CBD','3000'],
-    ['Chelsea','3196'],['Cheltenham','3192'],['Chirnside Park','3116'],['Coburg','3058'],
-    ['Coburg North','3058'],['Collingwood','3066'],['Cremorne','3121'],['Dandenong','3175'],
-    ['Docklands','3008'],['Doncaster','3108'],['Doncaster East','3109'],['Elsternwick','3185'],
-    ['Eltham','3095'],['Elwood','3184'],['Essendon','3040'],['Essendon North','3041'],
-    ['Fairfield','3078'],['Fitzroy','3065'],['Fitzroy North','3068'],['Flemington','3031'],
-    ['Footscray','3011'],['Forest Hill','3131'],['Glen Iris','3146'],['Glen Waverley','3150'],
-    ['Glenroy','3046'],['Glenhuntly','3163'],['Glenferrie','3122'],['Greensborough','3088'],
-    ['Hallam','3803'],['Hampton','3188'],['Hampton East','3188'],['Hawthorn','3122'],
-    ['Hawthorn East','3123'],['Heidelberg','3084'],['Heidelberg Heights','3081'],
-    ['Highett','3190'],['Hoppers Crossing','3029'],['Ivanhoe','3079'],['Kensington','3031'],
-    ['Keilor','3036'],['Keilor East','3033'],['Kew','3101'],['Kew East','3102'],
-    ['Kilsyth','3137'],['Knox','3152'],['Lalor','3075'],['Laverton','3028'],
-    ['Lilydale','3140'],['Macleod','3085'],['Malvern','3144'],['Malvern East','3145'],
-    ['McKinnon','3204'],['Melbourne CBD','3000'],['Mentone','3194'],['Mernda','3754'],
+    ['Chelsea','3196'],['Cheltenham','3192'],['Coburg','3058'],['Coburg North','3058'],
+    ['Collingwood','3066'],['Cremorne','3121'],['Dandenong','3175'],['Docklands','3008'],
+    ['Doncaster','3108'],['Doncaster East','3109'],['Elsternwick','3185'],['Eltham','3095'],
+    ['Elwood','3184'],['Essendon','3040'],['Essendon North','3041'],['Fairfield','3078'],
+    ['Fitzroy','3065'],['Fitzroy North','3068'],['Flemington','3031'],['Footscray','3011'],
+    ['Forest Hill','3131'],['Glen Iris','3146'],['Glen Waverley','3150'],['Glenroy','3046'],
+    ['Hawthorn','3122'],['Hawthorn East','3123'],['Heidelberg','3084'],['Highett','3190'],
+    ['Ivanhoe','3079'],['Kensington','3031'],['Kew','3101'],['Kew East','3102'],
+    ['Malvern','3144'],['Malvern East','3145'],['Melbourne CBD','3000'],['Mentone','3194'],
     ['Middle Park','3206'],['Mill Park','3082'],['Mitcham','3132'],['Mont Albert','3127'],
     ['Moonee Ponds','3039'],['Moorabbin','3189'],['Mordialloc','3195'],['Mount Waverley','3149'],
-    ['Mulgrave','3170'],['Niddrie','3042'],['Noble Park','3174'],['Northcote','3070'],
-    ['North Melbourne','3051'],['Notting Hill','3168'],['Nunawading','3131'],
-    ['Oakleigh','3166'],['Oakleigh East','3166'],['Oakleigh South','3167'],
-    ['Ormond','3204'],['Pakenham','3810'],['Pascoe Vale','3044'],['Port Melbourne','3207'],
-    ['Prahran','3181'],['Preston','3072'],['Reservoir','3073'],['Richmond','3121'],
-    ['Ringwood','3134'],['Ringwood East','3135'],['Rosanna','3084'],['Rowville','3178'],
-    ['Sandringham','3191'],['South Melbourne','3205'],['South Yarra','3141'],
-    ['Southbank','3006'],['Spotswood','3015'],['Springvale','3171'],['St Albans','3021'],
-    ['St Kilda','3182'],['St Kilda East','3183'],['St Kilda West','3182'],['Strathmore','3041'],
-    ['Sunshine','3020'],['Surrey Hills','3127'],['Templestowe','3106'],['Templestowe Lower','3107'],
-    ['Thornbury','3071'],['Toorak','3142'],['Tullamarine','3043'],['Vermont','3133'],
-    ['Vermont South','3133'],['Viewbank','3084'],['Wantirna','3152'],['Wantirna South','3152'],
-    ['Warrandyte','3113'],['Werribee','3030'],['Wheelers Hill','3150'],
+    ['Northcote','3070'],['North Melbourne','3051'],['Nunawading','3131'],['Oakleigh','3166'],
+    ['Ormond','3204'],['Pascoe Vale','3044'],['Port Melbourne','3207'],['Prahran','3181'],
+    ['Preston','3072'],['Reservoir','3073'],['Richmond','3121'],['Ringwood','3134'],
+    ['Ringwood East','3135'],['Rosanna','3084'],['Rowville','3178'],['Sandringham','3191'],
+    ['South Melbourne','3205'],['South Yarra','3141'],['Southbank','3006'],['Spotswood','3015'],
+    ['Springvale','3171'],['St Albans','3021'],['St Kilda','3182'],['St Kilda East','3183'],
+    ['St Kilda West','3182'],['Strathmore','3041'],['Sunshine','3020'],['Surrey Hills','3127'],
+    ['Templestowe','3106'],['Templestowe Lower','3107'],['Thornbury','3071'],['Toorak','3142'],
+    ['Vermont','3133'],['Vermont South','3133'],['Werribee','3030'],['Wheelers Hill','3150'],
     ['Williams Landing','3027'],['Williamstown','3016'],['Windsor','3181'],
-    ['Yarraville','3013'],['Yarra Glen','3775'],['Yarra Junction','3797'],
+    ['Yarraville','3013'],['Yarra Glen','3775'],
   ];
 
-  const suburbInput  = document.getElementById('suburb-input');
+  const suburbInput   = document.getElementById('suburb-input');
   const postcodeInput = document.getElementById('postcode-input');
-  const suggestions  = document.getElementById('suburb-suggestions');
+  const suggestions   = document.getElementById('suburb-suggestions');
   let activeIdx = -1;
 
   function showSuggestions(val) {
@@ -272,7 +258,7 @@
       li.innerHTML = `<span>${suburb}</span><span class="pc">${pc}</span>`;
       li.addEventListener('mousedown', e => {
         e.preventDefault();
-        suburbInput.value  = suburb;
+        suburbInput.value   = suburb;
         postcodeInput.value = pc;
         suggestions.innerHTML = '';
       });
@@ -281,7 +267,6 @@
   }
 
   suburbInput.addEventListener('input', () => showSuggestions(suburbInput.value));
-
   suburbInput.addEventListener('keydown', e => {
     const items = suggestions.querySelectorAll('li');
     if (!items.length) return;
@@ -290,13 +275,11 @@
     else if (e.key === 'Enter' && activeIdx >= 0) { e.preventDefault(); items[activeIdx].dispatchEvent(new MouseEvent('mousedown')); }
     else if (e.key === 'Escape') { suggestions.innerHTML = ''; }
   });
-
   document.addEventListener('click', e => {
     if (!suburbInput.contains(e.target)) suggestions.innerHTML = '';
   });
 })();
 
-/* Add inclusion row */
 document.querySelector('.add-inclusion-btn').addEventListener('click', function() {
   const row = document.createElement('div');
   row.className = 'form-row';

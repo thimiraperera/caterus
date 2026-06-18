@@ -14,7 +14,8 @@
       <% if (admins.length === 0) { %>
         <p style="color:var(--muted);font-size:0.9rem">No admins found.</p>
       <% } else { %>
-      <table class="data-table">
+      <div class="admin-table-wrap">
+      <table class="admin-table">
         <thead>
           <tr>
             <th>Name</th>
@@ -27,9 +28,9 @@
         <tbody>
           <% admins.forEach(function(a) { %>
           <tr>
-            <td><strong><%= a.name || '—' %></strong></td>
-            <td><%= a.email %></td>
-            <td><span class="badge badge-<%= a.role === 'super' ? 'success' : 'info' %>"><%= a.role || 'admin' %></span></td>
+            <td><strong><%= a.name || a.email %></strong></td>
+            <td><a href="mailto:<%= a.email %>"><%= a.email %></a></td>
+            <td><span class="badge badge-<%= a.role === 'super' ? 'active' : 'draft' %>"><%= a.role === 'super' ? 'Super Admin' : 'Admin' %></span></td>
             <td style="font-size:0.82rem;color:var(--muted)"><%= new Date(a.created_at).toLocaleDateString('en-AU') %></td>
             <td style="text-align:right">
               <% if (a.id !== currentAdminId) { %>
@@ -44,6 +45,7 @@
           <% }); %>
         </tbody>
       </table>
+      </div>
       <% } %>
     </div>
   </div>
