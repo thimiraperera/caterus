@@ -5,7 +5,7 @@
     <div class="form-group"><label class="form-label">Publishable Key</label><input type="text" name="stripe_publishable_key" class="form-control" value="<%= settings.stripe_publishable_key || '' %>" placeholder="pk_test_..."></div>
     <div class="form-group"><label class="form-label">Secret Key</label><input type="password" name="stripe_secret_key" class="form-control" value="<%= settings.stripe_secret_key || '' %>" placeholder="sk_test_..."></div>
     <div class="form-group"><label class="form-label">Webhook Secret</label><input type="password" name="stripe_webhook_secret" class="form-control" value="<%= settings.stripe_webhook_secret || '' %>" placeholder="whsec_..."></div>
-    <p class="form-hint" style="margin-bottom:16px">Get your keys from <a href="https://dashboard.stripe.com/apikeys" target="_blank">Stripe Dashboard → API Keys</a>. Use test keys during development.</p>
+    <p class="form-hint" style="margin-bottom:16px">Get your keys from <a href="https://dashboard.stripe.com/apikeys" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px">Stripe Dashboard <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>. Use test keys during development.</p>
     <button type="submit" class="btn btn-primary">Save</button>
   </form>
 </div>
