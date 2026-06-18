@@ -749,3 +749,13 @@ a.ph:hover { border-color: var(--accent); background: var(--bg-alt); }
 .nf-links { font-size: 0.88rem; color: var(--muted); }
 .nf-links a { color: var(--ink-soft); font-weight: var(--w-semi); }
 .nf-links a:hover { color: var(--accent); }
+
+
+/* ============================================================
+   REVIEW WRITE SECTION
+   ============================================================ */
+.rev-write { margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--line); }
+.rev-write__note { margin-top: 1rem; color: #75896d; font-weight: 600; }
+.star-pick { display: flex; gap: 4px; margin-top: 6px; }
+.star-pick__btn { background: none; border: none; font-size: 1.6rem; cursor: pointer; color: #d4d0c8; padding: 2px 4px; transition: color 0.15s, transform 0.1s; line-height: 1; }
+.star-pick__btn:hover, .star-pick__btn.active { color: #f5a623; transform: scale(1.15); }

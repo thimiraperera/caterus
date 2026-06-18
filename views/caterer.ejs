@@ -158,7 +158,7 @@
           <!-- ============ REVIEWS ============ -->
           <section class="cat-block" id="reviews">
             <div class="rev-head">
-              <h2 class="cat-block__h">Ratings & reviews</h2>
+              <h2 class="cat-block__h">Ratings &amp; reviews</h2>
             </div>
             <div class="rev-summary">
               <div class="rev-score">
@@ -181,6 +181,29 @@
                 <p>"<%= rev.comment %>"</p>
               </article>
               <% }) %>
+            </div>
+
+            <!-- Write a review -->
+            <div class="rev-write" id="write-review">
+              <h3 class="cat-block__h" style="font-size:1.1rem;margin-bottom:1rem">Leave a review</h3>
+              <form class="cform" id="review-form" novalidate>
+                <input type="hidden" name="caterer_id" value="<%= caterer.id %>"/>
+                <div class="cform__row">
+                  <label>Your name *<input type="text" name="reviewer_name" placeholder="Jane Doe" required/></label>
+                  <label>Event type<input type="text" name="event_type" placeholder="e.g. Corporate lunch"/></label>
+                </div>
+                <label>Rating *
+                  <div class="star-pick" id="star-pick" role="group" aria-label="Rating">
+                    <% for(let s=1;s<=5;s++){ %>
+                    <button type="button" class="star-pick__btn" data-star="<%= s %>" aria-label="<%= s %> star">★</button>
+                    <% } %>
+                    <input type="hidden" name="rating" id="rating-val" value=""/>
+                  </div>
+                </label>
+                <label>Your review *<textarea name="comment" rows="3" placeholder="Tell us about your experience…" required></textarea></label>
+                <button type="submit" class="btn btn--fill">Submit review</button>
+              </form>
+              <p class="rev-write__note" hidden>Thanks! Your review has been submitted and is pending approval.</p>
             </div>
           </section>
 
@@ -270,9 +293,88 @@
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
   </button>
 
+  <!-- ============ CONTACT / ENQUIRY MODAL ============ -->
+  <div class="modal" id="contact-modal" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-close></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="contact-title">
+      <button type="button" class="modal__close" data-modal-close aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <p class="section-label">Message caterer</p>
+      <h2 id="contact-title" class="h-display">Send an enquiry.</h2>
+      <p class="modal__lede">Ask <%= caterer.business_name %> a question about your event. We'll pass it on within one business day.</p>
+      <form class="cform" id="contact-form" novalidate>
+        <input type="hidden" name="caterer_id" value="<%= caterer.id %>"/>
+        <div class="cform__row">
+          <label>First name *<input type="text" name="firstName" placeholder="Jane" required/></label>
+          <label>Last name<input type="text" name="lastName" placeholder="Doe"/></label>
+        </div>
+        <label>Email *<input type="email" name="email" placeholder="jane@example.com" required/></label>
+        <label>Phone<input type="tel" name="phone" data-phone placeholder="0412 345 678" inputmode="numeric" maxlength="12"/></label>
+        <label>Message<textarea name="message" rows="4" placeholder="e.g. We need catering for 80 guests on 20 June in Melbourne CBD…"></textarea></label>
+        <button type="submit" class="btn btn--fill">Send enquiry</button>
+      </form>
+      <p class="cform__success" hidden>Thanks — your enquiry is on its way. We'll be in touch shortly.</p>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
-  <script src="/script.js?v=3"></script>
+  <script src="/script.js?v=4"></script>
   <script>
+  // ---- Star picker ----
+  (function() {
+    const pick  = document.getElementById('star-pick');
+    const input = document.getElementById('rating-val');
+    if (!pick) return;
+    const btns = pick.querySelectorAll('.star-pick__btn');
+    let selected = 0;
+    const paint = (n) => btns.forEach((b, i) => b.classList.toggle('active', i < n));
+    btns.forEach((b) => {
+      b.addEventListener('mouseenter', () => paint(parseInt(b.dataset.star)));
+      b.addEventListener('mouseleave', () => paint(selected));
+      b.addEventListener('click', () => {
+        selected = parseInt(b.dataset.star);
+        input.value = selected;
+        paint(selected);
+      });
+    });
+  })();
+
+  // ---- Review form submission ----
+  (function() {
+    const form = document.getElementById('review-form');
+    if (!form) return;
+    const note = form.nextElementSibling;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+      const rating = document.getElementById('rating-val').value;
+      if (!rating) { alert('Please select a star rating.'); return; }
+      const btn = form.querySelector('button[type="submit"]');
+      btn.disabled = true; btn.textContent = 'Submitting…';
+      const fd = new FormData(form);
+      const data = Object.fromEntries(fd);
+      try {
+        const res = await fetch('/api/reviews', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data),
+        });
+        const result = await res.json();
+        if (result.success) {
+          form.hidden = true;
+          if (note) note.hidden = false;
+        } else {
+          alert(result.error || 'Something went wrong.');
+          btn.disabled = false; btn.textContent = 'Submit review';
+        }
+      } catch (_) {
+        alert('Network error. Please try again.');
+        btn.disabled = false; btn.textContent = 'Submit review';
+      }
+    });
+  })();
+
   // Dynamic booking form calculations
   (function() {
     const form = document.getElementById('booking-form');

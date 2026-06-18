@@ -3,13 +3,10 @@
    ============================================================ */
 const express = require('express');
 const router = express.Router();
-const path = require('path');
 const pageController = require('../controllers/pageController');
 
-// Home — serve the existing static index.html from public/
-router.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
-});
+// Home — rendered dynamically with caterers from DB
+router.get('/', pageController.home);
 
 // Dynamic caterer profile (data from DB)
 router.get('/caterer/:slug', pageController.caterer);

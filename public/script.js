@@ -115,13 +115,13 @@
 
   /* ---- Caterer filters ---- */
   const filters = $$(".filter");
-  const cards = $$("#cat-grid .card");
   filters.forEach((btn) => {
     btn.addEventListener("click", () => {
       filters.forEach((b) => b.classList.remove("filter--on"));
       btn.classList.add("filter--on");
       const f = btn.getAttribute("data-f");
-      cards.forEach((card) => {
+      // Re-query each click so dynamically loaded cards are included
+      $$("#cat-grid .card").forEach((card) => {
         const tags = (card.getAttribute("data-tags") || "").split(" ");
         card.classList.toggle("hide", f !== "all" && !tags.includes(f));
       });
@@ -131,20 +131,79 @@
   /* ---- Search form ---- */
   const form = $("#search-form");
   if (form) {
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const loc = $("#s-loc").value;
-      const occ = $("#s-occ").value;
+      const loc    = ($("#s-loc").value || "").trim();
+      const occ    = $("#s-occ").value;
       const guests = $("#s-guests").value;
-      // Build query string for API
+
       const params = new URLSearchParams();
-      if (loc) params.set('search', loc);
-      if (occ) params.set('occasion', occ);
-      if (guests) params.set('guests', guests);
-      // For now scroll to caterers section (search results page can be added later)
-      const t = $("#caterers");
-      if (t) scrollToEl(t);
+      if (loc)    params.set("search",  loc);
+      if (occ)    params.set("occasion", occ);
+      if (guests) params.set("guests",  guests);
+
+      const grid    = $("#cat-grid");
+      const section = $("#caterers");
+      const btn     = form.querySelector('button[type="submit"]');
+      const origHTML = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = "<span>Searching…</span>";
+
+      try {
+        const res  = await fetch("/api/caterers?" + params);
+        const data = await res.json();
+        if (grid) {
+          if (data.caterers && data.caterers.length > 0) {
+            grid.innerHTML = data.caterers.map(renderCatCard).join("");
+          } else {
+            grid.innerHTML = '<p style="grid-column:1/-1;padding:2rem;color:#8a857a;text-align:center">No caterers found matching your search. <a href="/" style="color:#75896d;font-weight:600">Clear search</a></p>';
+          }
+          // Reset active filter to "All"
+          filters.forEach((b) => b.classList.toggle("filter--on", b.getAttribute("data-f") === "all"));
+        }
+        if (section) scrollToEl(section);
+      } catch (_) {
+        if (section) scrollToEl(section);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = origHTML;
+      }
     });
+  }
+
+  function escHtml(s) {
+    return String(s || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  function renderCatCard(cat) {
+    const tagStr  = "all " + (cat.occasions || []).join(" ");
+    const imgSrc  = cat.featured_image ? "/" + cat.featured_image : "/assets/food1.png";
+    const rating  = parseFloat(cat.rating_avg || 0).toFixed(1);
+    const price   = Math.round(parseFloat(cat.price_from || 0));
+    const badge   = cat.is_featured
+      ? '<span class="card__badge card__badge--top">★ Top Rated</span>'
+      : '<span class="card__badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Vetted</span>';
+    const tagBadges = (cat.tags || []).slice(0, 3).map((t) => "<span>" + escHtml(t) + "</span>").join("");
+    return `
+      <article class="card in" data-tags="${escHtml(tagStr)}">
+        <a href="/caterer/${escHtml(cat.slug)}" class="card__img" aria-label="View ${escHtml(cat.business_name)}">
+          <img src="${escHtml(imgSrc)}" alt="${escHtml(cat.business_name)} catering" loading="lazy"/>
+          ${badge}
+        </a>
+        <div class="card__body">
+          <div class="card__row">
+            <h3><a href="/caterer/${escHtml(cat.slug)}">${escHtml(cat.business_name)}</a></h3>
+            <span class="card__score">${escHtml(rating)} <small>★</small></span>
+          </div>
+          <p class="card__sub">${escHtml(cat.suburb)}, Melbourne · ★★★★★ (${escHtml(cat.review_count)})</p>
+          <p class="card__desc">${escHtml(cat.tagline || cat.cuisine_type || "")}</p>
+          <div class="card__tags">${tagBadges}</div>
+          <div class="card__foot">
+            <span class="card__price">from <strong>$${price}</strong>/pp</span>
+            <a href="/caterer/${escHtml(cat.slug)}" class="btn btn--line btn--sm">View &amp; Book</a>
+          </div>
+        </div>
+      </article>`;
   }
 
   /* ---- Back to top ---- */
@@ -316,49 +375,5 @@
     }
   }
 
-  /* ---- Caterer page: booking panel ---- */
-  const bform = $("#booking-form");
-  if (bform) {
-    const guests = $("#bf-guests");
-    const pkg = $("#bf-package");
-    const totalEl = $("#bf-total");
-    const money = (n) => "$" + n.toLocaleString("en-AU");
-    const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
-
-    const recompute = () => {
-      const min = parseInt(guests.min || "0", 10);
-      const max = parseInt(guests.max || "999999", 10);
-      const g = clamp(parseInt(guests.value || "0", 10) || 0, 0, max);
-      const opt = pkg.selectedOptions[0];
-      const price = parseInt(opt.getAttribute("data-price") || "0", 10);
-      totalEl.textContent = money(g * price);
-    };
-
-    $$('[data-stepper] .stepper__btn').forEach((b) => {
-      b.addEventListener("click", () => {
-        const step = parseInt(b.getAttribute("data-step"), 10);
-        const min = parseInt(guests.min || "0", 10);
-        const max = parseInt(guests.max || "999999", 10);
-        guests.value = clamp((parseInt(guests.value || "0", 10) || 0) + step, min, max);
-        recompute();
-      });
-    });
-    guests.addEventListener("input", recompute);
-    guests.addEventListener("blur", () => {
-      const min = parseInt(guests.min || "0", 10);
-      const max = parseInt(guests.max || "999999", 10);
-      guests.value = clamp(parseInt(guests.value || min, 10) || min, min, max);
-      recompute();
-    });
-    pkg.addEventListener("change", recompute);
-    recompute();
-
-    bform.addEventListener("submit", (e) => {
-      e.preventDefault();
-      if (!bform.checkValidity()) { bform.reportValidity(); return; }
-      bform.hidden = true;
-      const ok = $(".bf-success");
-      if (ok) ok.hidden = false;
-    });
-  }
+  /* ---- Caterer page: booking panel (stepper UI only — submit handled by caterer.ejs inline script) ---- */
 })();
