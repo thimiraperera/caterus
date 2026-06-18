@@ -1,4 +1,6 @@
 /* Admin Settings Controller */
+const path     = require('path');
+const fs       = require('fs');
 const Settings = require('../../models/Settings');
 const Admin    = require('../../models/Admin');
 const bcrypt   = require('bcryptjs');
@@ -7,7 +9,8 @@ const { sendTestEmail } = require('../../utils/email');
 module.exports = {
   async general(req, res) {
     const settings = await Settings.getByGroup('general');
-    res.render('admin/settings/general', { title: 'General Settings', currentPage: 'settings-general', settings });
+    const logoSetting = await Settings.get('logo_path').catch(() => null);
+    res.render('admin/settings/general', { title: 'General Settings', currentPage: 'settings-general', settings, logoPath: logoSetting || '' });
   },
   async smtp(req, res) {
     const settings = await Settings.getByGroup('smtp');
@@ -29,6 +32,23 @@ module.exports = {
       req.flash('success', 'Settings saved!');
       res.redirect(`/admin/settings/${group}`);
     } catch (err) { console.error(err); req.flash('error', 'Failed to save settings.'); res.redirect('back'); }
+  },
+
+  async uploadLogo(req, res) {
+    try {
+      if (!req.file) {
+        req.flash('error', 'No file selected.');
+        return res.redirect('/admin/settings/general');
+      }
+      const logoPath = 'assets/uploads/' + req.file.filename;
+      await Settings.set('logo_path', logoPath, 'general');
+      req.flash('success', 'Logo uploaded successfully!');
+      res.redirect('/admin/settings/general');
+    } catch (err) {
+      console.error(err);
+      req.flash('error', 'Logo upload failed.');
+      res.redirect('/admin/settings/general');
+    }
   },
 
   async testSmtp(req, res) {

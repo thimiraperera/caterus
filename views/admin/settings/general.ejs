@@ -1,4 +1,20 @@
 <div class="form-section">
+  <h3 class="form-section__title">Logo</h3>
+  <% if (logoPath) { %>
+  <div style="margin-bottom:16px">
+    <img src="/<%= logoPath %>" alt="Site logo" style="max-height:60px;max-width:240px;object-fit:contain;border:1px solid var(--border-color,#e8e4dc);border-radius:8px;padding:8px;background:#fff;">
+  </div>
+  <% } %>
+  <form method="POST" action="/admin/settings/logo" enctype="multipart/form-data">
+    <div class="form-group">
+      <label class="form-label">Upload logo <span style="color:#8a857a;font-weight:400">(PNG, SVG or JPEG — max 2 MB)</span></label>
+      <input type="file" name="logo" class="form-control" accept="image/png,image/jpeg,image/svg+xml,image/webp" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Upload logo</button>
+  </form>
+</div>
+
+<div class="form-section" style="margin-top:2rem">
   <h3 class="form-section__title">General Settings</h3>
   <form method="POST" action="/admin/settings?_method=PUT">
     <input type="hidden" name="group" value="general">

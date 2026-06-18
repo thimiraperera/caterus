@@ -83,6 +83,7 @@ router.get('/settings/smtp',           settingsController.smtp);
 router.get('/settings/stripe',         settingsController.stripe);
 router.get('/settings/profile',        settingsController.profile);
 router.put('/settings',                settingsController.update);
+router.post('/settings/logo',          upload.single('logo'), settingsController.uploadLogo);
 router.post('/settings/smtp/test',     settingsController.testSmtp);
 router.put('/settings/profile',        settingsController.updateProfile);
 
