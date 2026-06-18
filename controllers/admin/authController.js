@@ -3,17 +3,19 @@ const bcrypt   = require('bcryptjs');
 const crypto   = require('crypto');
 const Admin    = require('../../models/Admin');
 const Settings = require('../../models/Settings');
-const { sendEmail } = require('../../utils/email');
+const { sendEmail }    = require('../../utils/email');
+const { verifyCaptcha } = require('../../utils/captcha');
 
 const BASE_URL = process.env.BASE_URL || 'https://caterus.com.au';
 
 module.exports = {
   async showLogin(req, res) {
     try {
-      const [logoLight, logoDark, logoChoice] = await Promise.all([
+      const [logoLight, logoDark, logoChoice, captchaSettings] = await Promise.all([
         Settings.get('logo_path').catch(() => null),
         Settings.get('logo_path_dark').catch(() => null),
         Settings.get('login_logo_choice').catch(() => 'light'),
+        Settings.getByGroup('captcha').catch(() => ({})),
       ]);
       const choice = logoChoice || 'light';
       let loginLogo = '';
@@ -25,6 +27,8 @@ module.exports = {
         success: req.flash('success'),
         loginLogo,
         logoChoice: choice,
+        captchaType:    captchaSettings.captcha_type    || 'none',
+        captchaSiteKey: captchaSettings.captcha_site_key || '',
       });
     } catch (_) {
       res.render('admin/login', {
@@ -33,6 +37,8 @@ module.exports = {
         success: req.flash('success'),
         loginLogo: '',
         logoChoice: 'text',
+        captchaType: 'none',
+        captchaSiteKey: '',
       });
     }
   },
@@ -40,8 +46,14 @@ module.exports = {
   async login(req, res) {
     try {
       const { email, password, remember_me } = req.body;
+      const captcha_token = req.body.captcha_token || req.body['g-recaptcha-response'] || req.body['h-captcha-response'] || '';
       if (!email || !password) {
         req.flash('error', 'Please enter email and password.');
+        return res.redirect('/admin/login');
+      }
+      const captchaOk = await verifyCaptcha(captcha_token || '');
+      if (!captchaOk) {
+        req.flash('error', 'CAPTCHA verification failed. Please try again.');
         return res.redirect('/admin/login');
       }
       const admin = await Admin.findByEmail(email);

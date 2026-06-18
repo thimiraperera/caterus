@@ -25,7 +25,7 @@
       <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
         <div class="flash flash-error" style="margin-bottom:18px"><span><%= error %></span></div>
       <% } %>
-      <form method="POST" action="/admin/login">
+      <form method="POST" action="/admin/login" id="login-form">
         <div class="form-group">
           <label class="form-label" for="email">Email</label>
           <input class="form-control" type="email" id="email" name="email" placeholder="admin@caterus.com.au" required autofocus>
@@ -41,9 +41,35 @@
           </label>
           <a href="/admin/forgot-password" style="font-size:0.85rem;color:var(--primary,#75896d);text-decoration:none">Forgot password?</a>
         </div>
-        <button class="btn btn-primary" type="submit">Log in</button>
+        <% if (captchaType === 'recaptcha_v2') { %>
+        <div class="g-recaptcha" data-sitekey="<%= captchaSiteKey %>" style="margin-bottom:16px"></div>
+        <% } else if (captchaType === 'hcaptcha') { %>
+        <div class="h-captcha" data-sitekey="<%= captchaSiteKey %>" style="margin-bottom:16px"></div>
+        <% } else if (captchaType === 'recaptcha_v3') { %>
+        <input type="hidden" name="captcha_token" id="captcha_token_field">
+        <% } %>
+        <button class="btn btn-primary" type="submit" id="login-btn">Log in</button>
       </form>
     </div>
   </div>
+  <% if (captchaType === 'recaptcha_v2') { %>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <% } else if (captchaType === 'hcaptcha') { %>
+  <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+  <% } else if (captchaType === 'recaptcha_v3') { %>
+  <script src="https://www.google.com/recaptcha/api.js?render=<%= captchaSiteKey %>"></script>
+  <script>
+  document.getElementById('login-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var form = this;
+    grecaptcha.ready(function() {
+      grecaptcha.execute('<%= captchaSiteKey %>', { action: 'login' }).then(function(token) {
+        document.getElementById('captcha_token_field').value = token;
+        form.submit();
+      });
+    });
+  });
+  </script>
+  <% } %>
 </body>
 </html>
