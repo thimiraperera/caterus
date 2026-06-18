@@ -23,6 +23,11 @@ router.get('/login',  authController.showLogin);
 router.post('/login', authController.login);
 router.get('/logout', authController.logout);
 
+/* ── Session debug (remove after fix) ── */
+router.get('/session-test', (req, res) => {
+  res.json({ session: req.session, sessionID: req.sessionID, cookies: req.headers.cookie });
+});
+
 /* ── All routes below require admin ── */
 router.use(requireAdmin);
 
