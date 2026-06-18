@@ -81,6 +81,7 @@ router.put('/applications/:id/status', applicationController.updateStatus);
 /* FAQs */
 router.get('/faqs',              faqController.index);
 router.post('/faqs/seed',        faqController.seed);
+router.post('/faqs/reorder',     faqController.reorder);
 router.get('/faqs/create',       faqController.create);
 router.post('/faqs',             faqController.store);
 router.get('/faqs/:id/edit',     faqController.edit);

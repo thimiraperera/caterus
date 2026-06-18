@@ -19,11 +19,13 @@ module.exports = {
 
   async store(req, res) {
     try {
-      const { question, answer, sort_order, is_published } = req.body;
+      const { question, answer, is_published } = req.body;
       if (!question || !answer) {
         req.flash('error', 'Question and answer are required.');
         return res.redirect('/admin/faqs/create');
       }
+      const all = await Faq.findAll();
+      const sort_order = all.length + 1;
       await Faq.create({ question, answer, sort_order, is_published });
       req.flash('success', 'FAQ added.');
       res.redirect('/admin/faqs');
@@ -48,11 +50,13 @@ module.exports = {
 
   async update(req, res) {
     try {
-      const { question, answer, sort_order, is_published } = req.body;
+      const { question, answer, is_published } = req.body;
       if (!question || !answer) {
         req.flash('error', 'Question and answer are required.');
         return res.redirect(`/admin/faqs/${req.params.id}/edit`);
       }
+      const existing = await Faq.findById(req.params.id);
+      const sort_order = existing ? existing.sort_order : 0;
       await Faq.update(req.params.id, { question, answer, sort_order, is_published });
       req.flash('success', 'FAQ updated.');
       res.redirect('/admin/faqs');
@@ -72,6 +76,18 @@ module.exports = {
       console.error(err);
       req.flash('error', 'Failed to delete FAQ.');
       res.redirect('/admin/faqs');
+    }
+  },
+
+  async reorder(req, res) {
+    try {
+      const ids = req.body.order;
+      if (!Array.isArray(ids)) return res.status(400).json({ error: 'Invalid order array' });
+      await Faq.reorder(ids.map(Number));
+      res.json({ ok: true });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err.message });
     }
   },
 

@@ -35,6 +35,12 @@ const Faq = {
   async destroy(id) {
     await db.query('DELETE FROM faqs WHERE id = ?', [id]);
   },
+
+  async reorder(orderedIds) {
+    for (let i = 0; i < orderedIds.length; i++) {
+      await db.query('UPDATE faqs SET sort_order = ? WHERE id = ?', [i + 1, orderedIds[i]]);
+    }
+  },
 };
 
 module.exports = Faq;

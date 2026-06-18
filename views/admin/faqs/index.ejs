@@ -16,25 +16,36 @@
 <% if (faqs.length === 0) { %>
 <div class="form-section" style="border-left:3px solid var(--accent);background:var(--accent-soft)">
   <p style="font-size:0.9rem;color:var(--ink-soft);margin:0">
-    <strong>No custom FAQs yet.</strong> The homepage is currently showing the 6 built-in default FAQs.
-    Add at least one FAQ here to switch the homepage to your custom set, or click <strong>Seed defaults</strong> to import the current defaults for editing.
+    <strong>No custom FAQs yet.</strong> The homepage shows the 6 built-in defaults.
+    Add at least one FAQ here to switch to your custom set, or click <strong>Seed defaults</strong> to import them for editing.
   </p>
 </div>
 <% } else { %>
+
+<div id="faq-save-banner" style="display:none;margin-bottom:12px">
+  <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--accent-soft);border:1px solid var(--accent);border-radius:var(--radius-sm);font-size:0.88rem">
+    <span id="faq-save-status" style="flex:1;color:var(--ink-soft)">Order changed</span>
+    <span id="faq-save-spinner" style="display:none;color:var(--muted)">Saving...</span>
+    <span id="faq-save-ok" style="display:none;color:var(--accent);font-weight:600">Saved</span>
+  </div>
+</div>
+
 <div class="admin-table-wrap">
-  <table class="admin-table">
+  <table class="admin-table" id="faq-table">
     <thead>
       <tr>
-        <th style="width:48px">Order</th>
+        <th style="width:36px"></th>
         <th>Question</th>
         <th style="width:110px">Status</th>
         <th style="width:120px">Actions</th>
       </tr>
     </thead>
-    <tbody>
-      <% faqs.forEach((f, i) => { %>
-      <tr>
-        <td style="color:var(--text-muted);font-size:0.85rem"><%= f.sort_order || i + 1 %></td>
+    <tbody id="faq-tbody">
+      <% faqs.forEach(f => { %>
+      <tr class="faq-row" data-id="<%= f.id %>" draggable="true">
+        <td class="drag-handle" title="Drag to reorder">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:auto;opacity:0.4;cursor:grab"><circle cx="9" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="9" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="9" cy="19" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="19" r="1" fill="currentColor" stroke="none"/></svg>
+        </td>
         <td><strong><%= f.question %></strong></td>
         <td>
           <% if (f.is_published) { %>
@@ -56,5 +67,105 @@
     </tbody>
   </table>
 </div>
-<p style="margin-top:12px;font-size:0.82rem;color:var(--muted)">FAQs are shown on the homepage in sort order. Lower numbers appear first. The JSON-LD FAQ schema is injected automatically when at least one FAQ is published.</p>
+<p style="margin-top:12px;font-size:0.82rem;color:var(--muted)">Drag rows to reorder. The JSON-LD FAQ schema is injected automatically when at least one FAQ is published.</p>
+
+<style>
+.faq-row { transition: background 0.15s; }
+.faq-row.drag-over { background: var(--accent-soft); outline: 2px dashed var(--accent); outline-offset: -2px; }
+.faq-row.dragging { opacity: 0.4; }
+.drag-handle { cursor: grab; user-select: none; }
+.drag-handle:active { cursor: grabbing; }
+</style>
+
+<script>
+(function() {
+  const tbody = document.getElementById('faq-tbody');
+  const banner = document.getElementById('faq-save-banner');
+  const statusEl = document.getElementById('faq-save-status');
+  const spinnerEl = document.getElementById('faq-save-spinner');
+  const okEl = document.getElementById('faq-save-ok');
+  let dragSrc = null;
+  let saveTimer = null;
+
+  function getOrder() {
+    return Array.from(tbody.querySelectorAll('.faq-row')).map(r => r.dataset.id);
+  }
+
+  async function saveOrder() {
+    spinnerEl.style.display = 'inline';
+    statusEl.style.display = 'none';
+    okEl.style.display = 'none';
+    try {
+      const res = await fetch('/admin/faqs/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: getOrder() }),
+      });
+      if (!res.ok) throw new Error('Failed');
+      spinnerEl.style.display = 'none';
+      okEl.style.display = 'inline';
+      setTimeout(() => { banner.style.display = 'none'; }, 2000);
+    } catch (e) {
+      spinnerEl.style.display = 'none';
+      statusEl.textContent = 'Save failed. Try again.';
+      statusEl.style.display = 'inline';
+      statusEl.style.color = '#dc3545';
+    }
+  }
+
+  tbody.addEventListener('dragstart', e => {
+    dragSrc = e.target.closest('.faq-row');
+    if (!dragSrc) return;
+    dragSrc.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', dragSrc.dataset.id);
+  });
+
+  tbody.addEventListener('dragend', e => {
+    document.querySelectorAll('.faq-row').forEach(r => r.classList.remove('dragging', 'drag-over'));
+    dragSrc = null;
+  });
+
+  tbody.addEventListener('dragover', e => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const target = e.target.closest('.faq-row');
+    if (!target || target === dragSrc) return;
+    document.querySelectorAll('.faq-row').forEach(r => r.classList.remove('drag-over'));
+    target.classList.add('drag-over');
+  });
+
+  tbody.addEventListener('dragleave', e => {
+    const target = e.target.closest('.faq-row');
+    if (target) target.classList.remove('drag-over');
+  });
+
+  tbody.addEventListener('drop', e => {
+    e.preventDefault();
+    const target = e.target.closest('.faq-row');
+    if (!target || target === dragSrc || !dragSrc) return;
+    target.classList.remove('drag-over');
+
+    const rows = Array.from(tbody.querySelectorAll('.faq-row'));
+    const srcIdx = rows.indexOf(dragSrc);
+    const tgtIdx = rows.indexOf(target);
+    if (tgtIdx > srcIdx) {
+      target.after(dragSrc);
+    } else {
+      target.before(dragSrc);
+    }
+
+    banner.style.display = 'block';
+    statusEl.textContent = 'Order changed';
+    statusEl.style.color = '';
+    statusEl.style.display = 'inline';
+    spinnerEl.style.display = 'none';
+    okEl.style.display = 'none';
+
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveOrder, 600);
+  });
+})();
+</script>
+
 <% } %>
