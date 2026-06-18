@@ -5,8 +5,14 @@ const Caterer = require('../../models/Caterer');
 module.exports = {
   async index(req, res) {
     try {
-      const result = await Review.findAll({ status: req.query.status || 'pending', page: req.query.page });
-      res.render('admin/reviews/index', { title: 'Reviews', currentPage: 'reviews', ...result, currentStatus: req.query.status || 'pending' });
+      const { page = 1, per_page = 20, status = 'pending' } = req.query;
+      const result = await Review.findAll({ status, page, limit: per_page });
+      const queryExtra = 'status=' + encodeURIComponent(status) + '&per_page=' + per_page;
+      res.render('admin/reviews/index', {
+        title: 'Reviews', currentPage: 'reviews',
+        ...result, currentStatus: status,
+        per_page: parseInt(per_page) || 20, queryExtra,
+      });
     } catch (err) { console.error(err); req.flash('error', 'Failed to load reviews.'); res.redirect('/admin'); }
   },
 

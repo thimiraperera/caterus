@@ -10,19 +10,27 @@ const { formatCurrency, formatDate } = require('../../utils/helpers');
 module.exports = {
   async index(req, res) {
     try {
-      const bookingStats = await Booking.getStats();
-      const catererStats = await Caterer.getStats();
-      const reviewStats  = await Review.getStats();
-      const payoutStats  = await Payout.getStats();
-      const recentBookings = await Booking.getRecent(10);
-      const newEnquiries = await Enquiry.getCount('new');
-      const newApplications = await Application.getCount('new');
+      const { page = 1, per_page = 10 } = req.query;
+      const [bookingStats, catererStats, reviewStats, payoutStats, bookingsResult, newEnquiries, newApplications] = await Promise.all([
+        Booking.getStats(),
+        Caterer.getStats(),
+        Review.getStats(),
+        Payout.getStats(),
+        Booking.findAll({ page, limit: per_page }),
+        Enquiry.getCount('new'),
+        Application.getCount('new'),
+      ]);
+      const queryExtra = 'per_page=' + per_page;
 
       res.render('admin/dashboard', {
         title: 'Dashboard',
         currentPage: 'dashboard',
         bookingStats, catererStats, reviewStats, payoutStats,
-        recentBookings, newEnquiries, newApplications,
+        recentBookings: bookingsResult.bookings,
+        bookingPage: bookingsResult.page,
+        bookingTotalPages: bookingsResult.totalPages,
+        newEnquiries, newApplications,
+        per_page: parseInt(per_page) || 10, queryExtra,
         formatCurrency, formatDate,
       });
     } catch (err) {
@@ -31,7 +39,9 @@ module.exports = {
       res.render('admin/dashboard', {
         title: 'Dashboard', currentPage: 'dashboard',
         bookingStats: {}, catererStats: {}, reviewStats: {}, payoutStats: {},
-        recentBookings: [], newEnquiries: 0, newApplications: 0,
+        recentBookings: [], bookingPage: 1, bookingTotalPages: 1,
+        newEnquiries: 0, newApplications: 0,
+        per_page: 10, queryExtra: 'per_page=10',
         formatCurrency, formatDate,
       });
     }

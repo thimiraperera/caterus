@@ -1,24 +1,34 @@
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
   <div></div>
-  <a href="/admin/faqs/create" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    New FAQ
-  </a>
+  <div style="display:flex;gap:10px">
+    <% if (faqs.length === 0) { %>
+    <form method="POST" action="/admin/faqs/seed">
+      <button type="submit" class="btn btn-secondary">Seed defaults</button>
+    </form>
+    <% } %>
+    <a href="/admin/faqs/create" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New FAQ
+    </a>
+  </div>
 </div>
 
 <% if (faqs.length === 0) { %>
-<div class="empty-state">
-  <p>No FAQs yet. Add one to display on the homepage.</p>
+<div class="form-section" style="border-left:3px solid var(--accent);background:var(--accent-soft)">
+  <p style="font-size:0.9rem;color:var(--ink-soft);margin:0">
+    <strong>No custom FAQs yet.</strong> The homepage is currently showing the 6 built-in default FAQs.
+    Add at least one FAQ here to switch the homepage to your custom set, or click <strong>Seed defaults</strong> to import the current defaults for editing.
+  </p>
 </div>
 <% } else { %>
 <div class="admin-table-wrap">
   <table class="admin-table">
     <thead>
       <tr>
-        <th style="width:40px">#</th>
+        <th style="width:48px">Order</th>
         <th>Question</th>
-        <th style="width:110px">Published</th>
-        <th style="width:100px">Actions</th>
+        <th style="width:110px">Status</th>
+        <th style="width:120px">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -46,5 +56,5 @@
     </tbody>
   </table>
 </div>
-<p style="margin-top:12px;font-size:0.82rem;color:var(--text-muted)">FAQs are shown on the homepage in sort order. Lower numbers appear first.</p>
+<p style="margin-top:12px;font-size:0.82rem;color:var(--muted)">FAQs are shown on the homepage in sort order. Lower numbers appear first. The JSON-LD FAQ schema is injected automatically when at least one FAQ is published.</p>
 <% } %>

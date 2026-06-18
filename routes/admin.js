@@ -1,8 +1,6 @@
-/* ============================================================
-   Admin Routes
-   ============================================================ */
+/* Admin Routes */
 const express = require('express');
-const router = express.Router();
+const router  = express.Router();
 const { requireAdmin } = require('../middleware/adminAuth');
 const upload = require('../middleware/upload');
 
@@ -19,23 +17,18 @@ const enquiryController     = require('../controllers/admin/enquiryController');
 const applicationController = require('../controllers/admin/applicationController');
 const faqController         = require('../controllers/admin/faqController');
 
-/* ── Auth (no middleware) ── */
+/* Auth (no middleware) */
 router.get('/login',  authController.showLogin);
 router.post('/login', authController.login);
 router.get('/logout', authController.logout);
 
-/* ── Session debug (remove after fix) ── */
-router.get('/session-test', (req, res) => {
-  res.json({ session: req.session, sessionID: req.sessionID, cookies: req.headers.cookie });
-});
-
-/* ── All routes below require admin ── */
+/* All routes below require admin */
 router.use(requireAdmin);
 
-/* ── Dashboard ── */
+/* Dashboard */
 router.get('/', dashboardController.index);
 
-/* ── Caterers ── */
+/* Caterers */
 router.get('/caterers',                catererController.index);
 router.get('/caterers/create',         catererController.create);
 router.post('/caterers',               upload.single('featured_image'), catererController.store);
@@ -45,55 +38,63 @@ router.delete('/caterers/:id',         catererController.destroy);
 router.post('/caterers/:id/images',    upload.array('images', 10), catererController.uploadImages);
 router.delete('/caterers/:id/images/:imgId', catererController.deleteImage);
 
-/* ── Vetting ── */
+/* Vetting */
 router.get('/caterers/:id/vetting',    vettingController.show);
 router.post('/caterers/:id/vetting',   vettingController.update);
 
-/* ── Menus ── */
+/* Menus */
 router.get('/caterers/:id/menus',      menuController.index);
 router.post('/caterers/:id/menus',     menuController.store);
 router.put('/menus/:id',               menuController.update);
 router.delete('/menus/:id',            menuController.destroy);
 
-/* ── Bookings ── */
+/* Bookings */
 router.get('/bookings',                bookingController.index);
 router.get('/bookings/:id',            bookingController.show);
 router.put('/bookings/:id/status',     bookingController.updateStatus);
 router.put('/bookings/:id/notes',      bookingController.updateNotes);
 
-/* ── Reviews ── */
+/* Reviews */
 router.get('/reviews',                 reviewController.index);
 router.put('/reviews/:id/status',      reviewController.updateStatus);
 
-/* ── Payouts ── */
+/* Payouts */
 router.get('/payouts',                 payoutController.index);
 router.post('/payouts',                payoutController.store);
 router.put('/payouts/:id/status',      payoutController.updateStatus);
 
-/* ── Enquiries ── */
+/* Enquiries */
 router.get('/enquiries',               enquiryController.index);
 router.put('/enquiries/:id/status',    enquiryController.updateStatus);
 
-/* ── Applications ── */
+/* Applications */
 router.get('/applications',            applicationController.index);
 router.put('/applications/:id/status', applicationController.updateStatus);
 
-/* ── FAQs ── */
+/* FAQs */
 router.get('/faqs',              faqController.index);
+router.post('/faqs/seed',        faqController.seed);
 router.get('/faqs/create',       faqController.create);
 router.post('/faqs',             faqController.store);
 router.get('/faqs/:id/edit',     faqController.edit);
 router.put('/faqs/:id',          faqController.update);
 router.delete('/faqs/:id',       faqController.destroy);
 
-/* ── Settings ── */
-router.get('/settings/general',        settingsController.general);
-router.get('/settings/smtp',           settingsController.smtp);
-router.get('/settings/stripe',         settingsController.stripe);
-router.get('/settings/profile',        settingsController.profile);
-router.put('/settings',                settingsController.update);
-router.post('/settings/logo',          upload.single('logo'), settingsController.uploadLogo);
-router.post('/settings/smtp/test',     settingsController.testSmtp);
-router.put('/settings/profile',        settingsController.updateProfile);
+/* Settings */
+router.get('/settings/general',          settingsController.general);
+router.get('/settings/smtp',             settingsController.smtp);
+router.get('/settings/stripe',           settingsController.stripe);
+router.get('/settings/seo',              settingsController.seo);
+router.post('/settings/seo',             upload.single('featured_image'), settingsController.saveSeo);
+router.get('/settings/profile',          settingsController.profile);
+router.put('/settings',                  settingsController.update);
+router.post('/settings/logo',            upload.single('logo'), settingsController.uploadLogo);
+router.post('/settings/smtp/test',       settingsController.testSmtp);
+router.put('/settings/profile',          settingsController.updateProfile);
+router.post('/settings/profile/info',    settingsController.updateProfileInfo);
+router.post('/settings/profile/avatar',  upload.single('avatar'), settingsController.uploadAvatar);
+router.post('/settings/2fa/setup',       settingsController.setup2fa);
+router.post('/settings/2fa/enable',      settingsController.enable2fa);
+router.post('/settings/2fa/disable',     settingsController.disable2fa);
 
 module.exports = router;

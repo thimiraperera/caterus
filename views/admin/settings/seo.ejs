@@ -1,0 +1,237 @@
+<style>
+.seo-tabs { display:flex; gap:4px; background:var(--surface-2); border-radius:100px; padding:3px; margin-bottom:24px; width:fit-content; }
+.seo-tab { padding:7px 20px; border-radius:100px; font-size:0.82rem; font-weight:600; color:var(--muted); background:transparent; border:none; cursor:pointer; font-family:var(--font); transition:all 0.2s; }
+.seo-tab.active { background:var(--surface); color:var(--ink); box-shadow:var(--shadow-sm); }
+.seo-panel { display:none; }
+.seo-panel.active { display:block; }
+.seo-section-label { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); margin:24px 0 12px; padding-bottom:6px; border-bottom:1px solid var(--line); }
+</style>
+
+<div class="seo-tabs">
+  <button class="seo-tab active" data-panel="home">Home</button>
+  <button class="seo-tab" data-panel="browse">Caterers</button>
+  <button class="seo-tab" data-panel="local">Local Business</button>
+</div>
+
+<!-- HOME PAGE -->
+<div class="seo-panel active" id="seo-panel-home">
+<div class="form-section">
+  <h3 class="form-section__title">SEO: Home Page (/)</h3>
+  <form method="POST" action="/admin/settings/seo?page=home" enctype="multipart/form-data">
+
+    <p class="seo-section-label">Content</p>
+    <div class="form-group">
+      <label class="form-label">Featured Image</label>
+      <% if (seo.home_featured_image) { %>
+      <div style="margin-bottom:8px"><img src="/<%= seo.home_featured_image %>" alt="" style="max-height:80px;border-radius:6px;border:1px solid var(--line)"></div>
+      <% } %>
+      <input type="file" name="featured_image" class="form-control" accept="image/*">
+    </div>
+    <div class="form-group">
+      <label class="form-label">SEO Title</label>
+      <input type="text" name="title" class="form-control" value="<%= seo.home_title || '' %>" placeholder="Caterus - Find & Book Melbourne's Best Caterers" maxlength="70">
+      <p class="form-hint">Ideal length: 50-60 characters</p>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Focus Keyphrase</label>
+      <input type="text" name="focus_keyphrase" class="form-control" value="<%= seo.home_focus_keyphrase || '' %>" placeholder="e.g. catering marketplace Australia">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Meta Description</label>
+      <textarea name="meta_description" class="form-control" rows="3" maxlength="160" placeholder="A compelling 150-160 character description..."><%= seo.home_meta_description || '' %></textarea>
+      <p class="form-hint">Ideal length: 150-160 characters</p>
+    </div>
+
+    <p class="seo-section-label">Advanced</p>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Breadcrumbs Title</label>
+        <input type="text" name="breadcrumbs_title" class="form-control" value="<%= seo.home_breadcrumbs_title || 'Home' %>">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Canonical URL</label>
+        <input type="url" name="canonical_url" class="form-control" value="<%= seo.home_canonical_url || '' %>" placeholder="https://caterus.com.au/">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Page Type</label>
+        <select name="page_type" class="form-control">
+          <option value="">Default (WebPage)</option>
+          <option value="WebPage"          <%=seo.home_page_type==='WebPage'?'selected':''%>>WebPage</option>
+          <option value="ItemPage"         <%=seo.home_page_type==='ItemPage'?'selected':''%>>Item Page</option>
+          <option value="AboutPage"        <%=seo.home_page_type==='AboutPage'?'selected':''%>>About Page</option>
+          <option value="FAQPage"          <%=seo.home_page_type==='FAQPage'?'selected':''%>>FAQ Page</option>
+          <option value="QAPage"           <%=seo.home_page_type==='QAPage'?'selected':''%>>QA Page</option>
+          <option value="ProfilePage"      <%=seo.home_page_type==='ProfilePage'?'selected':''%>>Profile Page</option>
+          <option value="ContactPage"      <%=seo.home_page_type==='ContactPage'?'selected':''%>>Contact Page</option>
+          <option value="CollectionPage"   <%=seo.home_page_type==='CollectionPage'?'selected':''%>>Collection Page</option>
+          <option value="CheckoutPage"     <%=seo.home_page_type==='CheckoutPage'?'selected':''%>>Checkout Page</option>
+          <option value="SearchResultsPage" <%=seo.home_page_type==='SearchResultsPage'?'selected':''%>>Search Results Page</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Article Type</label>
+        <select name="article_type" class="form-control">
+          <option value="">None</option>
+          <option value="Article"          <%=seo.home_article_type==='Article'?'selected':''%>>Article</option>
+          <option value="BlogPosting"      <%=seo.home_article_type==='BlogPosting'?'selected':''%>>Blog Post</option>
+          <option value="NewsArticle"      <%=seo.home_article_type==='NewsArticle'?'selected':''%>>News Article</option>
+          <option value="TechArticle"      <%=seo.home_article_type==='TechArticle'?'selected':''%>>Tech Article</option>
+          <option value="Report"           <%=seo.home_article_type==='Report'?'selected':''%>>Report</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label" style="display:flex;align-items:center;gap:10px;cursor:pointer">
+        <input type="checkbox" name="is_cornerstone" value="1" style="width:16px;height:16px" <%=seo.home_is_cornerstone==='1'?'checked':''%>>
+        Mark as cornerstone content
+      </label>
+      <p class="form-hint">Cornerstone content is your most important, comprehensive content.</p>
+    </div>
+
+    <p class="seo-section-label">Social (Open Graph)</p>
+    <div class="form-group">
+      <label class="form-label">Social Title</label>
+      <input type="text" name="social_title" class="form-control" value="<%= seo.home_social_title || '' %>" placeholder="Defaults to SEO title">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Social Description</label>
+      <textarea name="social_description" class="form-control" rows="2"><%= seo.home_social_description || '' %></textarea>
+    </div>
+
+    <p class="seo-section-label">X / Twitter</p>
+    <div class="form-group">
+      <label class="form-label">X Title</label>
+      <input type="text" name="twitter_title" class="form-control" value="<%= seo.home_twitter_title || '' %>" placeholder="Defaults to social title">
+    </div>
+    <div class="form-group">
+      <label class="form-label">X Description</label>
+      <textarea name="twitter_description" class="form-control" rows="2"><%= seo.home_twitter_description || '' %></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Home SEO</button>
+  </form>
+</div>
+</div>
+
+<!-- CATERERS BROWSE PAGE -->
+<div class="seo-panel" id="seo-panel-browse">
+<div class="form-section">
+  <h3 class="form-section__title">SEO: Caterers Listing (/caterers)</h3>
+  <form method="POST" action="/admin/settings/seo?page=browse" enctype="multipart/form-data">
+
+    <p class="seo-section-label">Content</p>
+    <div class="form-group">
+      <label class="form-label">SEO Title</label>
+      <input type="text" name="title" class="form-control" value="<%= seo.browse_title || '' %>" placeholder="Browse Caterers | Caterus" maxlength="70">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Focus Keyphrase</label>
+      <input type="text" name="focus_keyphrase" class="form-control" value="<%= seo.browse_focus_keyphrase || '' %>">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Meta Description</label>
+      <textarea name="meta_description" class="form-control" rows="3" maxlength="160"><%= seo.browse_meta_description || '' %></textarea>
+    </div>
+
+    <p class="seo-section-label">Advanced</p>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Breadcrumbs Title</label>
+        <input type="text" name="breadcrumbs_title" class="form-control" value="<%= seo.browse_breadcrumbs_title || 'Caterers' %>">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Canonical URL</label>
+        <input type="url" name="canonical_url" class="form-control" value="<%= seo.browse_canonical_url || '' %>">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Page Type</label>
+        <select name="page_type" class="form-control">
+          <option value="">Default (WebPage)</option>
+          <option value="CollectionPage" <%=seo.browse_page_type==='CollectionPage'?'selected':''%>>Collection Page</option>
+          <option value="SearchResultsPage" <%=seo.browse_page_type==='SearchResultsPage'?'selected':''%>>Search Results Page</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Article Type</label>
+        <select name="article_type" class="form-control">
+          <option value="">None</option>
+          <option value="Article" <%=seo.browse_article_type==='Article'?'selected':''%>>Article</option>
+        </select>
+      </div>
+    </div>
+
+    <p class="seo-section-label">Social (Open Graph)</p>
+    <div class="form-group"><label class="form-label">Social Title</label><input type="text" name="social_title" class="form-control" value="<%= seo.browse_social_title || '' %>"></div>
+    <div class="form-group"><label class="form-label">Social Description</label><textarea name="social_description" class="form-control" rows="2"><%= seo.browse_social_description || '' %></textarea></div>
+    <p class="seo-section-label">X / Twitter</p>
+    <div class="form-group"><label class="form-label">X Title</label><input type="text" name="twitter_title" class="form-control" value="<%= seo.browse_twitter_title || '' %>"></div>
+    <div class="form-group"><label class="form-label">X Description</label><textarea name="twitter_description" class="form-control" rows="2"><%= seo.browse_twitter_description || '' %></textarea></div>
+
+    <button type="submit" class="btn btn-primary">Save Caterers SEO</button>
+  </form>
+</div>
+</div>
+
+<!-- LOCAL BUSINESS -->
+<div class="seo-panel" id="seo-panel-local">
+<div class="form-section">
+  <h3 class="form-section__title">Local Business Schema Markup</h3>
+  <p style="font-size:0.88rem;color:var(--muted);margin-bottom:18px">This data is injected as JSON-LD <code>LocalBusiness</code> schema on every page to improve Google rich results.</p>
+  <form method="POST" action="/admin/settings/seo?page=local">
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Business Name</label><input type="text" name="business_name" class="form-control" value="<%= seo.local_business_name || 'Caterus' %>"></div>
+      <div class="form-group"><label class="form-label">Business Type</label>
+        <select name="business_type" class="form-control">
+          <option value="LocalBusiness"    <%=seo.local_business_type==='LocalBusiness'?'selected':''%>>Local Business</option>
+          <option value="FoodEstablishment" <%=seo.local_business_type==='FoodEstablishment'?'selected':''%>>Food Establishment</option>
+          <option value="CateringCompany"  <%=seo.local_business_type==='CateringCompany'?'selected':''%>>Catering Company</option>
+          <option value="OnlineBusiness"   <%=seo.local_business_type==='OnlineBusiness'?'selected':''%>>Online Business</option>
+          <option value="OnlineStore"      <%=seo.local_business_type==='OnlineStore'?'selected':''%>>Online Store</option>
+          <option value="Service"          <%=seo.local_business_type==='Service'?'selected':''%>>Service</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">Description</label><textarea name="business_description" class="form-control" rows="2"><%= seo.local_business_description || '' %></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Phone</label><input type="text" name="business_phone" class="form-control" value="<%= seo.local_business_phone || '' %>" placeholder="+61 3 1234 5678"></div>
+      <div class="form-group"><label class="form-label">Email</label><input type="email" name="business_email" class="form-control" value="<%= seo.local_business_email || '' %>"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Street Address</label><input type="text" name="address_street" class="form-control" value="<%= seo.local_address_street || '' %>"></div>
+    <div class="form-row-3">
+      <div class="form-group"><label class="form-label">City / Suburb</label><input type="text" name="address_city" class="form-control" value="<%= seo.local_address_city || '' %>" placeholder="Melbourne"></div>
+      <div class="form-group"><label class="form-label">State</label><input type="text" name="address_state" class="form-control" value="<%= seo.local_address_state || '' %>" placeholder="VIC"></div>
+      <div class="form-group"><label class="form-label">Postcode</label><input type="text" name="address_postcode" class="form-control" value="<%= seo.local_address_postcode || '' %>"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Country</label><input type="text" name="address_country" class="form-control" value="<%= seo.local_address_country || 'AU' %>" placeholder="AU"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Latitude</label><input type="text" name="geo_lat" class="form-control" value="<%= seo.local_geo_lat || '' %>" placeholder="-37.8136"></div>
+      <div class="form-group"><label class="form-label">Longitude</label><input type="text" name="geo_lng" class="form-control" value="<%= seo.local_geo_lng || '' %>" placeholder="144.9631"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Price Range</label><input type="text" name="price_range" class="form-control" value="<%= seo.local_price_range || '$$' %>" placeholder="$$"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Facebook URL</label><input type="url" name="social_facebook" class="form-control" value="<%= seo.local_social_facebook || '' %>"></div>
+      <div class="form-group"><label class="form-label">Instagram URL</label><input type="url" name="social_instagram" class="form-control" value="<%= seo.local_social_instagram || '' %>"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">X / Twitter URL</label><input type="url" name="social_twitter" class="form-control" value="<%= seo.local_social_twitter || '' %>"></div>
+      <div class="form-group"><label class="form-label">LinkedIn URL</label><input type="url" name="social_linkedin" class="form-control" value="<%= seo.local_social_linkedin || '' %>"></div>
+    </div>
+    <button type="submit" class="btn btn-primary">Save Local Business</button>
+  </form>
+</div>
+</div>
+
+<script>
+document.querySelectorAll('.seo-tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.seo-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.seo-panel').forEach(function(p) { p.classList.remove('active'); });
+    this.classList.add('active');
+    document.getElementById('seo-panel-' + this.dataset.panel).classList.add('active');
+  });
+});
+</script>

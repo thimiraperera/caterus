@@ -1,8 +1,16 @@
 -- ============================================================
--- Caterus — Full Database Schema
--- ============================================================
+-- Caterus Full Database Schema
 -- NOTE: On cPanel, create the database via cPanel UI first,
 -- then import this file into that database via phpMyAdmin.
+-- ============================================================
+-- MIGRATION: run these on existing servers if admins table already exists:
+--   ALTER TABLE admins ADD COLUMN IF NOT EXISTS first_name VARCHAR(100) DEFAULT NULL;
+--   ALTER TABLE admins ADD COLUMN IF NOT EXISTS last_name VARCHAR(100) DEFAULT NULL;
+--   ALTER TABLE admins ADD COLUMN IF NOT EXISTS phone VARCHAR(30) DEFAULT NULL;
+--   ALTER TABLE admins ADD COLUMN IF NOT EXISTS phone_country VARCHAR(10) DEFAULT '+61';
+--   ALTER TABLE admins ADD COLUMN IF NOT EXISTS profile_image VARCHAR(255) DEFAULT NULL;
+--   ALTER TABLE admins ADD COLUMN IF NOT EXISTS totp_secret VARCHAR(100) DEFAULT NULL;
+--   ALTER TABLE admins ADD COLUMN IF NOT EXISTS totp_enabled TINYINT(1) DEFAULT 0;
 -- ============================================================
 
 -- ──────────────────────────────────────────────────────────────
@@ -13,6 +21,13 @@ CREATE TABLE IF NOT EXISTS admins (
   email         VARCHAR(255) NOT NULL UNIQUE,
   password_hash VARCHAR(255) NOT NULL,
   name          VARCHAR(100),
+  first_name    VARCHAR(100) DEFAULT NULL,
+  last_name     VARCHAR(100) DEFAULT NULL,
+  phone         VARCHAR(30)  DEFAULT NULL,
+  phone_country VARCHAR(10)  DEFAULT '+61',
+  profile_image VARCHAR(255) DEFAULT NULL,
+  totp_secret   VARCHAR(100) DEFAULT NULL,
+  totp_enabled  TINYINT(1)   DEFAULT 0,
   role          ENUM('super_admin','admin') DEFAULT 'admin',
   created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

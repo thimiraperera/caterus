@@ -7,15 +7,15 @@
   <% } %>
   <form method="POST" action="/admin/settings/logo" enctype="multipart/form-data">
     <div class="form-group">
-      <label class="form-label">Upload logo <span style="color:#8a857a;font-weight:400">(PNG, SVG or JPEG — max 2 MB)</span></label>
+      <label class="form-label">Upload logo <span style="color:#8a857a;font-weight:400">(PNG, SVG or JPEG, max 2 MB)</span></label>
       <input type="file" name="logo" class="form-control" accept="image/png,image/jpeg,image/svg+xml,image/webp" required>
     </div>
     <button type="submit" class="btn btn-primary">Upload logo</button>
   </form>
 </div>
 
-<div class="form-section" style="margin-top:2rem">
-  <h3 class="form-section__title">General Settings</h3>
+<div class="form-section">
+  <h3 class="form-section__title">Site Settings</h3>
   <form method="POST" action="/admin/settings?_method=PUT">
     <input type="hidden" name="group" value="general">
     <div class="form-group"><label class="form-label">Site Name</label><input type="text" name="site_name" class="form-control" value="<%= settings.site_name || 'Caterus' %>"></div>
@@ -27,3 +27,38 @@
     <button type="submit" class="btn btn-primary">Save</button>
   </form>
 </div>
+
+<div class="form-section">
+  <h3 class="form-section__title">CAPTCHA</h3>
+  <p style="font-size:0.88rem;color:var(--muted);margin-bottom:18px">Protect public forms (contact, enquiry, applications) with a CAPTCHA provider.</p>
+  <form method="POST" action="/admin/settings?_method=PUT">
+    <input type="hidden" name="group" value="captcha">
+    <input type="hidden" name="_redirect" value="/admin/settings/general">
+    <div class="form-group">
+      <label class="form-label">CAPTCHA Provider</label>
+      <select name="captcha_type" class="form-control" id="captcha-type-select">
+        <option value="none"         <%=settings.captcha_type==='none'||!settings.captcha_type?'selected':''%>>None</option>
+        <option value="recaptcha_v2" <%=settings.captcha_type==='recaptcha_v2'?'selected':''%>>Google reCAPTCHA v2 (Checkbox)</option>
+        <option value="recaptcha_v3" <%=settings.captcha_type==='recaptcha_v3'?'selected':''%>>Google reCAPTCHA v3 (Invisible)</option>
+        <option value="hcaptcha"     <%=settings.captcha_type==='hcaptcha'?'selected':''%>>hCaptcha</option>
+      </select>
+    </div>
+    <div id="captcha-keys" style="display:<%= settings.captcha_type && settings.captcha_type !== 'none' ? 'block' : 'none' %>">
+      <div class="form-group">
+        <label class="form-label">Site Key</label>
+        <input type="text" name="captcha_site_key" class="form-control" value="<%= settings.captcha_site_key || '' %>" placeholder="Site key from your provider dashboard">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Secret Key</label>
+        <input type="password" name="captcha_secret_key" class="form-control" value="<%= settings.captcha_secret_key || '' %>" placeholder="Secret key from your provider dashboard">
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Save CAPTCHA</button>
+  </form>
+</div>
+
+<script>
+document.getElementById('captcha-type-select').addEventListener('change', function() {
+  document.getElementById('captcha-keys').style.display = this.value === 'none' ? 'none' : 'block';
+});
+</script>

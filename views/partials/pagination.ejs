@@ -1,19 +1,36 @@
 <% if (typeof totalPages !== 'undefined' && totalPages > 1) { %>
+<%
+  const _qe = (typeof queryExtra !== 'undefined' && queryExtra) ? '&' + queryExtra : '';
+  function pgUrl(p) { return baseUrl + '?page=' + p + _qe; }
+%>
 <div class="pagination">
   <% if (page > 1) { %>
-    <a href="<%= baseUrl %>?page=<%= page - 1 %>" class="pg-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Prev</a>
+    <a href="<%= pgUrl(page - 1) %>" class="pg-btn">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Prev
+    </a>
   <% } %>
-  <% for (let i = 1; i <= totalPages; i++) { %>
-    <% if (i === page) { %>
-      <span class="pg-btn pg-active"><%= i %></span>
-    <% } else if (Math.abs(i - page) <= 2 || i === 1 || i === totalPages) { %>
-      <a href="<%= baseUrl %>?page=<%= i %>" class="pg-btn"><%= i %></a>
-    <% } else if (Math.abs(i - page) === 3) { %>
-      <span class="pg-dots">…</span>
-    <% } %>
-  <% } %>
+  <%
+    let _prev = null;
+    for (let _i = 1; _i <= totalPages; _i++) {
+      const _show = _i === 1 || _i === totalPages || Math.abs(_i - page) <= 2;
+      if (!_show) continue;
+      if (_prev !== null && _i - _prev > 1) {
+  %><span class="pg-dots">...</span><%
+      }
+      _prev = _i;
+      if (_i === page) {
+  %><span class="pg-btn pg-active"><%= _i %></span><%
+      } else {
+  %><a href="<%= pgUrl(_i) %>" class="pg-btn"><%= _i %></a><%
+      }
+    }
+  %>
   <% if (page < totalPages) { %>
-    <a href="<%= baseUrl %>?page=<%= page + 1 %>" class="pg-btn">Next <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></a>
+    <a href="<%= pgUrl(page + 1) %>" class="pg-btn">
+      Next
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
   <% } %>
 </div>
 <% } %>

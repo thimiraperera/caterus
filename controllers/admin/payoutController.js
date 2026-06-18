@@ -8,9 +8,20 @@ const { sendPayoutNotification } = require('../../utils/email');
 module.exports = {
   async index(req, res) {
     try {
-      const result = await Payout.findAll({ status: req.query.status, page: req.query.page });
-      const stats = await Payout.getStats();
-      res.render('admin/payouts/index', { title: 'Payouts', currentPage: 'payouts', ...result, stats, formatCurrency });
+      const { page = 1, per_page = 20, status } = req.query;
+      const [result, stats] = await Promise.all([
+        Payout.findAll({ status, page, limit: per_page }),
+        Payout.getStats(),
+      ]);
+      const qp = [];
+      if (status) qp.push('status=' + encodeURIComponent(status));
+      qp.push('per_page=' + per_page);
+      const queryExtra = qp.join('&');
+      res.render('admin/payouts/index', {
+        title: 'Payouts', currentPage: 'payouts',
+        ...result, stats, formatCurrency,
+        per_page: parseInt(per_page) || 20, queryExtra,
+      });
     } catch (err) { console.error(err); req.flash('error', 'Failed to load payouts.'); res.redirect('/admin'); }
   },
 

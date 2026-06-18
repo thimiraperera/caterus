@@ -48,7 +48,7 @@ const Caterer = {
     else if (filters.sort === 'newest') orderBy = 'ORDER BY c.created_at DESC';
 
     const page = Math.max(1, parseInt(filters.page) || 1);
-    const limit = Math.min(50, parseInt(filters.limit) || 20);
+    const limit = Math.min(100, parseInt(filters.limit) || 20);
     const offset = (page - 1) * limit;
 
     const [caterers] = await db.query(

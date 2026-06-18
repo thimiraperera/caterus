@@ -10,7 +10,7 @@ module.exports = {
       if (!caterer) { req.flash('error', 'Caterer not found.'); return res.redirect('/admin/caterers'); }
       const menus = await Menu.findByCaterer(caterer.id);
       const addons = await Menu.getAddons(caterer.id);
-      res.render('admin/menus/index', { title: `Menus — ${caterer.business_name}`, currentPage: 'caterers', caterer, menus, addons });
+      res.render('admin/menus/index', { title: `Menus: ${caterer.business_name}`, currentPage: 'caterers', caterer, menus, addons });
     } catch (err) { console.error(err); req.flash('error', 'Failed to load menus.'); res.redirect('/admin/caterers'); }
   },
 

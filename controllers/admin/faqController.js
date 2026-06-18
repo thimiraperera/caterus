@@ -74,4 +74,26 @@ module.exports = {
       res.redirect('/admin/faqs');
     }
   },
+
+  async seed(req, res) {
+    try {
+      const defaults = [
+        { question: 'How does Caterus vet caterers?', answer: 'Every application is reviewed by our team. We verify food safety certifications, public liability insurance, ABN registration and conduct quality checks. Only approved caterers are listed.', sort_order: 1 },
+        { question: 'How much does it cost?', answer: 'Searching and browsing is completely free. You only pay when you confirm a booking. The price shown is always the final price - no hidden fees, no surprise charges.', sort_order: 2 },
+        { question: 'Can I customise my menu?', answer: 'Yes. When building your order you can choose menu items, add dietary requirements (vegan, gluten-free, halal etc.), select add-ons and specify delivery or setup instructions - all before you pay.', sort_order: 3 },
+        { question: 'How do payments work?', answer: 'All payments are processed securely via Stripe. You pay Caterus when you book. After the event is completed, we release payment to the caterer minus our commission. This protects both parties.', sort_order: 4 },
+        { question: 'What if I need to cancel?', answer: 'Cancellation policies are shown on each caterer\'s profile. Generally, 14+ days before the event receives a full refund. For emergencies, contact our support team.', sort_order: 5 },
+        { question: 'Which cities do you serve?', answer: 'We currently serve Melbourne, Sydney and Brisbane. We\'re expanding to Adelaide and Perth in 2026. Enter your suburb in the search to see available caterers near you.', sort_order: 6 },
+      ];
+      for (const faq of defaults) {
+        await Faq.create({ ...faq, is_published: 1 });
+      }
+      req.flash('success', 'Default FAQs imported. Edit them to customise.');
+      res.redirect('/admin/faqs');
+    } catch (err) {
+      console.error(err);
+      req.flash('error', 'Failed to seed FAQs.');
+      res.redirect('/admin/faqs');
+    }
+  },
 };

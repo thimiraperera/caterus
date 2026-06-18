@@ -1,0 +1,31 @@
+<% if (caterers.length === 0) { %>
+<div class="empty-state" id="caterers-empty"><p>No caterers found.</p><a href="/admin/caterers/create" class="btn btn-primary">Add your first caterer</a></div>
+<% } else { %>
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr><th style="width:56px"></th><th>Business Name</th><th>Cuisine</th><th>Suburb</th><th>Rating</th><th>Status</th><th style="white-space:nowrap">Actions</th></tr>
+    </thead>
+    <tbody>
+      <% caterers.forEach(c => { %>
+      <tr>
+        <td><% if (c.featured_image) { %><img src="/<%= c.featured_image %>" class="thumb" alt=""><% } else { %><div class="thumb"></div><% } %></td>
+        <td><a href="/admin/caterers/<%= c.id %>/edit"><strong><%= c.business_name %></strong></a></td>
+        <td><%= c.cuisine_type || '-' %></td>
+        <td><%= c.suburb || '-' %></td>
+        <td>&#9733; <%= c.rating_avg %> (<%= c.review_count %>)</td>
+        <td><span class="badge badge-<%= c.status %>"><%= c.status %></span></td>
+        <td style="white-space:nowrap">
+          <div class="actions">
+            <a href="/admin/caterers/<%= c.id %>/edit" class="btn btn-secondary btn-sm">Edit</a>
+            <a href="/admin/caterers/<%= c.id %>/menus" class="btn btn-secondary btn-sm">Menus</a>
+            <a href="/admin/caterers/<%= c.id %>/vetting" class="btn btn-secondary btn-sm">Vetting</a>
+          </div>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<%- include('../../partials/pagination', { baseUrl: '/admin/caterers', page, totalPages, queryExtra }) %>
+<% } %>

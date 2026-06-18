@@ -7,8 +7,29 @@ const fs = require('fs');
 module.exports = {
   async index(req, res) {
     try {
-      const result = await Caterer.findAll({ status: req.query.status, search: req.query.search, page: req.query.page });
-      res.render('admin/caterers/index', { title: 'Caterers', currentPage: 'caterers', ...result });
+      const { page = 1, per_page = 20, status, search } = req.query;
+      const result = await Caterer.findAll({ status, search, page, limit: per_page });
+      const qp = [];
+      if (status) qp.push('status=' + encodeURIComponent(status));
+      if (search) qp.push('search=' + encodeURIComponent(search));
+      qp.push('per_page=' + per_page);
+      const queryExtra = qp.join('&');
+
+      if (req.headers['x-partial'] === '1') {
+        const ejs = require('ejs');
+        const path = require('path');
+        const html = await ejs.renderFile(
+          path.join(req.app.get('views'), 'admin/caterers/_table.ejs'),
+          { ...result, per_page: parseInt(per_page) || 20, queryExtra, status: status || '' }
+        );
+        return res.send(html);
+      }
+
+      res.render('admin/caterers/index', {
+        title: 'Caterers', currentPage: 'caterers',
+        ...result, per_page: parseInt(per_page) || 20, queryExtra,
+        currentStatus: status || '', searchQuery: search || '',
+      });
     } catch (err) {
       console.error(err);
       req.flash('error', 'Failed to load caterers.');
@@ -55,7 +76,7 @@ module.exports = {
       const caterer = await Caterer.findById(req.params.id);
       if (!caterer) { req.flash('error', 'Caterer not found.'); return res.redirect('/admin/caterers'); }
       const images = await Caterer.getImages(caterer.id);
-      res.render('admin/caterers/edit', { title: `Edit — ${caterer.business_name}`, currentPage: 'caterers', caterer, images });
+      res.render('admin/caterers/edit', { title: `Edit: ${caterer.business_name}`, currentPage: 'caterers', caterer, images });
     } catch (err) {
       console.error(err);
       req.flash('error', 'Failed to load caterer.');

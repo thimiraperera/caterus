@@ -20,7 +20,10 @@ a { color: var(--accent); text-decoration: none; } a:hover { color: var(--accent
 .admin-layout { display: flex; min-height: 100vh; }
 .admin-sidebar { position: fixed; top: 0; left: 0; width: var(--sidebar-w); height: 100vh; background: var(--dark); color: #ccc; display: flex; flex-direction: column; z-index: 100; overflow-y: auto; transition: transform 0.35s var(--ease); }
 .admin-main { flex: 1; margin-left: var(--sidebar-w); min-width: 0; }
-.admin-content { padding: 24px clamp(16px, 3vw, 32px) 48px; max-width: 1200px; }
+.admin-content { padding: 24px clamp(16px, 3vw, 32px) 48px; max-width: 1920px; }
+.per-page-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.per-page-bar .per-page-select { width: auto; min-width: 130px; font-size: 0.82rem; padding: 7px 12px; }
+.table-loading { opacity: 0.5; pointer-events: none; transition: opacity 0.2s; }
 
 /* ── Sidebar ── */
 .sidebar-logo { padding: 20px 20px 12px; }

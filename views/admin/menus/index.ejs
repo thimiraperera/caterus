@@ -6,7 +6,7 @@
 <div class="form-section">
   <form method="POST" action="/admin/menus/<%= menu.id %>?_method=PUT">
     <div class="card-header">
-      <h3 class="card-title"><%= menu.name %> — $<%= menu.price_per_head %>/pp</h3>
+      <h3 class="card-title"><%= menu.name %> - $<%= menu.price_per_head %>/pp</h3>
       <div class="actions">
         <button type="submit" class="btn btn-primary btn-sm">Save</button>
         <form method="POST" action="/admin/menus/<%= menu.id %>?_method=DELETE" style="display:inline"><button type="submit" class="btn btn-danger btn-sm" data-confirm="Delete this menu?">Delete</button></form>

@@ -1,5 +1,5 @@
 <div class="form-section">
-  <h3 class="form-section__title">Vetting Checklist — <%= caterer.business_name %></h3>
+  <h3 class="form-section__title">Vetting Checklist: <%= caterer.business_name %></h3>
   <form method="POST" action="/admin/caterers/<%= caterer.id %>/vetting">
     <div class="checklist-item<%= vetting && vetting.food_safety_cert ? ' checked' : '' %>">
       <label class="checkbox"><input type="checkbox" name="food_safety_cert" value="on" <%= vetting && vetting.food_safety_cert ? 'checked' : '' %>></label>

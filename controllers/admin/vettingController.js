@@ -8,7 +8,7 @@ module.exports = {
       const caterer = await Caterer.findById(req.params.id);
       if (!caterer) { req.flash('error', 'Caterer not found.'); return res.redirect('/admin/caterers'); }
       const vetting = await Vetting.findByCaterer(req.params.id);
-      res.render('admin/caterers/vetting', { title: `Vetting — ${caterer.business_name}`, currentPage: 'caterers', caterer, vetting });
+      res.render('admin/caterers/vetting', { title: `Vetting: ${caterer.business_name}`, currentPage: 'caterers', caterer, vetting });
     } catch (err) { console.error(err); req.flash('error', 'Failed to load vetting.'); res.redirect('/admin/caterers'); }
   },
 

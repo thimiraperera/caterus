@@ -1,3 +1,70 @@
+<div style="max-width:640px">
+
+<div class="form-section">
+  <h3 class="form-section__title">Profile</h3>
+  <form method="POST" action="/admin/settings/profile/info">
+    <div style="display:flex;align-items:center;gap:20px;margin-bottom:20px">
+      <div style="flex-shrink:0">
+        <% if (adminProfile && adminProfile.profile_image) { %>
+          <img src="/<%= adminProfile.profile_image %>" alt="Profile picture" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid var(--line)">
+        <% } else { %>
+          <div style="width:72px;height:72px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:1.6rem;font-weight:800">
+            <%= adminProfile && adminProfile.name ? adminProfile.name.charAt(0).toUpperCase() : 'A' %>
+          </div>
+        <% } %>
+      </div>
+      <div>
+        <p style="font-weight:700;font-size:1rem;margin-bottom:2px"><%= adminProfile && adminProfile.name ? adminProfile.name : 'Admin' %></p>
+        <p style="font-size:0.82rem;color:var(--muted)"><%= adminProfile ? adminProfile.email : '' %></p>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">First Name</label>
+        <input type="text" name="first_name" class="form-control" value="<%= adminProfile && adminProfile.first_name ? adminProfile.first_name : '' %>" placeholder="First name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Last Name</label>
+        <input type="text" name="last_name" class="form-control" value="<%= adminProfile && adminProfile.last_name ? adminProfile.last_name : '' %>" placeholder="Last name">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email Address</label>
+      <input type="email" name="email" class="form-control" value="<%= adminProfile ? adminProfile.email : '' %>" required>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Phone Number</label>
+      <div style="display:flex;gap:8px">
+        <select name="phone_country" class="form-control" style="width:130px;flex-shrink:0">
+          <% const phoneCodes = [
+            ['+61','AU (+61)'], ['+64','NZ (+64)'], ['+1','US/CA (+1)'],
+            ['+44','UK (+44)'], ['+91','IN (+91)'], ['+65','SG (+65)'],
+            ['+60','MY (+60)'], ['+63','PH (+63)'], ['+62','ID (+62)'],
+            ['+66','TH (+66)'], ['+81','JP (+81)'], ['+82','KR (+82)'],
+            ['+86','CN (+86)'], ['+971','AE (+971)'], ['+27','ZA (+27)'],
+          ]; %>
+          <% phoneCodes.forEach(function(c) { %>
+            <option value="<%= c[0] %>" <%=(adminProfile && adminProfile.phone_country===c[0])||(!adminProfile||!adminProfile.phone_country)&&c[0]==='+61'?'selected':''%>><%= c[1] %></option>
+          <% }) %>
+        </select>
+        <input type="tel" name="phone" class="form-control" value="<%= adminProfile && adminProfile.phone ? adminProfile.phone : '' %>" placeholder="0412 345 678">
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Save Profile</button>
+  </form>
+</div>
+
+<div class="form-section">
+  <h3 class="form-section__title">Profile Picture</h3>
+  <form method="POST" action="/admin/settings/profile/avatar" enctype="multipart/form-data">
+    <p style="font-size:0.88rem;color:var(--muted);margin-bottom:14px">Upload a new profile picture. It will be automatically resized to 256x256px and saved as WebP.</p>
+    <div class="form-group">
+      <input type="file" name="avatar" class="form-control" accept="image/png,image/jpeg,image/webp,image/gif">
+    </div>
+    <button type="submit" class="btn btn-primary">Upload picture</button>
+  </form>
+</div>
+
 <div class="form-section">
   <h3 class="form-section__title">Change Password</h3>
   <form method="POST" action="/admin/settings/profile?_method=PUT">
@@ -8,4 +75,42 @@
     </div>
     <button type="submit" class="btn btn-primary">Update Password</button>
   </form>
+</div>
+
+<div class="form-section">
+  <h3 class="form-section__title">Two-Factor Authentication</h3>
+  <% if (adminProfile && adminProfile.totp_enabled) { %>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <span class="badge badge-confirmed" style="font-size:0.82rem">2FA Active</span>
+      <p style="font-size:0.88rem;color:var(--ink-soft);margin:0">Your account is protected with TOTP authentication.</p>
+    </div>
+    <form method="POST" action="/admin/settings/2fa/disable">
+      <button type="submit" class="btn btn-danger" onclick="return confirm('Disable two-factor authentication? This reduces your account security.')">Disable 2FA</button>
+    </form>
+  <% } else if (totpSetup) { %>
+    <p style="font-size:0.88rem;color:var(--ink-soft);margin-bottom:14px">
+      Scan the QR code below with your authenticator app (Google Authenticator, Authy, etc.), then enter the 6-digit code to confirm.
+    </p>
+    <div style="margin-bottom:16px">
+      <img src="<%= totpSetup.qrDataUrl %>" alt="2FA QR Code" style="width:200px;height:200px;border:1px solid var(--line);border-radius:8px">
+    </div>
+    <p style="font-size:0.82rem;color:var(--muted);margin-bottom:14px">Manual entry key: <code style="background:var(--surface-2);padding:2px 6px;border-radius:4px"><%= totpSetup.secret %></code></p>
+    <form method="POST" action="/admin/settings/2fa/enable">
+      <div class="form-group">
+        <label class="form-label">Enter 6-digit code to confirm</label>
+        <input type="text" name="totp_token" class="form-control" maxlength="6" inputmode="numeric" pattern="[0-9]{6}" placeholder="000000" autocomplete="one-time-code" style="max-width:160px" required>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button type="submit" class="btn btn-primary">Confirm and Enable 2FA</button>
+        <a href="/admin/settings/profile" class="btn btn-secondary">Cancel</a>
+      </div>
+    </form>
+  <% } else { %>
+    <p style="font-size:0.88rem;color:var(--muted);margin-bottom:14px">Two-factor authentication adds an extra layer of security to your account.</p>
+    <form method="POST" action="/admin/settings/2fa/setup">
+      <button type="submit" class="btn btn-secondary">Set up 2FA</button>
+    </form>
+  <% } %>
+</div>
+
 </div>
