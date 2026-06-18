@@ -142,8 +142,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .link-arrow:hover { gap: 0.7rem; }
 .i-arrow { width: 1em; height: 1em; flex-shrink: 0; }
 .inline-link { color: var(--accent); border-bottom: 1.5px solid var(--accent-soft); }
-.tick { color: var(--accent); display: inline-flex; align-items: center; }
-.tick svg { width: 15px; height: 15px; }
+.tick { color: var(--on-accent); background: var(--accent); display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; }
+.tick svg { width: 11px; height: 11px; }
 
 /* ============ NAV ============ */
 .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0.9rem var(--pad); pointer-events: none; transition: padding 0.5s var(--ease); }
