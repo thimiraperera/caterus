@@ -8,7 +8,8 @@ const bookingController = require('../controllers/bookingController');
 const reviewController  = require('../controllers/reviewController');
 const Enquiry     = require('../models/Enquiry');
 const Application = require('../models/Application');
-const { sendEmail } = require('../utils/email');
+const { sendEmail }     = require('../utils/email');
+const { verifyCaptcha } = require('../utils/captcha');
 
 // Search & browse
 router.get('/caterers',             searchController.search);
@@ -24,8 +25,10 @@ router.post('/reviews', reviewController.create);
 // Contact enquiry
 router.post('/contact', async (req, res) => {
   try {
-    const { first_name, last_name, email, phone, message, caterer_id } = req.body;
+    const { first_name, last_name, email, phone, message, caterer_id, captcha_token } = req.body;
     if (!first_name || !email) return res.status(400).json({ error: 'Name and email are required.' });
+    const captchaOk = await verifyCaptcha(captcha_token || '');
+    if (!captchaOk) return res.status(400).json({ error: 'CAPTCHA verification failed. Please try again.' });
     await Enquiry.create({ first_name, last_name, email, phone, message, caterer_id });
     // Try to send notification email (non-blocking)
     sendEmail(process.env.SMTP_FROM_EMAIL || 'admin@caterus.com.au',
@@ -42,8 +45,10 @@ router.post('/contact', async (req, res) => {
 // Caterer application
 router.post('/apply', async (req, res) => {
   try {
-    const { business_name, contact_name, email, phone, cuisine, service_area } = req.body;
+    const { business_name, contact_name, email, phone, cuisine, service_area, captcha_token } = req.body;
     if (!business_name || !email) return res.status(400).json({ error: 'Business name and email are required.' });
+    const captchaOk = await verifyCaptcha(captcha_token || '');
+    if (!captchaOk) return res.status(400).json({ error: 'CAPTCHA verification failed. Please try again.' });
     await Application.create({ business_name, contact_name, email, phone, cuisine, service_area });
     sendEmail(process.env.SMTP_FROM_EMAIL || 'admin@caterus.com.au',
       `New Caterer Application — ${business_name}`,

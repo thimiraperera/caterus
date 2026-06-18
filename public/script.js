@@ -306,6 +306,9 @@
             data.phone = fd.get('phone') || '';
             data.message = fd.get('message') || '';
           }
+          if (window.captchaGetToken) {
+            try { data.captcha_token = await window.captchaGetToken(isRegister ? 'apply' : 'contact'); } catch (_) {}
+          }
           const res = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

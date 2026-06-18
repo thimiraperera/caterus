@@ -49,12 +49,13 @@ module.exports = {
   /** Home page */
   async home(req, res) {
     try {
-      const [{ caterers, total: catTotal }, catererStats, faqs, footerData, occasionsRaw] = await Promise.all([
+      const [{ caterers, total: catTotal }, catererStats, faqs, footerData, occasionsRaw, captchaSettings] = await Promise.all([
         Caterer.getPublished({ limit: 9, sort: 'reviews' }),
         Caterer.getStats(),
         Faq.findPublished(),
         getFooterData(),
         Settings.get('occasions_list').catch(() => null),
+        Settings.getByGroup('captcha').catch(() => ({})),
       ]);
       const stats = {
         totalEvents: 12000,
@@ -66,10 +67,12 @@ module.exports = {
       try { occasions = occasionsRaw ? JSON.parse(occasionsRaw) : []; } catch (_) {}
       occasions = occasions.map(o => typeof o === 'string' ? o : o.name);
       if (!occasions.length) occasions = ['Wedding', 'Corporate', 'Birthday', 'Christmas', 'Conference', 'Cocktail Party', 'Gala Dinner', 'School Event'];
-      res.render('index', { layout: false, caterers, catTotal, stats, faqs, occasions, ...footerData, formatCurrency, SOCIAL_ICONS });
+      const captchaType    = captchaSettings.captcha_type    || 'none';
+      const captchaSiteKey = captchaSettings.captcha_site_key || '';
+      res.render('index', { layout: false, caterers, catTotal, stats, faqs, occasions, ...footerData, captchaType, captchaSiteKey, formatCurrency, SOCIAL_ICONS });
     } catch (err) {
       console.error('Home page error:', err);
-      res.render('index', { layout: false, caterers: [], catTotal: 0, faqs: [], occasions: [], stats: { totalEvents: 12000, totalCaterers: 150, satisfactionRate: 98, cities: 3 }, siteLogo: '', contactEmail: '', contactPhone: '', contactPhoneCountry: '', footerTagline: 'Caterus Pty Ltd · Melbourne, Victoria, Australia', socialLinks: [], formatCurrency, SOCIAL_ICONS });
+      res.render('index', { layout: false, caterers: [], catTotal: 0, faqs: [], occasions: [], stats: { totalEvents: 12000, totalCaterers: 150, satisfactionRate: 98, cities: 3 }, siteLogo: '', contactEmail: '', contactPhone: '', contactPhoneCountry: '', footerTagline: 'Caterus Pty Ltd · Melbourne, Victoria, Australia', socialLinks: [], captchaType: 'none', captchaSiteKey: '', formatCurrency, SOCIAL_ICONS });
     }
   },
 

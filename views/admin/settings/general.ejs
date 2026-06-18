@@ -7,6 +7,20 @@
       <h3 class="form-section__title">Logo</h3>
       <p style="font-size:0.85rem;color:var(--muted);margin-bottom:16px">Upload separate logos for light and dark themes. Both are used in the admin sidebar, emails, and frontend.</p>
 
+      <div style="margin-bottom:20px">
+        <label class="form-label" style="display:block;margin-bottom:6px">Logo on login screen</label>
+        <form method="POST" action="/admin/settings?_method=PUT" style="display:flex;align-items:center;gap:10px">
+          <input type="hidden" name="group" value="general">
+          <input type="hidden" name="_redirect" value="/admin/settings/general">
+          <select name="login_logo_choice" class="form-control" style="max-width:220px">
+            <option value="light" <%=settings.login_logo_choice==='light'||!settings.login_logo_choice?'selected':''%>>Light logo</option>
+            <option value="dark" <%=settings.login_logo_choice==='dark'?'selected':''%>>Dark logo</option>
+            <option value="text" <%=settings.login_logo_choice==='text'?'selected':''%>>Text only (no image)</option>
+          </select>
+          <button type="submit" class="btn btn-secondary btn-sm">Save</button>
+        </form>
+      </div>
+
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:4px">
         <div>
           <p style="font-size:0.8rem;font-weight:600;margin-bottom:8px;color:var(--ink-soft)">Light Theme Logo</p>

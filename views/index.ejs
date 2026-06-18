@@ -571,6 +571,11 @@
           <div style="display:flex;gap:6px"><%- include('partials/fe-phone-picker', { currentCountry: '+61', placeholder: '0412 345 678', inputId: 'cf-phone' }) %></div>
         </label>
         <label>Tell us about your event<textarea name="message" rows="4" placeholder="e.g. Corporate lunch for 80 guests, Melbourne CBD, 20 June"></textarea></label>
+        <% if (captchaType === 'recaptcha_v2') { %>
+        <div class="g-recaptcha" data-sitekey="<%= captchaSiteKey %>" style="margin-bottom:12px"></div>
+        <% } else if (captchaType === 'hcaptcha') { %>
+        <div class="h-captcha" data-sitekey="<%= captchaSiteKey %>" style="margin-bottom:12px"></div>
+        <% } %>
         <button type="submit" class="btn btn--fill">Send message</button>
       </form>
       <p class="cform__success" hidden>Thanks - your message is on its way. We'll be in touch shortly.</p>
@@ -624,6 +629,11 @@
           </select>
         </label>
         <label>Primary service area <span class="cform__opt">(optional)</span><input type="text" name="area" placeholder="e.g. Melbourne CBD &amp; inner suburbs"/></label>
+        <% if (captchaType === 'recaptcha_v2') { %>
+        <div class="g-recaptcha" data-sitekey="<%= captchaSiteKey %>" style="margin-bottom:12px"></div>
+        <% } else if (captchaType === 'hcaptcha') { %>
+        <div class="h-captcha" data-sitekey="<%= captchaSiteKey %>" style="margin-bottom:12px"></div>
+        <% } %>
         <button type="submit" class="btn btn--fill">Submit application</button>
       </form>
       <p class="cform__success" hidden>Thanks - we've received your application. Our team will review it and be in touch within 3 business days.</p>
@@ -654,5 +664,34 @@
 
   <script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
   <script src="/script.js?v=4"></script>
+  <% if (captchaType === 'recaptcha_v2') { %>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <script>
+  window.captchaGetToken = function() {
+    var token = typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : '';
+    return Promise.resolve(token);
+  };
+  </script>
+  <% } else if (captchaType === 'recaptcha_v3') { %>
+  <script src="https://www.google.com/recaptcha/api.js?render=<%= captchaSiteKey %>" async></script>
+  <script>
+  window.captchaGetToken = function(action) {
+    if (typeof grecaptcha === 'undefined') return Promise.resolve('');
+    return new Promise(function(resolve) {
+      grecaptcha.ready(function() {
+        grecaptcha.execute('<%= captchaSiteKey %>', { action: action || 'submit' }).then(resolve);
+      });
+    });
+  };
+  </script>
+  <% } else if (captchaType === 'hcaptcha') { %>
+  <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+  <script>
+  window.captchaGetToken = function() {
+    var token = typeof hcaptcha !== 'undefined' ? hcaptcha.getResponse() : '';
+    return Promise.resolve(token);
+  };
+  </script>
+  <% } %>
 </body>
 </html>

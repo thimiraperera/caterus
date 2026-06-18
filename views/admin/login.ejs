@@ -11,9 +11,18 @@
 <body class="admin-body">
   <div class="login-page">
     <div class="login-card">
-      <div class="login-logo"><span class="logo-dot"></span>caterus</div>
+      <div class="login-logo">
+        <% if (loginLogo) { %>
+          <img src="/<%= loginLogo %>" alt="Logo" style="max-height:52px;max-width:180px;object-fit:contain;display:block;margin:0 auto 4px">
+        <% } else { %>
+          <span class="logo-dot"></span>caterus
+        <% } %>
+      </div>
       <p class="login-sub">Admin Dashboard</p>
-      <% if (typeof error !== 'undefined' && error.length > 0) { %>
+      <% if (typeof success !== 'undefined' && success && success.length > 0) { %>
+        <div class="flash flash-success" style="margin-bottom:18px"><span><%= success %></span></div>
+      <% } %>
+      <% if (typeof error !== 'undefined' && error && error.length > 0) { %>
         <div class="flash flash-error" style="margin-bottom:18px"><span><%= error %></span></div>
       <% } %>
       <form method="POST" action="/admin/login">
@@ -24,6 +33,13 @@
         <div class="form-group">
           <label class="form-label" for="password">Password</label>
           <input class="form-control" type="password" id="password" name="password" placeholder="Enter password" required>
+        </div>
+        <div class="form-group" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.88rem;cursor:pointer;color:var(--ink-soft,#555)">
+            <input type="checkbox" name="remember_me" value="1" style="width:16px;height:16px;cursor:pointer;accent-color:var(--primary,#75896d)">
+            Remember me for 30 days
+          </label>
+          <a href="/admin/forgot-password" style="font-size:0.85rem;color:var(--primary,#75896d);text-decoration:none">Forgot password?</a>
         </div>
         <button class="btn btn-primary" type="submit">Log in</button>
       </form>

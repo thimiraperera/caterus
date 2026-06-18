@@ -7,6 +7,7 @@ const upload = require('../middleware/upload');
 const Settings = require('../models/Settings');
 
 const authController        = require('../controllers/admin/authController');
+const adminsController      = require('../controllers/admin/adminsController');
 const dashboardController   = require('../controllers/admin/dashboardController');
 const catererController     = require('../controllers/admin/catererController');
 const menuController        = require('../controllers/admin/menuController');
@@ -28,6 +29,12 @@ router.get('/login',  authController.showLogin);
 router.post('/login', authController.login);
 router.get('/logout', authController.logout);
 
+/* Forgot / reset password (unauthenticated) */
+router.get('/forgot-password',        authController.showForgotPassword);
+router.post('/forgot-password',       authController.forgotPassword);
+router.get('/reset-password/:token',  authController.showResetPassword);
+router.post('/reset-password/:token', authController.resetPassword);
+
 /* All routes below require admin */
 router.use(requireAdmin);
 
@@ -46,6 +53,11 @@ router.use(async (req, res, next) => {
 
 /* Dashboard */
 router.get('/', dashboardController.index);
+
+/* Admins */
+router.get('/admins',        adminsController.index);
+router.post('/admins',       adminsController.store);
+router.delete('/admins/:id', adminsController.destroy);
 
 /* Caterers */
 router.get('/caterers',                catererController.index);
