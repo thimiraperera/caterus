@@ -4,7 +4,7 @@
     {
       "name": "caterus",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["server.js"],
+      "runtimeArgs": ["server.cjs"],
       "port": 3000
     }
   ]
