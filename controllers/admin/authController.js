@@ -26,8 +26,14 @@ module.exports = {
       }
       req.session.adminId = admin.id;
       req.session.admin = { id: admin.id, email: admin.email, name: admin.name, role: admin.role };
-      req.flash('success', `Welcome back, ${admin.name || 'Admin'}!`);
-      res.redirect('/admin');
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error:', err);
+          req.flash('error', 'Login failed. Please try again.');
+          return res.redirect('/admin/login');
+        }
+        res.redirect('/admin');
+      });
     } catch (err) {
       console.error('Login error:', err);
       req.flash('error', 'Login failed. Please try again.');

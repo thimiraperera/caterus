@@ -16,6 +16,8 @@ const expressLayouts = require('express-ejs-layouts');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.set('trust proxy', 1);
+
 /* ---- Stripe webhook needs raw body — mount BEFORE body parsers ---- */
 const webhookRoutes = require('./routes/webhooks');
 app.use('/webhooks', express.raw({ type: 'application/json' }), webhookRoutes);
