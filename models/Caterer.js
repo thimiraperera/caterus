@@ -83,6 +83,7 @@ const Caterer = {
     }
     if (filters.cuisine) { where += ' AND c.cuisine_type LIKE ?'; params.push(`%${filters.cuisine}%`); }
     if (filters.suburb) { where += ' AND c.suburb LIKE ?'; params.push(`%${filters.suburb}%`); }
+    if (filters.rating_min) { where += ' AND c.rating_avg >= ?'; params.push(parseFloat(filters.rating_min)); }
 
     const [countRows] = await db.query(`SELECT COUNT(*) AS total FROM caterers c ${where}`, params);
     const total = countRows[0].total;
@@ -134,7 +135,7 @@ const Caterer = {
   async update(id, data) {
     const fields = [];
     const params = [];
-    const allowed = ['slug', 'business_name', 'tagline', 'description', 'cuisine_type', 'suburb', 'city', 'postcode', 'state', 'contact_name', 'contact_email', 'contact_phone', 'abn', 'price_from', 'min_guests', 'max_guests', 'min_notice_days', 'response_time', 'featured_image', 'is_published', 'is_featured', 'is_promoted', 'status'];
+    const allowed = ['slug', 'business_name', 'tagline', 'description', 'cuisine_type', 'suburb', 'city', 'postcode', 'state', 'contact_name', 'contact_email', 'contact_phone', 'contact_phone_country', 'abn', 'price_from', 'min_guests', 'max_guests', 'min_notice_days', 'response_time', 'featured_image', 'is_published', 'is_featured', 'is_promoted', 'status'];
     for (const key of allowed) {
       if (data[key] !== undefined) {
         fields.push(`${key} = ?`);
@@ -221,6 +222,17 @@ const Caterer = {
       const values = inclusions.filter(i => i.title).map((i, idx) => [catererId, i.title, i.description || '', idx]);
       if (values.length) await db.query('INSERT INTO caterer_inclusions (caterer_id, title, description, sort_order) VALUES ?', [values]);
     }
+  },
+
+  async getSuggestions(type, q) {
+    const allowed = { suburb: 'suburb', cuisine: 'cuisine_type' };
+    const col = allowed[type];
+    if (!col) return [];
+    const [rows] = await db.query(
+      `SELECT DISTINCT ${col} AS value FROM caterers WHERE is_published = TRUE AND status = 'active' AND ${col} LIKE ? ORDER BY ${col} LIMIT 10`,
+      [`%${q}%`]
+    );
+    return rows.map(r => r.value).filter(Boolean);
   },
 
   async getStats() {

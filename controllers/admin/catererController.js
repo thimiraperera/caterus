@@ -9,13 +9,14 @@ const fs             = require('fs');
 module.exports = {
   async index(req, res) {
     try {
-      const { page = 1, per_page = 20, status, search, cuisine, suburb } = req.query;
-      const result = await Caterer.findAll({ status, search, cuisine, suburb, page, limit: per_page });
+      const { page = 1, per_page = 20, status, search, cuisine, suburb, rating_min } = req.query;
+      const result = await Caterer.findAll({ status, search, cuisine, suburb, rating_min, page, limit: per_page });
       const qp = [];
       if (status) qp.push('status=' + encodeURIComponent(status));
       if (search) qp.push('search=' + encodeURIComponent(search));
       if (cuisine) qp.push('cuisine=' + encodeURIComponent(cuisine));
       if (suburb) qp.push('suburb=' + encodeURIComponent(suburb));
+      if (rating_min) qp.push('rating_min=' + rating_min);
       qp.push('per_page=' + per_page);
       const queryExtra = qp.join('&');
 
@@ -32,7 +33,7 @@ module.exports = {
         title: 'Caterers', currentPage: 'caterers',
         ...result, per_page: parseInt(per_page) || 20, queryExtra,
         currentStatus: status || '', searchQuery: search || '',
-        cfCuisine: cuisine || '', cfSuburb: suburb || '',
+        cfCuisine: cuisine || '', cfSuburb: suburb || '', cfRating: rating_min || '',
       });
     } catch (err) {
       console.error(err);

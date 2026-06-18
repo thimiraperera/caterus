@@ -33,7 +33,16 @@
         <div class="form-row-3">
           <div class="form-group"><label class="form-label">Contact Name</label><input type="text" name="contact_name" class="form-control" value="<%= caterer.contact_name || '' %>"></div>
           <div class="form-group"><label class="form-label">Email</label><input type="email" name="contact_email" class="form-control" value="<%= caterer.contact_email || '' %>"></div>
-          <div class="form-group"><label class="form-label">Phone</label><input type="text" name="contact_phone" class="form-control" value="<%= caterer.contact_phone || '' %>"></div>
+          <div class="form-group">
+            <label class="form-label">Phone</label>
+            <%- include('../../partials/phone-picker', {
+              fieldName: 'contact_phone_country',
+              phoneName: 'contact_phone',
+              currentCountry: caterer.contact_phone_country || '+61',
+              currentPhone: caterer.contact_phone || '',
+              placeholder: '0412 345 678'
+            }) %>
+          </div>
         </div>
       </div>
 
@@ -46,7 +55,14 @@
         </div>
         <div class="form-row">
           <div class="form-group"><label class="form-label">Min Notice (days)</label><input type="number" name="min_notice_days" class="form-control" value="<%= caterer.min_notice_days || 7 %>"></div>
-          <div class="form-group"><label class="form-label">Response Time</label><input type="text" name="response_time" class="form-control" value="<%= caterer.response_time || '~2 hours' %>"></div>
+          <div class="form-group">
+            <label class="form-label">Response Time</label>
+            <select name="response_time" class="form-control">
+              <% ['< 1 hour','~1 hour','~2 hours','~4 hours','~8 hours','Within 24 hours','1-2 days','2-3 days','3-5 days'].forEach(function(t) { %>
+              <option value="<%= t %>" <%=(caterer.response_time||'~2 hours')===t?'selected':''%>><%= t %></option>
+              <% }) %>
+            </select>
+          </div>
         </div>
       </div>
     </div>
@@ -118,7 +134,7 @@
         <button type="button" class="btn btn-secondary btn-sm add-inclusion-btn">+ Add Inclusion</button>
       </div>
 
-      <div style="display:flex;gap:12px;margin-top:4px">
+      <div class="form-section" style="display:flex;justify-content:flex-end;padding:16px 20px">
         <button type="submit" class="btn btn-primary">Save Changes</button>
       </div>
     </div>

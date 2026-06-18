@@ -14,11 +14,17 @@
   </select>
 </div>
 
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:flex-end">
   <input type="text" id="bf-search"  class="form-control" placeholder="Ref, name, email..." style="flex:1;min-width:160px;max-width:220px" value="<%= bfSearch %>">
   <input type="text" id="bf-caterer" class="form-control" placeholder="Caterer..." style="flex:1;min-width:130px;max-width:180px" value="<%= bfCaterer %>">
-  <input type="date" id="bf-date-from" class="form-control" style="min-width:140px;max-width:160px" value="<%= bfDateFrom %>">
-  <input type="date" id="bf-date-to"   class="form-control" style="min-width:140px;max-width:160px" value="<%= bfDateTo %>">
+  <div style="display:flex;flex-direction:column;gap:3px">
+    <span style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted)">Date</span>
+    <div style="display:flex;gap:6px;align-items:center">
+      <input type="date" id="bf-date-from" class="form-control" style="min-width:130px" value="<%= bfDateFrom %>">
+      <span style="color:var(--muted);font-size:0.8rem">to</span>
+      <input type="date" id="bf-date-to" class="form-control" style="min-width:130px" value="<%= bfDateTo %>">
+    </div>
+  </div>
   <select id="bf-payment" class="form-control" style="max-width:150px">
     <option value="" <%=bfPayment===''?'selected':''%>>All payments</option>
     <option value="unpaid"   <%=bfPayment==='unpaid'?'selected':''%>>Unpaid</option>
@@ -28,16 +34,24 @@
 </div>
 
 <div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:16px">
-  <div class="filter-slider" style="min-width:200px;max-width:300px;flex:1">
-    <div class="filter-slider__hd"><span>Guests</span><span id="bf-guest-label">Any</span></div>
-    <div class="range-wrap" id="bf-guest-track">
+  <div class="fsl" style="min-width:200px;max-width:300px;flex:1">
+    <div class="fsl__hd">
+      <span class="fsl__name">Guests</span>
+      <span class="fsl__val" id="bf-guest-label">Any</span>
+    </div>
+    <div class="fsl__track">
+      <div class="fsl__fill" id="bf-guest-fill"></div>
       <input type="range" id="bf-guest-lo" min="0" max="500" value="<%= bfGuestMin || 0 %>" step="5">
       <input type="range" id="bf-guest-hi" min="0" max="500" value="<%= bfGuestMax || 500 %>" step="5">
     </div>
   </div>
-  <div class="filter-slider" style="min-width:200px;max-width:300px;flex:1">
-    <div class="filter-slider__hd"><span>Total ($)</span><span id="bf-total-label">Any</span></div>
-    <div class="range-wrap" id="bf-total-track">
+  <div class="fsl" style="min-width:200px;max-width:300px;flex:1">
+    <div class="fsl__hd">
+      <span class="fsl__name">Total ($)</span>
+      <span class="fsl__val" id="bf-total-label">Any</span>
+    </div>
+    <div class="fsl__track">
+      <div class="fsl__fill" id="bf-total-fill"></div>
       <input type="range" id="bf-total-lo" min="0" max="50000" value="<%= bfTotalMin || 0 %>" step="100">
       <input type="range" id="bf-total-hi" min="0" max="50000" value="<%= bfTotalMax || 50000 %>" step="100">
     </div>
@@ -115,25 +129,30 @@
     load({ page: new URL(btn.href).searchParams.get('page') });
   });
 
-  function bindSlider(loId, hiId, trackId, labelId, max, fmt) {
+  function bindSlider(loId, hiId, fillId, labelId, max, fmt) {
     var lo = document.getElementById(loId);
     var hi = document.getElementById(hiId);
-    var track = document.getElementById(trackId);
+    var fill = document.getElementById(fillId);
     var label = document.getElementById(labelId);
     function upd() {
       var lv = parseInt(lo.value), hv = parseInt(hi.value);
-      if (lv > hv) { lv = hv; lo.value = lv; }
       var lp = lv / max * 100, hp = hv / max * 100;
-      track.style.background = 'linear-gradient(to right,var(--line) ' + lp + '%,var(--accent) ' + lp + '%,var(--accent) ' + hp + '%,var(--line) ' + hp + '%)';
+      fill.style.left = lp + '%';
+      fill.style.width = (hp - lp) + '%';
       label.textContent = (lv === 0 && hv === max) ? 'Any' : fmt(lv, hv);
-      schedule();
     }
-    lo.addEventListener('input', upd);
-    hi.addEventListener('input', upd);
+    lo.addEventListener('input', function() {
+      if (parseInt(lo.value) > parseInt(hi.value)) lo.value = hi.value;
+      upd(); schedule();
+    });
+    hi.addEventListener('input', function() {
+      if (parseInt(hi.value) < parseInt(lo.value)) hi.value = lo.value;
+      upd(); schedule();
+    });
     upd();
   }
 
-  bindSlider('bf-guest-lo', 'bf-guest-hi', 'bf-guest-track', 'bf-guest-label', 500, function(a, b) { return a + ' - ' + b; });
-  bindSlider('bf-total-lo', 'bf-total-hi', 'bf-total-track', 'bf-total-label', 50000, function(a, b) { return '$' + a.toLocaleString() + ' - $' + b.toLocaleString(); });
+  bindSlider('bf-guest-lo', 'bf-guest-hi', 'bf-guest-fill', 'bf-guest-label', 500, function(a, b) { return a + ' - ' + b + ' guests'; });
+  bindSlider('bf-total-lo', 'bf-total-hi', 'bf-total-fill', 'bf-total-label', 50000, function(a, b) { return '$' + a.toLocaleString() + ' - $' + b.toLocaleString(); });
 })();
 </script>

@@ -4,11 +4,17 @@
   <div class="stat-card"><div class="stat-card__label">This Month</div><div class="stat-card__value"><%= formatCurrency(stats.monthlyTotal || 0) %></div></div>
 </div>
 
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:flex-end">
   <input type="text" id="pf-caterer" class="form-control" placeholder="Caterer..." style="flex:1;min-width:140px;max-width:200px" value="<%= pfCaterer %>">
   <input type="text" id="pf-booking" class="form-control" placeholder="Booking ref..." style="flex:1;min-width:130px;max-width:180px" value="<%= pfBooking %>">
-  <input type="date" id="pf-date-from" class="form-control" style="min-width:140px;max-width:160px" value="<%= pfDateFrom %>">
-  <input type="date" id="pf-date-to"   class="form-control" style="min-width:140px;max-width:160px" value="<%= pfDateTo %>">
+  <div style="display:flex;flex-direction:column;gap:3px">
+    <span style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted)">Date</span>
+    <div style="display:flex;gap:6px;align-items:center">
+      <input type="date" id="pf-date-from" class="form-control" style="min-width:130px" value="<%= pfDateFrom %>">
+      <span style="color:var(--muted);font-size:0.8rem">to</span>
+      <input type="date" id="pf-date-to" class="form-control" style="min-width:130px" value="<%= pfDateTo %>">
+    </div>
+  </div>
   <select id="pf-status" class="form-control" style="max-width:150px">
     <option value="" <%=currentStatus===''?'selected':''%>>All statuses</option>
     <option value="pending"   <%=currentStatus==='pending'?'selected':''%>>Pending</option>
@@ -24,9 +30,13 @@
 </div>
 
 <div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:16px">
-  <div class="filter-slider" style="min-width:200px;max-width:340px;flex:1">
-    <div class="filter-slider__hd"><span>Amount ($)</span><span id="pf-amount-label">Any</span></div>
-    <div class="range-wrap" id="pf-amount-track">
+  <div class="fsl" style="min-width:200px;max-width:340px;flex:1">
+    <div class="fsl__hd">
+      <span class="fsl__name">Amount ($)</span>
+      <span class="fsl__val" id="pf-amount-label">Any</span>
+    </div>
+    <div class="fsl__track">
+      <div class="fsl__fill" id="pf-amount-fill"></div>
       <input type="range" id="pf-amount-lo" min="0" max="20000" value="<%= pfAmountMin || 0 %>" step="50">
       <input type="range" id="pf-amount-hi" min="0" max="20000" value="<%= pfAmountMax || 20000 %>" step="50">
     </div>
@@ -87,24 +97,29 @@
     load({ page: new URL(btn.href).searchParams.get('page') });
   });
 
-  function bindSlider(loId, hiId, trackId, labelId, max, fmt) {
+  function bindSlider(loId, hiId, fillId, labelId, max, fmt) {
     var lo = document.getElementById(loId);
     var hi = document.getElementById(hiId);
-    var track = document.getElementById(trackId);
+    var fill = document.getElementById(fillId);
     var label = document.getElementById(labelId);
     function upd() {
       var lv = parseInt(lo.value), hv = parseInt(hi.value);
-      if (lv > hv) { lv = hv; lo.value = lv; }
       var lp = lv / max * 100, hp = hv / max * 100;
-      track.style.background = 'linear-gradient(to right,var(--line) ' + lp + '%,var(--accent) ' + lp + '%,var(--accent) ' + hp + '%,var(--line) ' + hp + '%)';
+      fill.style.left = lp + '%';
+      fill.style.width = (hp - lp) + '%';
       label.textContent = (lv === 0 && hv === max) ? 'Any' : fmt(lv, hv);
-      schedule();
     }
-    lo.addEventListener('input', upd);
-    hi.addEventListener('input', upd);
+    lo.addEventListener('input', function() {
+      if (parseInt(lo.value) > parseInt(hi.value)) lo.value = hi.value;
+      upd(); schedule();
+    });
+    hi.addEventListener('input', function() {
+      if (parseInt(hi.value) < parseInt(lo.value)) hi.value = lo.value;
+      upd(); schedule();
+    });
     upd();
   }
 
-  bindSlider('pf-amount-lo', 'pf-amount-hi', 'pf-amount-track', 'pf-amount-label', 20000, function(a, b) { return '$' + a.toLocaleString() + ' - $' + b.toLocaleString(); });
+  bindSlider('pf-amount-lo', 'pf-amount-hi', 'pf-amount-fill', 'pf-amount-label', 20000, function(a, b) { return '$' + a.toLocaleString() + ' - $' + b.toLocaleString(); });
 })();
 </script>

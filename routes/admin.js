@@ -87,6 +87,7 @@ router.put('/payouts/:id/status',      payoutController.updateStatus);
 
 /* Caterer Messages */
 router.get('/caterer-messages',        catererMessagesController.index);
+router.get('/caterer-messages/:id',    catererMessagesController.show);
 
 /* Enquiries */
 router.get('/enquiries',               enquiryController.index);

@@ -3,7 +3,7 @@
 <% } else { %>
 <div class="admin-table-wrap">
   <table class="admin-table">
-    <thead><tr><th>Caterer</th><th>Booking</th><th>Amount</th><th>Date</th><th>Status</th><th>Actions</th></tr></thead>
+    <thead><tr><th>Caterer</th><th>Booking</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead>
     <tbody>
       <% payouts.forEach(function(p) { %>
       <tr>
@@ -12,14 +12,6 @@
         <td><strong><%= formatCurrency(p.amount) %></strong></td>
         <td><%= p.payout_date || '-' %></td>
         <td><span class="badge badge-<%= p.status %>"><%= p.status %></span></td>
-        <td class="actions" style="white-space:nowrap">
-          <% if (p.status === 'pending') { %>
-          <form method="POST" action="/admin/payouts/<%= p.id %>/status?_method=PUT" style="display:inline">
-            <input type="hidden" name="status" value="completed">
-            <button type="submit" class="btn btn-primary btn-sm">Mark Paid</button>
-          </form>
-          <% } %>
-        </td>
       </tr>
       <% }) %>
     </tbody>

@@ -63,10 +63,9 @@ module.exports = {
         'title', 'focus_keyphrase', 'meta_description', 'breadcrumbs_title',
         'canonical_url', 'page_type', 'article_type', 'is_cornerstone',
         'social_title', 'social_description', 'twitter_title', 'twitter_description',
-        'business_name', 'business_type', 'business_description', 'business_phone', 'business_email',
+        'business_name', 'business_type', 'business_description', 'business_phone', 'business_phone_country', 'business_email',
         'address_street', 'address_city', 'address_state', 'address_postcode', 'address_country',
         'geo_lat', 'geo_lng', 'price_range',
-        'social_facebook', 'social_instagram', 'social_twitter', 'social_linkedin',
       ];
       allowedFields.forEach(f => {
         if (data[f] !== undefined) toSave['seo_' + pageId + '_' + f] = data[f] || '';

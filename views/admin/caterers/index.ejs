@@ -16,6 +16,12 @@
     placeholder="Cuisine..." value="<%= typeof cfCuisine !== 'undefined' ? cfCuisine : '' %>">
   <input type="text" id="caterer-suburb" class="form-control" style="flex:1;max-width:160px"
     placeholder="Suburb..." value="<%= typeof cfSuburb !== 'undefined' ? cfSuburb : '' %>">
+  <select id="caterer-rating" class="form-control" style="flex:1;max-width:150px">
+    <option value="" <%=(typeof cfRating==='undefined'||cfRating==='')?'selected':''%>>Any rating</option>
+    <option value="3"   <%=cfRating==='3'  ?'selected':''%>>3+ stars</option>
+    <option value="4"   <%=cfRating==='4'  ?'selected':''%>>4+ stars</option>
+    <option value="4.5" <%=cfRating==='4.5'?'selected':''%>>4.5+ stars</option>
+  </select>
   <select class="per-page-select form-control"
     onchange="const p=new URLSearchParams(location.search);p.set('per_page',this.value);p.delete('page');location.href=location.pathname+'?'+p.toString()">
     <option value="10"  <%=per_page===10?'selected':''%>>10 / page</option>
@@ -35,6 +41,7 @@
   const searchInput  = document.getElementById('caterer-search');
   const cuisineInput = document.getElementById('caterer-cuisine');
   const suburbInput  = document.getElementById('caterer-suburb');
+  const ratingInput  = document.getElementById('caterer-rating');
   const tabs = document.querySelectorAll('#caterer-status-tabs .filter-tab');
   const countEl = document.getElementById('caterer-count');
   let debounce;
@@ -44,10 +51,11 @@
   async function load(params) {
     wrap.classList.add('table-loading');
     const url = new URL('/admin/caterers', location.origin);
-    if (params.status)  url.searchParams.set('status', params.status);
-    if (params.search)  url.searchParams.set('search', params.search);
-    if (params.cuisine) url.searchParams.set('cuisine', params.cuisine);
-    if (params.suburb)  url.searchParams.set('suburb', params.suburb);
+    if (params.status)     url.searchParams.set('status', params.status);
+    if (params.search)     url.searchParams.set('search', params.search);
+    if (params.cuisine)    url.searchParams.set('cuisine', params.cuisine);
+    if (params.suburb)     url.searchParams.set('suburb', params.suburb);
+    if (params.rating_min) url.searchParams.set('rating_min', params.rating_min);
     url.searchParams.set('per_page', params.per_page || currentPerPage);
     if (params.page) url.searchParams.set('page', params.page);
 
@@ -60,11 +68,12 @@
 
   function getFilterParams(extra) {
     return {
-      status:  currentStatus,
-      search:  searchInput.value,
-      cuisine: cuisineInput.value,
-      suburb:  suburbInput.value,
-      per_page: currentPerPage,
+      status:     currentStatus,
+      search:     searchInput.value,
+      cuisine:    cuisineInput.value,
+      suburb:     suburbInput.value,
+      rating_min: ratingInput.value,
+      per_page:   currentPerPage,
       ...extra,
     };
   }
@@ -75,6 +84,7 @@
       debounce = setTimeout(() => load(getFilterParams()), 280);
     });
   });
+  ratingInput.addEventListener('change', function() { load(getFilterParams()); });
 
   tabs.forEach(tab => {
     tab.addEventListener('click', function(e) {

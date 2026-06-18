@@ -11,8 +11,9 @@ const Application = require('../models/Application');
 const { sendEmail } = require('../utils/email');
 
 // Search & browse
-router.get('/caterers',       searchController.search);
-router.get('/caterers/:slug', searchController.getCaterer);
+router.get('/caterers',             searchController.search);
+router.get('/caterers/:slug',       searchController.getCaterer);
+router.get('/suggestions',          searchController.suggestions);
 
 // Booking
 router.post('/bookings/create-checkout', bookingController.createCheckout);

@@ -1,8 +1,14 @@
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
   <input type="text" id="ef-search"  class="form-control" placeholder="Name, email..." style="flex:1;min-width:140px;max-width:200px" value="<%= efSearch %>">
   <input type="text" id="ef-caterer" class="form-control" placeholder="Caterer..." style="flex:1;min-width:130px;max-width:180px" value="<%= efCaterer %>">
-  <input type="date" id="ef-date-from" class="form-control" style="min-width:140px;max-width:160px" value="<%= efDateFrom %>">
-  <input type="date" id="ef-date-to"   class="form-control" style="min-width:140px;max-width:160px" value="<%= efDateTo %>">
+  <div style="display:flex;flex-direction:column;gap:3px">
+    <span style="font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted)">Date</span>
+    <div style="display:flex;gap:6px;align-items:center">
+      <input type="date" id="ef-date-from" class="form-control" style="min-width:130px" value="<%= efDateFrom %>">
+      <span style="color:var(--muted);font-size:0.8rem">to</span>
+      <input type="date" id="ef-date-to"   class="form-control" style="min-width:130px" value="<%= efDateTo %>">
+    </div>
+  </div>
   <select id="ef-status" class="form-control" style="max-width:150px">
     <option value="" <%=currentStatus===''?'selected':''%>>All statuses</option>
     <option value="new"    <%=currentStatus==='new'?'selected':''%>>New</option>

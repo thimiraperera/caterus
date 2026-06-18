@@ -133,7 +133,16 @@
     </div>
     <div class="form-group"><label class="form-label">Description</label><textarea name="business_description" class="form-control" rows="2"><%= seo.local_business_description || '' %></textarea></div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Phone</label><input type="text" name="business_phone" class="form-control" value="<%= seo.local_business_phone || '' %>" placeholder="+61 3 1234 5678"></div>
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <%- include('../../partials/phone-picker', {
+          fieldName: 'business_phone_country',
+          phoneName: 'business_phone',
+          currentCountry: seo.local_business_phone_country || '+61',
+          currentPhone: seo.local_business_phone || '',
+          placeholder: '+61 3 1234 5678'
+        }) %>
+      </div>
       <div class="form-group"><label class="form-label">Email</label><input type="email" name="business_email" class="form-control" value="<%= seo.local_business_email || '' %>"></div>
     </div>
     <div class="form-group"><label class="form-label">Street Address</label><input type="text" name="address_street" class="form-control" value="<%= seo.local_address_street || '' %>"></div>
@@ -142,19 +151,57 @@
       <div class="form-group"><label class="form-label">State</label><input type="text" name="address_state" class="form-control" value="<%= seo.local_address_state || '' %>" placeholder="VIC"></div>
       <div class="form-group"><label class="form-label">Postcode</label><input type="text" name="address_postcode" class="form-control" value="<%= seo.local_address_postcode || '' %>"></div>
     </div>
-    <div class="form-group"><label class="form-label">Country</label><input type="text" name="address_country" class="form-control" value="<%= seo.local_address_country || 'AU' %>" placeholder="AU"></div>
+    <div class="form-group">
+      <label class="form-label">Country</label>
+      <select name="address_country" class="form-control">
+        <% const SEO_COUNTRIES = [
+          {code:'AU',flag:'🇦🇺',name:'Australia'},
+          {code:'NZ',flag:'🇳🇿',name:'New Zealand'},
+          {code:'US',flag:'🇺🇸',name:'United States'},
+          {code:'CA',flag:'🇨🇦',name:'Canada'},
+          {code:'GB',flag:'🇬🇧',name:'United Kingdom'},
+          {code:'IE',flag:'🇮🇪',name:'Ireland'},
+          {code:'IN',flag:'🇮🇳',name:'India'},
+          {code:'SG',flag:'🇸🇬',name:'Singapore'},
+          {code:'MY',flag:'🇲🇾',name:'Malaysia'},
+          {code:'PH',flag:'🇵🇭',name:'Philippines'},
+          {code:'ID',flag:'🇮🇩',name:'Indonesia'},
+          {code:'TH',flag:'🇹🇭',name:'Thailand'},
+          {code:'VN',flag:'🇻🇳',name:'Vietnam'},
+          {code:'CN',flag:'🇨🇳',name:'China'},
+          {code:'JP',flag:'🇯🇵',name:'Japan'},
+          {code:'KR',flag:'🇰🇷',name:'South Korea'},
+          {code:'HK',flag:'🇭🇰',name:'Hong Kong'},
+          {code:'AE',flag:'🇦🇪',name:'UAE'},
+          {code:'SA',flag:'🇸🇦',name:'Saudi Arabia'},
+          {code:'ZA',flag:'🇿🇦',name:'South Africa'},
+          {code:'DE',flag:'🇩🇪',name:'Germany'},
+          {code:'FR',flag:'🇫🇷',name:'France'},
+          {code:'IT',flag:'🇮🇹',name:'Italy'},
+          {code:'ES',flag:'🇪🇸',name:'Spain'},
+          {code:'NL',flag:'🇳🇱',name:'Netherlands'},
+          {code:'SE',flag:'🇸🇪',name:'Sweden'},
+          {code:'NO',flag:'🇳🇴',name:'Norway'},
+          {code:'DK',flag:'🇩🇰',name:'Denmark'},
+          {code:'CH',flag:'🇨🇭',name:'Switzerland'},
+          {code:'BR',flag:'🇧🇷',name:'Brazil'},
+          {code:'MX',flag:'🇲🇽',name:'Mexico'},
+          {code:'AR',flag:'🇦🇷',name:'Argentina'},
+        ];
+        const seoCur = seo.local_address_country || 'AU';
+        %>
+        <% SEO_COUNTRIES.forEach(function(ct) { %>
+        <option value="<%= ct.code %>" <%= seoCur === ct.code ? 'selected' : '' %>><%= ct.flag %> <%= ct.name %></option>
+        <% }); %>
+      </select>
+    </div>
     <div class="form-row">
       <div class="form-group"><label class="form-label">Latitude</label><input type="text" name="geo_lat" class="form-control" value="<%= seo.local_geo_lat || '' %>" placeholder="-37.8136"></div>
       <div class="form-group"><label class="form-label">Longitude</label><input type="text" name="geo_lng" class="form-control" value="<%= seo.local_geo_lng || '' %>" placeholder="144.9631"></div>
     </div>
     <div class="form-group"><label class="form-label">Price Range</label><input type="text" name="price_range" class="form-control" value="<%= seo.local_price_range || '$$' %>" placeholder="$$"></div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Facebook URL</label><input type="url" name="social_facebook" class="form-control" value="<%= seo.local_social_facebook || '' %>"></div>
-      <div class="form-group"><label class="form-label">Instagram URL</label><input type="url" name="social_instagram" class="form-control" value="<%= seo.local_social_instagram || '' %>"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">X / Twitter URL</label><input type="url" name="social_twitter" class="form-control" value="<%= seo.local_social_twitter || '' %>"></div>
-      <div class="form-group"><label class="form-label">LinkedIn URL</label><input type="url" name="social_linkedin" class="form-control" value="<%= seo.local_social_linkedin || '' %>"></div>
+    <div style="background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 16px;font-size:0.85rem;color:var(--muted);margin-bottom:16px">
+      Social media URLs for schema markup are pulled automatically from <a href="/admin/settings/contact" style="color:var(--accent)">Contact &amp; Social</a> settings.
     </div>
     <button type="submit" class="btn btn-primary">Save Local Business</button>
   </form>

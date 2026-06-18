@@ -5,66 +5,67 @@
   </div>
 </div>
 
-<div class="filter-bar" style="gap:10px">
-  <select class="form-control" style="max-width:160px"
-    onchange="const p=new URLSearchParams(location.search);p.set('status',this.value);p.delete('page');location.href=location.pathname+'?'+p.toString()">
-    <option value="">All statuses</option>
+<div class="filter-bar" style="gap:10px;flex-wrap:wrap">
+  <input type="text" id="cm-caterer" class="form-control" placeholder="Caterer..." style="flex:1;min-width:140px;max-width:200px" value="<%= caterer_search %>">
+  <input type="text" id="cm-from"    class="form-control" placeholder="From (name or email)..." style="flex:1;min-width:160px;max-width:240px" value="<%= from_search %>">
+  <select id="cm-status" class="form-control" style="max-width:160px">
+    <option value="" <%=status===''?'selected':''%>>All statuses</option>
     <option value="new"    <%=status==='new'?'selected':''%>>New</option>
     <option value="read"   <%=status==='read'?'selected':''%>>Read</option>
     <option value="closed" <%=status==='closed'?'selected':''%>>Closed</option>
   </select>
-  <select class="form-control per-page-select" style="max-width:120px"
-    onchange="const p=new URLSearchParams(location.search);p.set('per_page',this.value);p.delete('page');location.href=location.pathname+'?'+p.toString()">
+  <select id="cm-per-page" class="form-control" style="max-width:120px">
     <option value="10" <%=per_page===10?'selected':''%>>10 / page</option>
     <option value="20" <%=per_page===20?'selected':''%>>20 / page</option>
     <option value="50" <%=per_page===50?'selected':''%>>50 / page</option>
   </select>
 </div>
 
-<% if (enquiries.length === 0) { %>
-<div class="empty-state"><p>No caterer messages yet.</p></div>
-<% } else { %>
-<div class="admin-table-wrap">
-  <table class="admin-table">
-    <thead>
-      <tr>
-        <th>Caterer</th>
-        <th>From</th>
-        <th>Email</th>
-        <th>Message</th>
-        <th>Date</th>
-        <th>Status</th>
-        <th style="white-space:nowrap">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% enquiries.forEach(e => { %>
-      <tr>
-        <td><strong><%= e.caterer_name || 'Unknown' %></strong></td>
-        <td><%= e.first_name %> <%= e.last_name || '' %></td>
-        <td><a href="mailto:<%= e.email %>"><%= e.email %></a></td>
-        <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><%= e.message || '-' %></td>
-        <td style="white-space:nowrap"><%= formatDate(e.created_at) %></td>
-        <td><span class="badge badge-<%= e.status %>"><%= e.status %></span></td>
-        <td style="white-space:nowrap">
-          <div class="actions">
-            <a href="/admin/enquiries/<%= e.id %>" class="btn btn-primary btn-sm">View</a>
-            <% if (e.status === 'new') { %>
-            <form method="POST" action="/admin/enquiries/<%= e.id %>/status?_method=PUT" style="display:inline">
-              <input type="hidden" name="status" value="read">
-              <button type="submit" class="btn btn-secondary btn-sm">Mark Read</button>
-            </form>
-            <% } %>
-            <form method="POST" action="/admin/enquiries/<%= e.id %>/status?_method=PUT" style="display:inline">
-              <input type="hidden" name="status" value="closed">
-              <button type="submit" class="btn btn-secondary btn-sm">Close</button>
-            </form>
-          </div>
-        </td>
-      </tr>
-      <% }) %>
-    </tbody>
-  </table>
+<div id="cm-table-wrap">
+  <%- include('./caterer-messages/_table', { enquiries, page, totalPages, per_page, queryExtra, formatDate }) %>
 </div>
-<%- include('../partials/pagination', { baseUrl: '/admin/caterer-messages', page, totalPages, queryExtra }) %>
-<% } %>
+
+<script>
+(function() {
+  var wrap = document.getElementById('cm-table-wrap');
+  var dbt;
+  var currentPerPage = String(<%= per_page %>);
+
+  function getVal(id) { return document.getElementById(id).value; }
+
+  function load(extra) {
+    extra = extra || {};
+    var params = new URLSearchParams();
+    var cat = getVal('cm-caterer');
+    var frm = getVal('cm-from');
+    var st  = getVal('cm-status');
+    if (cat) params.set('caterer_search', cat);
+    if (frm) params.set('from_search', frm);
+    if (st)  params.set('status', st);
+    params.set('per_page', currentPerPage);
+    if (extra.page) params.set('page', extra.page);
+    wrap.classList.add('table-loading');
+    fetch('/admin/caterer-messages?' + params.toString(), { headers: { 'X-Partial': '1' } })
+      .then(function(r) { return r.text(); })
+      .then(function(html) { wrap.innerHTML = html; wrap.classList.remove('table-loading'); })
+      .catch(function() { wrap.classList.remove('table-loading'); });
+    history.replaceState(null, '', '/admin/caterer-messages?' + params.toString());
+  }
+
+  function schedule() { clearTimeout(dbt); dbt = setTimeout(load, 300); }
+
+  document.getElementById('cm-caterer').addEventListener('input', schedule);
+  document.getElementById('cm-from').addEventListener('input', schedule);
+  document.getElementById('cm-status').addEventListener('change', function() { load(); });
+  document.getElementById('cm-per-page').addEventListener('change', function() {
+    currentPerPage = this.value; load();
+  });
+
+  wrap.addEventListener('click', function(e) {
+    var btn = e.target.closest('a.pg-btn');
+    if (!btn) return;
+    e.preventDefault();
+    load({ page: new URL(btn.href).searchParams.get('page') });
+  });
+})();
+</script>

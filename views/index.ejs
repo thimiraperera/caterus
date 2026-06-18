@@ -40,11 +40,12 @@
         <a href="#caterers">Caterers</a>
         <a href="#occasions">Occasions</a>
         <a href="#for-caterers">For caterers</a>
+        <a href="/caterers">Find a Caterer</a>
       </nav>
 
       <div class="nav__end">
         <a href="#" class="nav__contact" data-contact-open>Contact</a>
-        <a href="#search" class="btn btn--fill">Find a caterer</a>
+        <a href="/caterers" class="btn btn--fill">Find a caterer</a>
       </div>
 
       <button class="nav__ham" id="ham" aria-label="Open menu" aria-expanded="false">
@@ -57,8 +58,9 @@
       <a href="#caterers">Caterers</a>
       <a href="#occasions">Occasions</a>
       <a href="#for-caterers">For caterers</a>
+      <a href="/caterers">Find a Caterer</a>
       <a href="#" class="nav__contact" data-contact-open>Contact</a>
-      <a href="#search" class="btn btn--fill">Find a caterer</a>
+      <a href="/caterers" class="btn btn--fill">Find a caterer</a>
     </div>
   </header>
 
@@ -411,7 +413,7 @@
           <li><span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><div><strong>We've got your back</strong><p>Something goes wrong? Our support team is available before, during and after your event.</p></div></li>
         </ul>
 
-        <a href="#search" class="btn btn--fill">Find a caterer now</a>
+        <a href="/caterers" class="btn btn--fill">Find a caterer now</a>
       </div>
     </div>
   </section>
@@ -488,7 +490,7 @@
         <h2 class="h-display">Your catering questions, answered.</h2>
         <p class="faq__sub">From how bookings work to what happens if your caterer cancels - we've covered the things people actually ask before pressing "Book".</p>
         <p class="faq__note">Still not answered? <a href="#" class="inline-link" data-contact-open>Talk to us</a> - we respond within one business day.</p>
-        <a href="#search" class="btn btn--fill faq__btn">Find a caterer</a>
+        <a href="/caterers" class="btn btn--fill faq__btn">Find a caterer</a>
       </div>
       <div class="faq__items">
         <% if (typeof faqs !== 'undefined' && faqs.length > 0) { %>
@@ -515,7 +517,7 @@
       <h2 class="h-display cta__h">Find your perfect caterer today.</h2>
       <p class="cta__lead">Join 12,000+ Australians who trust Caterus to find and book exceptional catering - every time.</p>
       <div class="cta__btns">
-        <a href="#search" class="btn btn--fill">Search caterers</a>
+        <a href="/caterers" class="btn btn--fill">Search caterers</a>
         <a href="#" class="btn btn--line-light" data-register-open>List your business</a>
       </div>
       <p class="cta__seal">Vetted caterers · Stripe secured payments · Instant confirmation</p>
@@ -533,6 +535,7 @@
         <a href="#caterers">Caterers</a>
         <a href="#occasions">Occasions</a>
         <a href="#for-caterers">For caterers</a>
+        <a href="/caterers">Find a Caterer</a>
         <a href="#" data-contact-open>Contact</a>
       </nav>
       <% if (socialLinks && socialLinks.length) { %>
@@ -565,7 +568,7 @@
         </div>
         <label>Email<input type="email" name="email" placeholder="jane@example.com" autocomplete="email" required/></label>
         <label>Phone
-          <div class="fe-phone-wrap" style="display:flex;gap:6px"><%- include('partials/fe-phone-picker', { currentCountry: '+61', placeholder: '0412 345 678', inputId: 'cf-phone' }) %></div>
+          <div style="display:flex;gap:6px"><%- include('partials/fe-phone-picker', { currentCountry: '+61', placeholder: '0412 345 678', inputId: 'cf-phone' }) %></div>
         </label>
         <label>Tell us about your event<textarea name="message" rows="4" placeholder="e.g. Corporate lunch for 80 guests, Melbourne CBD, 20 June"></textarea></label>
         <button type="submit" class="btn btn--fill">Send message</button>
@@ -607,21 +610,19 @@
           <label>Your name<input type="text" name="contactName" placeholder="Jane Doe" autocomplete="name" required/></label>
           <label>Email<input type="email" name="email" placeholder="jane@oliveandvine.com.au" autocomplete="email" required/></label>
         </div>
-        <div class="cform__row">
-          <label>Phone<div class="fe-phone-wrap" style="display:flex;gap:6px"><%- include('partials/fe-phone-picker', { currentCountry: '+61', placeholder: '0412 345 678', inputId: 'rf-phone' }) %></div></label>
-          <label>Cuisine
-            <select name="cuisine">
-              <option value="">Select…</option>
-              <option>Modern Australian</option>
-              <option>Mediterranean</option>
-              <option>Italian</option>
-              <option>Asian Fusion</option>
-              <option>BBQ &amp; Grill</option>
-              <option>Fine Dining</option>
-              <option>Other</option>
-            </select>
-          </label>
-        </div>
+        <label>Phone<div class="fe-phone-wrap" style="display:flex;gap:6px"><%- include('partials/fe-phone-picker', { currentCountry: '+61', placeholder: '0412 345 678', inputId: 'rf-phone' }) %></div></label>
+        <label>Cuisine
+          <select name="cuisine">
+            <option value="">Select…</option>
+            <option>Modern Australian</option>
+            <option>Mediterranean</option>
+            <option>Italian</option>
+            <option>Asian Fusion</option>
+            <option>BBQ &amp; Grill</option>
+            <option>Fine Dining</option>
+            <option>Other</option>
+          </select>
+        </label>
         <label>Primary service area <span class="cform__opt">(optional)</span><input type="text" name="area" placeholder="e.g. Melbourne CBD &amp; inner suburbs"/></label>
         <button type="submit" class="btn btn--fill">Submit application</button>
       </form>

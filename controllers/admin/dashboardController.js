@@ -12,13 +12,13 @@ const { formatCurrency, formatDate } = require('../../utils/helpers');
 module.exports = {
   async index(req, res) {
     try {
-      const { page = 1, per_page = 10, search, caterer_search, date_from, date_to, total_min, total_max } = req.query;
+      const { page = 1, per_page = 10, search, caterer_search, date_from, date_to, total_min, total_max, status } = req.query;
       const [bookingStats, catererStats, reviewStats, payoutStats, bookingsResult, newEnquiries, newApplications] = await Promise.all([
         Booking.getStats(),
         Caterer.getStats(),
         Review.getStats(),
         Payout.getStats(),
-        Booking.findAll({ page, limit: per_page, search, caterer_search, date_from, date_to, total_min, total_max }),
+        Booking.findAll({ page, limit: per_page, search, caterer_search, date_from, date_to, total_min, total_max, status }),
         Enquiry.getCount('new'),
         Application.getCount('new'),
       ]);
@@ -30,6 +30,7 @@ module.exports = {
       if (date_to) qp.push('date_to=' + encodeURIComponent(date_to));
       if (total_min) qp.push('total_min=' + total_min);
       if (total_max) qp.push('total_max=' + total_max);
+      if (status)  qp.push('status=' + encodeURIComponent(status));
       qp.push('per_page=' + per_page);
       const queryExtra = qp.join('&');
 
@@ -55,6 +56,7 @@ module.exports = {
         dfSearch: search || '', dfCaterer: caterer_search || '',
         dfDateFrom: date_from || '', dfDateTo: date_to || '',
         dfTotalMin: total_min || '', dfTotalMax: total_max || '',
+        dfStatus: status || '',
       });
     } catch (err) {
       console.error('Dashboard error:', err);
@@ -66,7 +68,7 @@ module.exports = {
         newEnquiries: 0, newApplications: 0,
         per_page: 10, queryExtra: 'per_page=10',
         formatCurrency, formatDate,
-        dfSearch: '', dfCaterer: '', dfDateFrom: '', dfDateTo: '', dfTotalMin: '', dfTotalMax: '',
+        dfSearch: '', dfCaterer: '', dfDateFrom: '', dfDateTo: '', dfTotalMin: '', dfTotalMax: '', dfStatus: '',
       });
     }
   },

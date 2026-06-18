@@ -48,19 +48,36 @@
 
   <div class="caterer-col">
     <div class="form-section">
-      <h3 class="form-section__title">Status</h3>
+      <h3 class="form-section__title">Approval Status</h3>
       <% if (vetting && vetting.approved_at) { %>
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
           <span class="badge badge-confirmed">Approved</span>
           <span style="font-size:0.88rem;color:var(--muted)">by <%= vetting.approved_by_name || 'Admin' %></span>
         </div>
-        <p style="font-size:0.82rem;color:var(--ink-soft)"><%= vetting.approved_at %></p>
+        <p style="font-size:0.82rem;color:var(--ink-soft);margin-bottom:16px"><%= vetting.approved_at %></p>
+        <form method="POST" action="/admin/caterers/<%= caterer.id %>/vetting">
+          <input type="hidden" name="revoke_approval" value="1">
+          <input type="hidden" name="food_safety_cert" value="<%= vetting.food_safety_cert ? 'on' : '' %>">
+          <input type="hidden" name="public_liability" value="<%= vetting.public_liability ? 'on' : '' %>">
+          <input type="hidden" name="abn_verified" value="<%= vetting.abn_verified ? 'on' : '' %>">
+          <input type="hidden" name="quality_check" value="<%= vetting.quality_check ? 'on' : '' %>">
+          <button type="submit" class="btn btn-secondary btn-sm" onclick="return confirm('Revoke approval for this caterer?')">Revoke Approval</button>
+        </form>
       <% } else { %>
-        <p style="font-size:0.88rem;color:var(--muted)">Not yet approved.</p>
+        <p style="font-size:0.88rem;color:var(--muted);margin-bottom:16px">Not yet approved.</p>
+        <form method="POST" action="/admin/caterers/<%= caterer.id %>/vetting">
+          <input type="hidden" name="manual_approve" value="1">
+          <input type="hidden" name="food_safety_cert" value="<%= vetting && vetting.food_safety_cert ? 'on' : '' %>">
+          <input type="hidden" name="public_liability" value="<%= vetting && vetting.public_liability ? 'on' : '' %>">
+          <input type="hidden" name="abn_verified" value="<%= vetting && vetting.abn_verified ? 'on' : '' %>">
+          <input type="hidden" name="quality_check" value="<%= vetting && vetting.quality_check ? 'on' : '' %>">
+          <button type="submit" class="btn btn-primary btn-sm">Approve Manually</button>
+        </form>
       <% } %>
 
       <div style="margin-top:20px">
-        <h4 style="font-size:0.88rem;font-weight:700;margin-bottom:10px">Checklist Summary</h4>
+        <h4 style="font-size:0.88rem;font-weight:700;margin-bottom:4px">Checklist Summary</h4>
+        <p style="font-size:0.78rem;color:var(--muted);margin-bottom:10px">Reflects the checklist saved on the left.</p>
         <% const checks = [
           ['Food Safety', vetting && vetting.food_safety_cert],
           ['Public Liability', vetting && vetting.public_liability],

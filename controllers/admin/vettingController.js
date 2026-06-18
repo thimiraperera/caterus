@@ -19,12 +19,20 @@ module.exports = {
       data.public_liability = data.public_liability === 'on';
       data.abn_verified = data.abn_verified === 'on';
       data.quality_check = data.quality_check === 'on';
-      if (data.food_safety_cert && data.public_liability && data.abn_verified) {
+
+      if (data.revoke_approval === '1') {
+        data.approved_by = null;
+        data.approved_at = null;
+      } else if (data.manual_approve === '1') {
+        data.approved_by = req.session.adminId;
+        data.approved_at = new Date();
+      } else if (data.food_safety_cert && data.public_liability && data.abn_verified) {
         data.approved_by = req.session.adminId;
         data.approved_at = new Date();
       }
+
       await Vetting.upsert(req.params.id, data);
-      req.flash('success', 'Vetting checklist updated!');
+      req.flash('success', data.revoke_approval === '1' ? 'Approval revoked.' : data.manual_approve === '1' ? 'Caterer approved.' : 'Vetting checklist updated!');
       res.redirect(`/admin/caterers/${req.params.id}/vetting`);
     } catch (err) { console.error(err); req.flash('error', 'Failed to update vetting.'); res.redirect(`/admin/caterers/${req.params.id}/vetting`); }
   },

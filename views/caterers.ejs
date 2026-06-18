@@ -52,6 +52,21 @@
       .cl-wrap { grid-template-columns:1fr; }
       .cl-filters { position:static; }
     }
+    .cl-slider-wrap { padding:4px 0 8px; }
+    .cl-slider-hd { display:flex; justify-content:space-between; font-size:0.78rem; color:var(--ink-soft,#666); margin-bottom:6px; }
+    .cl-slider-hd .cl-sv { font-weight:700; color:#75896d; }
+    .cl-slider-track { position:relative; height:6px; background:#e0dbd2; border-radius:100px; margin:0 4px 4px; }
+    .cl-slider-fill { position:absolute; left:0; top:0; height:100%; background:#75896d; border-radius:100px; pointer-events:none; }
+    .cl-slider-track input[type="range"] { position:absolute; top:50%; transform:translateY(-50%); left:0; width:100%; height:24px; appearance:none; -webkit-appearance:none; background:transparent; cursor:pointer; margin:0; pointer-events:all; }
+    .cl-slider-track input[type="range"]::-webkit-slider-thumb { appearance:none; -webkit-appearance:none; width:16px; height:16px; border-radius:50%; background:#75896d; border:2.5px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,.22); }
+    .cl-slider-track input[type="range"]::-moz-range-thumb { width:16px; height:16px; border-radius:50%; background:#75896d; border:2.5px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,.22); }
+    .cl-slider-track input[type="range"]::-webkit-slider-runnable-track { background:transparent; }
+    .cl-slider-track input[type="range"]::-moz-range-track { background:transparent; }
+    .cl-ac { position:relative; }
+    .cl-ac-drop { display:none; position:absolute; top:100%; left:0; right:0; z-index:99; background:#fff; border:1px solid #e0dbd2; border-radius:8px; box-shadow:0 8px 20px rgba(0,0,0,.1); overflow:hidden; margin-top:2px; }
+    .cl-ac-drop.open { display:block; }
+    .cl-ac-opt { padding:8px 12px; font-size:0.88rem; cursor:pointer; }
+    .cl-ac-opt:hover { background:#eef0eb; }
   </style>
 </head>
 <body>
@@ -63,25 +78,27 @@
       <a href="/" class="logo" aria-label="Caterus home"><% if (siteLogo) { %><img src="/<%= siteLogo %>" alt="Caterus" style="height:44px;width:auto;object-fit:contain;display:block;max-width:180px"><% } else { %><span class="logo__dot" aria-hidden="true"></span>Caterus<% } %></a>
       <nav class="nav__links" aria-label="Primary">
         <a href="/#how-it-works">How it works</a>
-        <a href="/caterers">Caterers</a>
+        <a href="/#caterers">Caterers</a>
         <a href="/#occasions">Occasions</a>
         <a href="/#for-caterers">For caterers</a>
+        <a href="/caterers" style="font-weight:700">Find a Caterer</a>
       </nav>
       <div class="nav__end">
-        <a href="/#search" class="btn btn--fill">Find a caterer</a>
+        <a href="/caterers" class="btn btn--fill">Find a caterer</a>
       </div>
       <button class="nav__ham" id="ham" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
     </div>
     <div class="nav__mob" id="mob" hidden>
       <a href="/#how-it-works">How it works</a>
-      <a href="/caterers">Caterers</a>
+      <a href="/#caterers">Caterers</a>
       <a href="/#occasions">Occasions</a>
       <a href="/#for-caterers">For caterers</a>
-      <a href="/#search" class="btn btn--fill">Find a caterer</a>
+      <a href="/caterers" style="font-weight:700">Find a Caterer</a>
+      <a href="/caterers" class="btn btn--fill">Find a caterer</a>
     </div>
   </header>
 
-  <main>
+  <main style="padding-top:84px">
     <div class="container">
       <div style="padding:36px 0 0">
         <h1 style="font-size:2rem;font-weight:800;margin-bottom:8px">Find a Caterer</h1>
@@ -107,6 +124,9 @@
         <aside class="cl-filters">
           <form id="filter-form" method="GET" action="/caterers">
 
+            <button type="submit" class="cl-apply">Apply Filters</button>
+            <button type="button" class="cl-reset" onclick="window.location='/caterers'">Reset</button>
+
             <h3>Occasion</h3>
             <div class="cl-fi">
               <% const occasions = ['corporate','wedding','party','private dining','gala dinner','conference','christmas','birthday','baby shower','graduation']; %>
@@ -119,37 +139,44 @@
             </div>
 
             <h3>Location</h3>
-            <input type="text" name="suburb" class="cl-input" placeholder="e.g. Richmond, CBD" value="<%= query.suburb || '' %>">
+            <div class="cl-ac">
+              <input type="text" name="suburb" id="cl-suburb" class="cl-input" placeholder="e.g. Richmond, CBD" value="<%= query.suburb || '' %>" autocomplete="off">
+              <div class="cl-ac-drop" id="cl-suburb-drop"></div>
+            </div>
 
             <h3>Cuisine</h3>
-            <input type="text" name="cuisine" class="cl-input" placeholder="e.g. Italian, Asian Fusion" value="<%= query.cuisine || '' %>">
+            <div class="cl-ac">
+              <input type="text" name="cuisine" id="cl-cuisine" class="cl-input" placeholder="e.g. Italian, Asian Fusion" value="<%= query.cuisine || '' %>" autocomplete="off">
+              <div class="cl-ac-drop" id="cl-cuisine-drop"></div>
+            </div>
 
             <h3>Guest Count</h3>
-            <select name="guests" class="cl-input">
-              <option value="">Any size</option>
-              <option value="10"  <%=query.guests==='10' ?'selected':''%>>10+ guests</option>
-              <option value="20"  <%=query.guests==='20' ?'selected':''%>>20+ guests</option>
-              <option value="50"  <%=query.guests==='50' ?'selected':''%>>50+ guests</option>
-              <option value="100" <%=query.guests==='100'?'selected':''%>>100+ guests</option>
-              <option value="200" <%=query.guests==='200'?'selected':''%>>200+ guests</option>
-              <option value="500" <%=query.guests==='500'?'selected':''%>>500+ guests</option>
-            </select>
+            <div class="cl-slider-wrap">
+              <div class="cl-slider-hd">
+                <span>Min guests</span>
+                <span class="cl-sv" id="cl-guests-label"><%= query.guests ? query.guests + '+' : 'Any' %></span>
+              </div>
+              <div class="cl-slider-track">
+                <div class="cl-slider-fill" id="cl-guests-fill"></div>
+                <input type="range" id="cl-guests-range" min="0" max="500" step="10" value="<%= parseInt(query.guests) || 0 %>">
+              </div>
+              <input type="hidden" name="guests" id="cl-guests-hidden" value="<%= query.guests || '' %>">
+            </div>
 
             <h3>Max Price (per person)</h3>
-            <select name="max_price" class="cl-input">
-              <option value="">Any price</option>
-              <option value="30"  <%=query.max_price==='30' ?'selected':''%>>Up to $30</option>
-              <option value="50"  <%=query.max_price==='50' ?'selected':''%>>Up to $50</option>
-              <option value="80"  <%=query.max_price==='80' ?'selected':''%>>Up to $80</option>
-              <option value="100" <%=query.max_price==='100'?'selected':''%>>Up to $100</option>
-              <option value="150" <%=query.max_price==='150'?'selected':''%>>Up to $150</option>
-              <option value="200" <%=query.max_price==='200'?'selected':''%>>Up to $200</option>
-            </select>
+            <div class="cl-slider-wrap">
+              <div class="cl-slider-hd">
+                <span>Up to</span>
+                <span class="cl-sv" id="cl-price-label"><%= query.max_price ? '$' + query.max_price : 'Any' %></span>
+              </div>
+              <div class="cl-slider-track">
+                <div class="cl-slider-fill" id="cl-price-fill"></div>
+                <input type="range" id="cl-price-range" min="0" max="300" step="10" value="<%= parseInt(query.max_price) || 0 %>">
+              </div>
+              <input type="hidden" name="max_price" id="cl-price-hidden" value="<%= query.max_price || '' %>">
+            </div>
 
             <input type="hidden" name="sort" id="sort-hidden" value="<%= query.sort || '' %>">
-
-            <button type="submit" class="cl-apply">Apply Filters</button>
-            <button type="button" class="cl-reset" onclick="window.location='/caterers'">Reset</button>
           </form>
         </aside>
 
@@ -237,9 +264,11 @@
       <a href="/" class="logo footer__logo" aria-label="Caterus"><% if (siteLogo) { %><img src="/<%= siteLogo %>" alt="Caterus" style="height:44px;width:auto;object-fit:contain;display:block;max-width:180px"><% } else { %><span class="logo__dot"></span> Caterus<% } %></a>
       <nav class="footer__links" aria-label="Footer">
         <a href="/#how-it-works">How it works</a>
-        <a href="/caterers">Caterers</a>
+        <a href="/#caterers">Caterers</a>
         <a href="/#occasions">Occasions</a>
         <a href="/#for-caterers">For caterers</a>
+        <a href="/caterers">Find a Caterer</a>
+        <a href="#" data-contact-open>Contact</a>
       </nav>
       <% if (socialLinks && socialLinks.length) { %>
       <div class="footer__socials">
@@ -254,5 +283,77 @@
   </footer>
 
   <script src="/script.js?v=4"></script>
+  <script>
+  (function() {
+    // --- Single sliders ---
+    function initSlider(rangeId, fillId, labelId, hiddenId, max, fmt, zeroLabel) {
+      var range  = document.getElementById(rangeId);
+      var fill   = document.getElementById(fillId);
+      var label  = document.getElementById(labelId);
+      var hidden = document.getElementById(hiddenId);
+      if (!range) return;
+      function upd() {
+        var v = parseInt(range.value);
+        var pct = v / max * 100;
+        fill.style.width = pct + '%';
+        if (v === 0) {
+          label.textContent = zeroLabel;
+          hidden.value = '';
+        } else {
+          label.textContent = fmt(v);
+          hidden.value = v;
+        }
+      }
+      range.addEventListener('input', upd);
+      upd();
+    }
+
+    initSlider('cl-guests-range', 'cl-guests-fill', 'cl-guests-label', 'cl-guests-hidden', 500,
+      function(v) { return v + '+'; }, 'Any');
+    initSlider('cl-price-range', 'cl-price-fill', 'cl-price-label', 'cl-price-hidden', 300,
+      function(v) { return '$' + v; }, 'Any');
+
+    // --- Autocomplete ---
+    function initAc(inputId, dropId, type) {
+      var inp  = document.getElementById(inputId);
+      var drop = document.getElementById(dropId);
+      if (!inp) return;
+      var timer;
+      inp.addEventListener('input', function() {
+        clearTimeout(timer);
+        var q = inp.value.trim();
+        if (q.length < 2) { drop.classList.remove('open'); drop.innerHTML = ''; return; }
+        timer = setTimeout(function() {
+          fetch('/api/suggestions?type=' + type + '&q=' + encodeURIComponent(q))
+            .then(function(r) { return r.json(); })
+            .then(function(items) {
+              drop.innerHTML = '';
+              if (!items.length) { drop.classList.remove('open'); return; }
+              items.forEach(function(item) {
+                var opt = document.createElement('div');
+                opt.className = 'cl-ac-opt';
+                opt.textContent = item;
+                opt.addEventListener('mousedown', function(e) {
+                  e.preventDefault();
+                  inp.value = item;
+                  drop.classList.remove('open');
+                  drop.innerHTML = '';
+                });
+                drop.appendChild(opt);
+              });
+              drop.classList.add('open');
+            })
+            .catch(function() { drop.classList.remove('open'); });
+        }, 200);
+      });
+      inp.addEventListener('blur', function() {
+        setTimeout(function() { drop.classList.remove('open'); }, 150);
+      });
+    }
+
+    initAc('cl-suburb',  'cl-suburb-drop',  'suburb');
+    initAc('cl-cuisine', 'cl-cuisine-drop', 'cuisine');
+  })();
+  </script>
 </body>
 </html>

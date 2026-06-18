@@ -24,6 +24,17 @@ module.exports = {
     }
   },
 
+  async suggestions(req, res) {
+    try {
+      const { type, q } = req.query;
+      if (!type || !q || q.length < 2) return res.json([]);
+      const results = await Caterer.getSuggestions(type, q);
+      res.json(results);
+    } catch (err) {
+      res.json([]);
+    }
+  },
+
   async getCaterer(req, res) {
     try {
       const caterer = await Caterer.findBySlug(req.params.slug);
