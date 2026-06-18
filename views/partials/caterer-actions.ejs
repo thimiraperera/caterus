@@ -1,0 +1,17 @@
+<div class="caterer-action-nav">
+  <a href="/admin/caterers" class="btn btn-secondary btn-sm">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Caterers
+  </a>
+  <a href="/admin/caterers/<%= caterer.id %>/edit" class="btn <%=currentAction==='edit'?'btn-primary':'btn-secondary'%> btn-sm">Edit</a>
+  <a href="/admin/caterers/<%= caterer.id %>/menus" class="btn <%=currentAction==='menus'?'btn-primary':'btn-secondary'%> btn-sm">Menus</a>
+  <a href="/admin/caterers/<%= caterer.id %>/vetting" class="btn <%=currentAction==='vetting'?'btn-primary':'btn-secondary'%> btn-sm">Vetting</a>
+  <div class="nav-spacer"></div>
+  <a href="/caterers/<%= caterer.slug %>" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">
+    View on Site
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+  </a>
+  <form method="POST" action="/admin/caterers/<%= caterer.id %>?_method=DELETE" onsubmit="return confirm('Delete this caterer permanently?')">
+    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+  </form>
+</div>

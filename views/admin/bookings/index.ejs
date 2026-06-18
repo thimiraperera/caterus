@@ -9,6 +9,13 @@
   <form method="GET" action="/admin/bookings" style="flex:1;max-width:300px">
     <input type="text" name="search" class="form-control" placeholder="Search ref, name, email…">
   </form>
+  <select class="per-page-select form-control"
+    onchange="const p=new URLSearchParams(location.search);p.set('per_page',this.value);p.delete('page');location.href=location.pathname+'?'+p.toString()">
+    <option value="10"  <%=(typeof per_page!=='undefined'?per_page:10)===10?'selected':''%>>10 / page</option>
+    <option value="20"  <%=(typeof per_page!=='undefined'?per_page:10)===20?'selected':''%>>20 / page</option>
+    <option value="50"  <%=(typeof per_page!=='undefined'?per_page:10)===50?'selected':''%>>50 / page</option>
+    <option value="100" <%=(typeof per_page!=='undefined'?per_page:10)===100?'selected':''%>>100 / page</option>
+  </select>
 </div>
 
 <% if (bookings.length === 0) { %>

@@ -183,6 +183,28 @@ select.form-control { cursor: pointer; }
 /* ── Unlisted badge ── */
 .badge-unlisted { background: rgba(108,117,125,0.15); color: #495057; }
 
+/* ── Per-page select always auto-width ── */
+.per-page-select { width: auto !important; min-width: 130px; font-size: 0.82rem; }
+
+/* ── Caterer action nav ── */
+.caterer-action-nav {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 20px; padding: 10px 14px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: var(--radius-sm); box-shadow: var(--shadow-sm);
+}
+.caterer-action-nav .nav-spacer { flex: 1; }
+
+/* ── Caterer edit 2-col grid ── */
+.caterer-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 20px; align-items: start;
+}
+.caterer-col { display: flex; flex-direction: column; gap: 20px; }
+@media (max-width: 1100px) {
+  .caterer-grid { grid-template-columns: 1fr; }
+}
+
 /* ── Settings masonry 2-col grid ── */
 .settings-grid {
   display: grid;

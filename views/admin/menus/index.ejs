@@ -1,48 +1,61 @@
-<div style="display:flex;gap:12px;margin-bottom:24px">
-  <a href="/admin/caterers/<%= caterer.id %>/edit" class="btn btn-secondary btn-sm">← Back to <%= caterer.business_name %></a>
-</div>
+<%- include('../../partials/caterer-actions', { caterer, currentAction: 'menus' }) %>
 
-<% menus.forEach(menu => { %>
-<div class="form-section">
-  <form method="POST" action="/admin/menus/<%= menu.id %>?_method=PUT">
-    <div class="card-header">
-      <h3 class="card-title"><%= menu.name %> - $<%= menu.price_per_head %>/pp</h3>
-      <div class="actions">
-        <button type="submit" class="btn btn-primary btn-sm">Save</button>
-        <form method="POST" action="/admin/menus/<%= menu.id %>?_method=DELETE" style="display:inline"><button type="submit" class="btn btn-danger btn-sm" data-confirm="Delete this menu?">Delete</button></form>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Name</label><input type="text" name="name" class="form-control" value="<%= menu.name %>"></div>
-      <div class="form-group"><label class="form-label">Price/Head ($)</label><input type="number" name="price_per_head" class="form-control" step="0.01" value="<%= menu.price_per_head %>"></div>
-    </div>
-    <div class="form-group"><label class="form-label">Description</label><textarea name="description" class="form-control"><%= menu.description || '' %></textarea></div>
-    <label class="toggle" style="margin-bottom:12px"><input type="checkbox" name="is_featured" value="on" <%= menu.is_featured ? 'checked' : '' %>><span class="toggle-track"></span><span class="toggle-label">Featured</span></label>
-    <div class="form-label">Items</div>
-    <div class="menu-items-list">
-      <% menu.items.forEach(item => { %>
-      <div class="form-row" style="margin-bottom:8px"><input type="text" name="item_names" class="form-control" value="<%= item.name %>"></div>
-      <% }) %>
-    </div>
-    <button type="button" class="btn btn-secondary btn-sm add-menu-item-btn" style="margin-top:8px">+ Add Item</button>
-  </form>
-</div>
-<% }) %>
+<div class="caterer-grid">
 
-<div class="form-section">
-  <h3 class="form-section__title">Add New Menu</h3>
-  <form method="POST" action="/admin/caterers/<%= caterer.id %>/menus">
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Name *</label><input type="text" name="name" class="form-control" required placeholder="e.g. Canapé Reception"></div>
-      <div class="form-group"><label class="form-label">Price/Head ($) *</label><input type="number" name="price_per_head" class="form-control" step="0.01" required></div>
+  <!-- LEFT: Existing menus -->
+  <div class="caterer-col">
+    <% if (menus.length === 0) { %>
+    <div class="empty-state"><p>No menus yet. Add one on the right.</p></div>
+    <% } %>
+    <% menus.forEach(menu => { %>
+    <div class="form-section">
+      <form method="POST" action="/admin/menus/<%= menu.id %>?_method=PUT">
+        <div class="card-header" style="margin-bottom:14px">
+          <h3 class="card-title" style="font-size:0.95rem"><%= menu.name %> &middot; $<%= menu.price_per_head %>/pp</h3>
+          <div class="actions">
+            <button type="submit" class="btn btn-primary btn-sm">Save</button>
+            <form method="POST" action="/admin/menus/<%= menu.id %>?_method=DELETE" style="display:inline">
+              <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this menu?')">Delete</button>
+            </form>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Name</label><input type="text" name="name" class="form-control" value="<%= menu.name %>"></div>
+          <div class="form-group"><label class="form-label">Price/Head ($)</label><input type="number" name="price_per_head" class="form-control" step="0.01" value="<%= menu.price_per_head %>"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Description</label><textarea name="description" class="form-control"><%= menu.description || '' %></textarea></div>
+        <label class="toggle" style="margin-bottom:12px"><input type="checkbox" name="is_featured" value="on" <%= menu.is_featured ? 'checked' : '' %>><span class="toggle-track"></span><span class="toggle-label">Featured</span></label>
+        <div class="form-label" style="margin-bottom:8px">Items</div>
+        <div class="menu-items-list">
+          <% menu.items.forEach(item => { %>
+          <div class="form-row" style="margin-bottom:6px"><input type="text" name="item_names" class="form-control" value="<%= item.name %>"></div>
+          <% }) %>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm add-menu-item-btn" style="margin-top:8px">+ Add Item</button>
+      </form>
     </div>
-    <div class="form-group"><label class="form-label">Description</label><textarea name="description" class="form-control" placeholder="Brief description…"></textarea></div>
-    <div class="form-label">Items</div>
-    <div class="menu-items-list">
-      <div class="form-row" style="margin-bottom:8px"><input type="text" name="item_names" class="form-control" placeholder="Item name"></div>
+    <% }) %>
+  </div>
+
+  <!-- RIGHT: Add new menu -->
+  <div class="caterer-col">
+    <div class="form-section">
+      <h3 class="form-section__title">Add New Menu</h3>
+      <form method="POST" action="/admin/caterers/<%= caterer.id %>/menus">
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Name *</label><input type="text" name="name" class="form-control" required placeholder="e.g. Canape Reception"></div>
+          <div class="form-group"><label class="form-label">Price/Head ($) *</label><input type="number" name="price_per_head" class="form-control" step="0.01" required></div>
+        </div>
+        <div class="form-group"><label class="form-label">Description</label><textarea name="description" class="form-control" placeholder="Brief description..."></textarea></div>
+        <div class="form-label" style="margin-bottom:8px">Items</div>
+        <div class="menu-items-list">
+          <div class="form-row" style="margin-bottom:6px"><input type="text" name="item_names" class="form-control" placeholder="Item name"></div>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm add-menu-item-btn" style="margin-bottom:16px;margin-top:8px">+ Add Item</button>
+        <br>
+        <button type="submit" class="btn btn-primary">Create Menu</button>
+      </form>
     </div>
-    <button type="button" class="btn btn-secondary btn-sm add-menu-item-btn" style="margin-bottom:16px;margin-top:8px">+ Add Item</button>
-    <br>
-    <button type="submit" class="btn btn-primary">Create Menu</button>
-  </form>
+  </div>
+
 </div>

@@ -23,6 +23,7 @@
             <a href="/admin/caterers/<%= c.id %>/edit" class="btn btn-secondary btn-sm">Edit</a>
             <a href="/admin/caterers/<%= c.id %>/menus" class="btn btn-secondary btn-sm">Menus</a>
             <a href="/admin/caterers/<%= c.id %>/vetting" class="btn btn-secondary btn-sm">Vetting</a>
+            <a href="/caterers/<%= c.slug %>" target="_blank" rel="noopener" class="btn btn-secondary btn-sm" title="View on site">View</a>
             <% if (c.is_unlisted) { %>
             <form method="POST" action="/admin/caterers/<%= c.id %>/relist?_method=PUT" style="display:inline">
               <button type="submit" class="btn btn-secondary btn-sm" title="Relist this caterer" onclick="return confirm('Relist this caterer so it appears in listings and search results?')">Relist</button>
