@@ -16,7 +16,7 @@
 
   <header class="nav" id="nav">
     <div class="nav__inner">
-      <a href="/" class="logo" aria-label="Caterus home"><span class="logo__dot"></span> Caterus</a>
+      <a href="/" class="logo" aria-label="Caterus home"><% if (siteLogo) { %><img src="/<%= siteLogo %>" alt="Caterus" style="height:44px;width:auto;object-fit:contain;display:block;max-width:180px"><% } else { %><span class="logo__dot"></span> Caterus<% } %></a>
       <nav class="nav__links" aria-label="Primary">
         <a href="/#how-it-works">How it works</a>
         <a href="/#caterers">Caterers</a>
@@ -71,7 +71,7 @@
 
   <footer class="footer">
     <div class="container footer__inner">
-      <a href="/" class="logo footer__logo" aria-label="Caterus"><span class="logo__dot"></span> Caterus</a>
+      <a href="/" class="logo footer__logo" aria-label="Caterus"><% if (siteLogo) { %><img src="/<%= siteLogo %>" alt="Caterus" style="height:44px;width:auto;object-fit:contain;display:block;max-width:180px"><% } else { %><span class="logo__dot"></span> Caterus<% } %></a>
       <nav class="footer__links" aria-label="Footer">
         <a href="/#how-it-works">How it works</a>
         <a href="/#caterers">Caterers</a>

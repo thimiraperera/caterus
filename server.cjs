@@ -126,23 +126,28 @@ app.use('/admin', adminRoutes);
 app.use('/api',   apiRoutes);
 app.use('/',      pageRoutes);   // catch-all last
 
+const Settings = require('./models/Settings');
+async function getLogoForError() { try { return await Settings.get('logo_path'); } catch (_) { return null; } }
+
 /* ---- 404 handler ---- */
-app.use((req, res) => {
+app.use(async (req, res) => {
   res.status(404);
   if (req.accepts('html')) {
-    res.render('404', { layout: false });
+    const siteLogo = await getLogoForError();
+    res.render('404', { layout: false, siteLogo: siteLogo || '' });
   } else {
     res.json({ error: 'Not found' });
   }
 });
 
 /* ---- Error handler ---- */
-app.use((err, req, res, _next) => {
+app.use(async (err, req, res, _next) => {
   console.error('Server error:', err);
   const status = err.status || 500;
   res.status(status);
   if (req.accepts('html')) {
-    res.render('404', { layout: false });
+    const siteLogo = await getLogoForError();
+    res.render('404', { layout: false, siteLogo: siteLogo || '' });
   } else {
     res.json({ error: process.env.NODE_ENV === 'production' ? 'Server error' : err.message });
   }
