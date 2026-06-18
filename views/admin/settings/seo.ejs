@@ -5,13 +5,16 @@
 .seo-panel { display:none; }
 .seo-panel.active { display:block; }
 .seo-section-label { font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); margin:24px 0 12px; padding-bottom:6px; border-bottom:1px solid var(--line); }
+.seo-locked { background:var(--surface-2); padding:10px 14px; border-radius:var(--radius-sm); font-size:0.88rem; color:var(--ink-soft); border:1px solid var(--line); display:flex; align-items:center; gap:8px; }
+.seo-locked svg { flex-shrink:0; opacity:0.5; }
 </style>
 
 <div class="seo-tabs">
   <button class="seo-tab active" data-panel="home">Home</button>
-  <button class="seo-tab" data-panel="browse">Caterers</button>
   <button class="seo-tab" data-panel="local">Local Business</button>
 </div>
+
+<p style="font-size:0.82rem;color:var(--muted);margin-bottom:20px">Caterer page SEO is managed per-caterer. Go to <a href="/admin/caterers">Caterers</a>, edit a caterer, and scroll to the SEO section.</p>
 
 <!-- HOME PAGE -->
 <div class="seo-panel active" id="seo-panel-home">
@@ -29,7 +32,7 @@
     </div>
     <div class="form-group">
       <label class="form-label">SEO Title</label>
-      <input type="text" name="title" class="form-control" value="<%= seo.home_title || '' %>" placeholder="Caterus - Find & Book Melbourne's Best Caterers" maxlength="70">
+      <input type="text" name="title" class="form-control" value="<%= seo.home_title || '' %>" placeholder="Caterus - Find and Book Melbourne's Best Caterers" maxlength="70">
       <p class="form-hint">Ideal length: 50-60 characters</p>
     </div>
     <div class="form-group">
@@ -49,37 +52,30 @@
         <input type="text" name="breadcrumbs_title" class="form-control" value="<%= seo.home_breadcrumbs_title || 'Home' %>">
       </div>
       <div class="form-group">
-        <label class="form-label">Canonical URL</label>
-        <input type="url" name="canonical_url" class="form-control" value="<%= seo.home_canonical_url || '' %>" placeholder="https://caterus.com.au/">
+        <label class="form-label">Canonical URL <span style="color:var(--muted);font-weight:400;font-size:0.78rem">(auto)</span></label>
+        <input type="hidden" name="canonical_url" value="">
+        <div class="seo-locked">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Set automatically from BASE_URL
+        </div>
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label class="form-label">Page Type</label>
-        <select name="page_type" class="form-control">
-          <option value="">Default (WebPage)</option>
-          <option value="WebPage"          <%=seo.home_page_type==='WebPage'?'selected':''%>>WebPage</option>
-          <option value="ItemPage"         <%=seo.home_page_type==='ItemPage'?'selected':''%>>Item Page</option>
-          <option value="AboutPage"        <%=seo.home_page_type==='AboutPage'?'selected':''%>>About Page</option>
-          <option value="FAQPage"          <%=seo.home_page_type==='FAQPage'?'selected':''%>>FAQ Page</option>
-          <option value="QAPage"           <%=seo.home_page_type==='QAPage'?'selected':''%>>QA Page</option>
-          <option value="ProfilePage"      <%=seo.home_page_type==='ProfilePage'?'selected':''%>>Profile Page</option>
-          <option value="ContactPage"      <%=seo.home_page_type==='ContactPage'?'selected':''%>>Contact Page</option>
-          <option value="CollectionPage"   <%=seo.home_page_type==='CollectionPage'?'selected':''%>>Collection Page</option>
-          <option value="CheckoutPage"     <%=seo.home_page_type==='CheckoutPage'?'selected':''%>>Checkout Page</option>
-          <option value="SearchResultsPage" <%=seo.home_page_type==='SearchResultsPage'?'selected':''%>>Search Results Page</option>
-        </select>
+        <label class="form-label">Page Type <span style="color:var(--muted);font-weight:400;font-size:0.78rem">(locked)</span></label>
+        <input type="hidden" name="page_type" value="WebPage">
+        <div class="seo-locked">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          WebPage (homepage)
+        </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Article Type</label>
-        <select name="article_type" class="form-control">
-          <option value="">None</option>
-          <option value="Article"          <%=seo.home_article_type==='Article'?'selected':''%>>Article</option>
-          <option value="BlogPosting"      <%=seo.home_article_type==='BlogPosting'?'selected':''%>>Blog Post</option>
-          <option value="NewsArticle"      <%=seo.home_article_type==='NewsArticle'?'selected':''%>>News Article</option>
-          <option value="TechArticle"      <%=seo.home_article_type==='TechArticle'?'selected':''%>>Tech Article</option>
-          <option value="Report"           <%=seo.home_article_type==='Report'?'selected':''%>>Report</option>
-        </select>
+        <label class="form-label">Article Type <span style="color:var(--muted);font-weight:400;font-size:0.78rem">(locked)</span></label>
+        <input type="hidden" name="article_type" value="">
+        <div class="seo-locked">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          None (not an article)
+        </div>
       </div>
     </div>
     <div class="form-group">
@@ -111,67 +107,6 @@
     </div>
 
     <button type="submit" class="btn btn-primary">Save Home SEO</button>
-  </form>
-</div>
-</div>
-
-<!-- CATERERS BROWSE PAGE -->
-<div class="seo-panel" id="seo-panel-browse">
-<div class="form-section">
-  <h3 class="form-section__title">SEO: Caterers Listing (/caterers)</h3>
-  <form method="POST" action="/admin/settings/seo?page=browse" enctype="multipart/form-data">
-
-    <p class="seo-section-label">Content</p>
-    <div class="form-group">
-      <label class="form-label">SEO Title</label>
-      <input type="text" name="title" class="form-control" value="<%= seo.browse_title || '' %>" placeholder="Browse Caterers | Caterus" maxlength="70">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Focus Keyphrase</label>
-      <input type="text" name="focus_keyphrase" class="form-control" value="<%= seo.browse_focus_keyphrase || '' %>">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Meta Description</label>
-      <textarea name="meta_description" class="form-control" rows="3" maxlength="160"><%= seo.browse_meta_description || '' %></textarea>
-    </div>
-
-    <p class="seo-section-label">Advanced</p>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Breadcrumbs Title</label>
-        <input type="text" name="breadcrumbs_title" class="form-control" value="<%= seo.browse_breadcrumbs_title || 'Caterers' %>">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Canonical URL</label>
-        <input type="url" name="canonical_url" class="form-control" value="<%= seo.browse_canonical_url || '' %>">
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Page Type</label>
-        <select name="page_type" class="form-control">
-          <option value="">Default (WebPage)</option>
-          <option value="CollectionPage" <%=seo.browse_page_type==='CollectionPage'?'selected':''%>>Collection Page</option>
-          <option value="SearchResultsPage" <%=seo.browse_page_type==='SearchResultsPage'?'selected':''%>>Search Results Page</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Article Type</label>
-        <select name="article_type" class="form-control">
-          <option value="">None</option>
-          <option value="Article" <%=seo.browse_article_type==='Article'?'selected':''%>>Article</option>
-        </select>
-      </div>
-    </div>
-
-    <p class="seo-section-label">Social (Open Graph)</p>
-    <div class="form-group"><label class="form-label">Social Title</label><input type="text" name="social_title" class="form-control" value="<%= seo.browse_social_title || '' %>"></div>
-    <div class="form-group"><label class="form-label">Social Description</label><textarea name="social_description" class="form-control" rows="2"><%= seo.browse_social_description || '' %></textarea></div>
-    <p class="seo-section-label">X / Twitter</p>
-    <div class="form-group"><label class="form-label">X Title</label><input type="text" name="twitter_title" class="form-control" value="<%= seo.browse_twitter_title || '' %>"></div>
-    <div class="form-group"><label class="form-label">X Description</label><textarea name="twitter_description" class="form-control" rows="2"><%= seo.browse_twitter_description || '' %></textarea></div>
-
-    <button type="submit" class="btn btn-primary">Save Caterers SEO</button>
   </form>
 </div>
 </div>

@@ -3,7 +3,7 @@
 -- NOTE: On cPanel, create the database via cPanel UI first,
 -- then import this file into that database via phpMyAdmin.
 -- ============================================================
--- MIGRATION: run these on existing servers if admins table already exists:
+-- MIGRATION: run these on existing servers if tables already exist:
 --   ALTER TABLE admins ADD COLUMN IF NOT EXISTS first_name VARCHAR(100) DEFAULT NULL;
 --   ALTER TABLE admins ADD COLUMN IF NOT EXISTS last_name VARCHAR(100) DEFAULT NULL;
 --   ALTER TABLE admins ADD COLUMN IF NOT EXISTS phone VARCHAR(30) DEFAULT NULL;
@@ -11,6 +11,9 @@
 --   ALTER TABLE admins ADD COLUMN IF NOT EXISTS profile_image VARCHAR(255) DEFAULT NULL;
 --   ALTER TABLE admins ADD COLUMN IF NOT EXISTS totp_secret VARCHAR(100) DEFAULT NULL;
 --   ALTER TABLE admins ADD COLUMN IF NOT EXISTS totp_enabled TINYINT(1) DEFAULT 0;
+--   ALTER TABLE caterers ADD COLUMN IF NOT EXISTS is_unlisted TINYINT(1) DEFAULT 0;
+--   ALTER TABLE caterers ADD COLUMN IF NOT EXISTS meta_title VARCHAR(255) DEFAULT NULL;
+--   ALTER TABLE caterers ADD COLUMN IF NOT EXISTS meta_description TEXT DEFAULT NULL;
 -- ============================================================
 
 -- ──────────────────────────────────────────────────────────────
@@ -60,6 +63,9 @@ CREATE TABLE IF NOT EXISTS caterers (
   is_published    BOOLEAN DEFAULT FALSE,
   is_featured     BOOLEAN DEFAULT FALSE,
   is_promoted     BOOLEAN DEFAULT FALSE,
+  is_unlisted     TINYINT(1) DEFAULT 0,
+  meta_title      VARCHAR(255) DEFAULT NULL,
+  meta_description TEXT DEFAULT NULL,
   rating_avg      DECIMAL(3,2) DEFAULT 0.00,
   review_count    INT DEFAULT 0,
   status          ENUM('draft','pending','active','suspended') DEFAULT 'draft',

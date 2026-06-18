@@ -1,8 +1,9 @@
 /* Admin Caterer Controller */
-const Caterer = require('../../models/Caterer');
-const { slugify } = require('../../utils/helpers');
-const path = require('path');
-const fs = require('fs');
+const Caterer        = require('../../models/Caterer');
+const { slugify }    = require('../../utils/helpers');
+const convertToWebp  = require('../../utils/convertToWebp');
+const path           = require('path');
+const fs             = require('fs');
 
 module.exports = {
   async index(req, res) {
@@ -17,7 +18,6 @@ module.exports = {
 
       if (req.headers['x-partial'] === '1') {
         const ejs = require('ejs');
-        const path = require('path');
         const html = await ejs.renderFile(
           path.join(req.app.get('views'), 'admin/caterers/_table.ejs'),
           { ...result, per_page: parseInt(per_page) || 20, queryExtra, status: status || '' }
@@ -45,18 +45,18 @@ module.exports = {
     try {
       const data = req.body;
       data.slug = slugify(data.business_name);
-      if (req.file) data.featured_image = 'assets/uploads/' + req.file.filename;
+      if (req.file) {
+        data.featured_image = await convertToWebp(req.file.path);
+      }
       data.is_published = data.is_published === 'on' || data.is_published === '1';
-      data.is_featured = data.is_featured === 'on' || data.is_featured === '1';
+      data.is_featured  = data.is_featured  === 'on' || data.is_featured  === '1';
 
       const id = await Caterer.create(data);
 
-      // Tags
       if (data.tags) {
         const tags = typeof data.tags === 'string' ? data.tags.split(',') : data.tags;
         await Caterer.setTags(id, tags);
       }
-      // Occasions
       if (data.occasions) {
         const occasions = Array.isArray(data.occasions) ? data.occasions : [data.occasions];
         await Caterer.setOccasions(id, occasions);
@@ -88,9 +88,11 @@ module.exports = {
     try {
       const data = req.body;
       if (data.business_name) data.slug = slugify(data.business_name);
-      if (req.file) data.featured_image = 'assets/uploads/' + req.file.filename;
+      if (req.file) {
+        data.featured_image = await convertToWebp(req.file.path);
+      }
       data.is_published = data.is_published === 'on' || data.is_published === '1';
-      data.is_featured = data.is_featured === 'on' || data.is_featured === '1';
+      data.is_featured  = data.is_featured  === 'on' || data.is_featured  === '1';
 
       await Caterer.update(req.params.id, data);
 
@@ -108,7 +110,7 @@ module.exports = {
       }
       if (data.inclusion_titles) {
         const titles = Array.isArray(data.inclusion_titles) ? data.inclusion_titles : [data.inclusion_titles];
-        const descs = Array.isArray(data.inclusion_descriptions) ? data.inclusion_descriptions : [data.inclusion_descriptions || ''];
+        const descs  = Array.isArray(data.inclusion_descriptions) ? data.inclusion_descriptions : [data.inclusion_descriptions || ''];
         const inclusions = titles.map((t, i) => ({ title: t, description: descs[i] || '' }));
         await Caterer.setInclusions(req.params.id, inclusions);
       }
@@ -138,7 +140,8 @@ module.exports = {
     try {
       if (req.files) {
         for (const file of req.files) {
-          await Caterer.addImage(req.params.id, 'assets/uploads/' + file.filename, '', 0);
+          const imgPath = await convertToWebp(file.path);
+          await Caterer.addImage(req.params.id, imgPath, '', 0);
         }
       }
       req.flash('success', 'Images uploaded!');
@@ -158,6 +161,46 @@ module.exports = {
     } catch (err) {
       console.error(err);
       req.flash('error', 'Failed to delete image.');
+      res.redirect(`/admin/caterers/${req.params.id}/edit`);
+    }
+  },
+
+  /* Unlist a caterer - sets is_published=false, page stays live with noindex */
+  async unlist(req, res) {
+    try {
+      await Caterer.setUnlisted(req.params.id, true);
+      req.flash('success', 'Caterer unlisted. Page stays live but will not be indexed by search engines.');
+      res.redirect('/admin/caterers');
+    } catch (err) {
+      console.error(err);
+      req.flash('error', 'Failed to unlist caterer.');
+      res.redirect('/admin/caterers');
+    }
+  },
+
+  /* Relist a caterer */
+  async relist(req, res) {
+    try {
+      await Caterer.setUnlisted(req.params.id, false);
+      req.flash('success', 'Caterer relisted and visible to search engines.');
+      res.redirect('/admin/caterers');
+    } catch (err) {
+      console.error(err);
+      req.flash('error', 'Failed to relist caterer.');
+      res.redirect('/admin/caterers');
+    }
+  },
+
+  /* Save caterer-specific SEO from edit page */
+  async saveSeo(req, res) {
+    try {
+      const { meta_title, meta_description } = req.body;
+      await Caterer.updateSeo(req.params.id, { meta_title, meta_description });
+      req.flash('success', 'SEO saved.');
+      res.redirect(`/admin/caterers/${req.params.id}/edit#caterer-seo`);
+    } catch (err) {
+      console.error(err);
+      req.flash('error', 'Failed to save SEO.');
       res.redirect(`/admin/caterers/${req.params.id}/edit`);
     }
   },

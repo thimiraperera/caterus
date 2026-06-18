@@ -92,6 +92,36 @@ const pageRoutes  = require('./routes/pages');
 const apiRoutes   = require('./routes/api');
 const adminRoutes = require('./routes/admin');
 
+/* Dynamic robots.txt */
+app.get('/robots.txt', async (req, res) => {
+  try {
+    const Settings = require('./models/Settings');
+    const baseUrl  = process.env.BASE_URL || `http://localhost:${PORT}`;
+    const noindex  = await Settings.get('noindex').catch(() => '');
+    res.type('text/plain');
+    if (noindex === '1') {
+      res.send('User-agent: *\nDisallow: /\n');
+    } else {
+      res.send(`User-agent: *\nDisallow: /admin/\nSitemap: ${baseUrl}/sitemap.xml\n`);
+    }
+  } catch (_) {
+    res.type('text/plain').send('User-agent: *\nDisallow: /admin/\n');
+  }
+});
+
+/* Dynamic sitemap.xml */
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    const settingsCtrl = require('./controllers/admin/settingsController');
+    const baseUrl = process.env.BASE_URL || `http://localhost:${PORT}`;
+    const xml = await settingsCtrl.getSitemapXml(baseUrl);
+    res.type('application/xml').send(xml);
+  } catch (err) {
+    console.error('sitemap error:', err);
+    res.status(500).type('text/plain').send('Sitemap unavailable');
+  }
+});
+
 app.use('/admin', adminRoutes);
 app.use('/api',   apiRoutes);
 app.use('/',      pageRoutes);   // catch-all last

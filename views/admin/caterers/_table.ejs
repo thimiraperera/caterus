@@ -10,7 +10,10 @@
       <% caterers.forEach(c => { %>
       <tr>
         <td><% if (c.featured_image) { %><img src="/<%= c.featured_image %>" class="thumb" alt=""><% } else { %><div class="thumb"></div><% } %></td>
-        <td><a href="/admin/caterers/<%= c.id %>/edit"><strong><%= c.business_name %></strong></a></td>
+        <td>
+          <a href="/admin/caterers/<%= c.id %>/edit"><strong><%= c.business_name %></strong></a>
+          <% if (c.is_unlisted) { %><span class="badge badge-unlisted" style="margin-left:6px">Unlisted</span><% } %>
+        </td>
         <td><%= c.cuisine_type || '-' %></td>
         <td><%= c.suburb || '-' %></td>
         <td>&#9733; <%= c.rating_avg %> (<%= c.review_count %>)</td>
@@ -20,6 +23,15 @@
             <a href="/admin/caterers/<%= c.id %>/edit" class="btn btn-secondary btn-sm">Edit</a>
             <a href="/admin/caterers/<%= c.id %>/menus" class="btn btn-secondary btn-sm">Menus</a>
             <a href="/admin/caterers/<%= c.id %>/vetting" class="btn btn-secondary btn-sm">Vetting</a>
+            <% if (c.is_unlisted) { %>
+            <form method="POST" action="/admin/caterers/<%= c.id %>/relist?_method=PUT" style="display:inline">
+              <button type="submit" class="btn btn-secondary btn-sm" title="Relist this caterer" onclick="return confirm('Relist this caterer so it appears in listings and search results?')">Relist</button>
+            </form>
+            <% } else { %>
+            <form method="POST" action="/admin/caterers/<%= c.id %>/unlist?_method=PUT" style="display:inline">
+              <button type="submit" class="btn btn-secondary btn-sm" title="Unlist caterer (keeps page live with noindex)" onclick="return confirm('Unlist this caterer? The page stays live but will be hidden from listings and marked noindex.')">Unlist</button>
+            </form>
+            <% } %>
           </div>
         </td>
       </tr>

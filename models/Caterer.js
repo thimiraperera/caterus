@@ -148,6 +148,23 @@ const Caterer = {
     await db.query('DELETE FROM caterers WHERE id = ?', [id]);
   },
 
+  /* is_unlisted=true: page stays live but gets noindex; is_published stays unchanged */
+  async setUnlisted(id, unlisted) {
+    await db.query('UPDATE caterers SET is_unlisted = ? WHERE id = ?', [unlisted ? 1 : 0, id]);
+  },
+
+  async updateSeo(id, data) {
+    const allowed = ['meta_title', 'meta_description'];
+    const fields  = [];
+    const params  = [];
+    for (const k of allowed) {
+      if (data[k] !== undefined) { fields.push(`${k} = ?`); params.push(data[k]); }
+    }
+    if (fields.length === 0) return;
+    params.push(id);
+    await db.query(`UPDATE caterers SET ${fields.join(', ')} WHERE id = ?`, params);
+  },
+
   async updateRating(catererId) {
     const [rows] = await db.query(
       "SELECT COALESCE(AVG(rating), 0) AS avg_rating, COUNT(*) AS cnt FROM reviews WHERE caterer_id = ? AND status = 'approved'",

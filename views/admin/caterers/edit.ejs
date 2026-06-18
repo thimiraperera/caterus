@@ -101,3 +101,22 @@
     <a href="/admin/caterers" class="btn btn-secondary">Back</a>
   </div>
 </form>
+
+<!-- Caterer SEO Section -->
+<div class="form-section" id="caterer-seo" style="margin-top:20px">
+  <h3 class="form-section__title">SEO</h3>
+  <p style="font-size:0.88rem;color:var(--muted);margin-bottom:16px">Override the meta title and description for this caterer's page. Leave blank to use the caterer's business name and tagline.</p>
+  <form method="POST" action="/admin/caterers/<%= caterer.id %>/seo">
+    <div class="form-group">
+      <label class="form-label">Meta Title</label>
+      <input type="text" name="meta_title" class="form-control" value="<%= caterer.meta_title || '' %>" placeholder="<%= caterer.business_name %> | Caterus" maxlength="70">
+      <p class="form-hint">Ideal length: 50-60 characters</p>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Meta Description</label>
+      <textarea name="meta_description" class="form-control" rows="3" maxlength="160" placeholder="A short description of this caterer for search results..."><%= caterer.meta_description || '' %></textarea>
+      <p class="form-hint">Ideal length: 150-160 characters</p>
+    </div>
+    <button type="submit" class="btn btn-primary">Save SEO</button>
+  </form>
+</div>

@@ -25,7 +25,7 @@ module.exports = {
         return res.redirect('/admin/login');
       }
       req.session.adminId = admin.id;
-      req.session.admin = { id: admin.id, email: admin.email, name: admin.name, role: admin.role };
+      req.session.admin = { id: admin.id, email: admin.email, name: admin.name, role: admin.role, profile_image: admin.profile_image || null };
       req.session.save((err) => {
         if (err) {
           console.error('Session save error:', err);

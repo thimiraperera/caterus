@@ -1,15 +1,19 @@
 /* Admin Settings Controller */
-const path     = require('path');
-const fs       = require('fs');
-const sharp    = require('sharp');
-const Settings = require('../../models/Settings');
-const Admin    = require('../../models/Admin');
-const bcrypt   = require('bcryptjs');
+const path         = require('path');
+const fs           = require('fs');
+const sharp        = require('sharp');
+const Settings     = require('../../models/Settings');
+const Admin        = require('../../models/Admin');
+const bcrypt       = require('bcryptjs');
 const { sendTestEmail } = require('../../utils/email');
+const convertToWebp = require('../../utils/convertToWebp');
+const db           = require('../../config/database');
 
-let speakeasy, qrcode;
+let speakeasy, qrcode, archiver, unzipper;
 try { speakeasy = require('speakeasy'); } catch (_) {}
-try { qrcode   = require('qrcode'); }    catch (_) {}
+try { qrcode    = require('qrcode');    } catch (_) {}
+try { archiver  = require('archiver');  } catch (_) {}
+try { unzipper  = require('unzipper'); } catch (_) {}
 
 module.exports = {
   async general(req, res) {
@@ -19,7 +23,7 @@ module.exports = {
       Settings.get('logo_path').catch(() => null),
     ]);
     res.render('admin/settings/general', {
-      title: 'Site Settings', currentPage: 'settings-general',
+      title: 'Settings', currentPage: 'settings-general',
       settings: { ...settings, ...captchaSettings },
       logoPath: logoSetting || '',
     });
@@ -39,8 +43,7 @@ module.exports = {
     const allSeo = await Settings.getByGroup('seo');
     const seo = {};
     Object.keys(allSeo).forEach(k => {
-      const withoutPrefix = k.replace(/^seo_/, '');
-      seo[withoutPrefix] = allSeo[k];
+      seo[k.replace(/^seo_/, '')] = allSeo[k];
     });
     res.render('admin/settings/seo', { title: 'SEO Settings', currentPage: 'settings-seo', seo });
   },
@@ -48,7 +51,7 @@ module.exports = {
   async saveSeo(req, res) {
     try {
       const pageId = req.query.page || 'home';
-      const data = req.body;
+      const data   = req.body;
       const toSave = {};
       const allowedFields = [
         'title', 'focus_keyphrase', 'meta_description', 'breadcrumbs_title',
@@ -60,16 +63,12 @@ module.exports = {
         'social_facebook', 'social_instagram', 'social_twitter', 'social_linkedin',
       ];
       allowedFields.forEach(f => {
-        if (data[f] !== undefined) {
-          toSave['seo_' + pageId + '_' + f] = data[f] || '';
-        }
+        if (data[f] !== undefined) toSave['seo_' + pageId + '_' + f] = data[f] || '';
       });
       if (data.is_cornerstone === undefined) toSave['seo_' + pageId + '_is_cornerstone'] = '0';
 
       if (req.file) {
-        const imgPath = 'assets/uploads/seo_' + pageId + '_' + Date.now() + '.webp';
-        await sharp(req.file.path).resize(1200, 630, { fit: 'cover' }).webp({ quality: 85 }).toFile('public/' + imgPath);
-        fs.unlink(req.file.path, () => {});
+        const imgPath = await convertToWebp(req.file.path, { maxWidth: 1200, maxHeight: 630, quality: 85, fit: 'cover' });
         toSave['seo_' + pageId + '_featured_image'] = imgPath;
       }
 
@@ -98,6 +97,10 @@ module.exports = {
   async update(req, res) {
     try {
       const { group, _redirect, ...settings } = req.body;
+      // Normalize array values (e.g. hidden+checkbox sends ['0','1']) - take last value
+      for (const k of Object.keys(settings)) {
+        if (Array.isArray(settings[k])) settings[k] = settings[k][settings[k].length - 1];
+      }
       await Settings.setMultiple(settings, group);
       req.flash('success', 'Settings saved.');
       const known = ['general', 'smtp', 'stripe', 'profile'];
@@ -109,7 +112,7 @@ module.exports = {
   async uploadLogo(req, res) {
     try {
       if (!req.file) { req.flash('error', 'No file selected.'); return res.redirect('/admin/settings/general'); }
-      const logoPath = 'assets/uploads/' + req.file.filename;
+      const logoPath = await convertToWebp(req.file.path, { maxWidth: 800, maxHeight: 400, quality: 90, fit: 'inside' });
       await Settings.set('logo_path', logoPath, 'general');
       req.flash('success', 'Logo uploaded.');
       res.redirect('/admin/settings/general');
@@ -130,9 +133,7 @@ module.exports = {
     try {
       const { first_name, last_name, email, phone, phone_country } = req.body;
       await Admin.updateProfileInfo(req.session.adminId, { first_name, last_name, email, phone, phone_country });
-      if (email && email !== req.session.admin.email) {
-        req.session.admin.email = email;
-      }
+      if (email && email !== req.session.admin.email) req.session.admin.email = email;
       const fullName = [first_name, last_name].filter(Boolean).join(' ');
       if (fullName) req.session.admin.name = fullName;
       req.flash('success', 'Profile updated.');
@@ -146,7 +147,7 @@ module.exports = {
       const dir = path.join(__dirname, '../../public/assets/uploads/admin');
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       const filename = 'avatar_' + req.session.adminId + '.webp';
-      const outPath = path.join(dir, filename);
+      const outPath  = path.join(dir, filename);
       await sharp(req.file.path)
         .resize(256, 256, { fit: 'cover', position: 'centre' })
         .webp({ quality: 85 })
@@ -154,6 +155,7 @@ module.exports = {
       fs.unlink(req.file.path, () => {});
       const imgPath = 'assets/uploads/admin/' + filename;
       await Admin.updateProfileInfo(req.session.adminId, { profile_image: imgPath });
+      req.session.admin.profile_image = imgPath;
       req.flash('success', 'Profile picture updated.');
       res.redirect('/admin/settings/profile');
     } catch (err) { console.error(err); req.flash('error', 'Failed to upload picture.'); res.redirect('/admin/settings/profile'); }
@@ -204,5 +206,160 @@ module.exports = {
       req.flash('success', 'Two-factor authentication disabled.');
       res.redirect('/admin/settings/profile');
     } catch (err) { console.error(err); req.flash('error', 'Failed to disable 2FA.'); res.redirect('/admin/settings/profile'); }
+  },
+
+  /* Erase test data - keeps admins, caterers, menus, settings, faqs, seo */
+  async eraseTestData(req, res) {
+    try {
+      await db.query('SET FOREIGN_KEY_CHECKS = 0');
+      const tables = ['booking_addons', 'payments', 'bookings', 'reviews', 'payouts', 'contact_enquiries', 'caterer_applications', 'sessions'];
+      for (const t of tables) {
+        await db.query(`TRUNCATE TABLE \`${t}\``);
+      }
+      await db.query('SET FOREIGN_KEY_CHECKS = 1');
+      req.flash('success', 'Test data erased. Caterers, settings, FAQs and admin accounts are untouched.');
+      res.redirect('/admin/settings/general');
+    } catch (err) {
+      console.error(err);
+      req.flash('error', 'Erase failed: ' + err.message);
+      res.redirect('/admin/settings/general');
+    }
+  },
+
+  /* Backup: download DB as SQL */
+  async backupDb(req, res) {
+    try {
+      const { exec } = require('child_process');
+      const dbName   = process.env.DB_NAME;
+      const dbUser   = process.env.DB_USER;
+      const dbPass   = process.env.DB_PASSWORD || '';
+      const dbHost   = process.env.DB_HOST || 'localhost';
+      const dbPort   = process.env.DB_PORT || '3306';
+
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+      const filename  = `caterus-db-${timestamp}.sql`;
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.setHeader('Content-Type', 'application/sql');
+
+      const passArg = dbPass ? `-p${dbPass}` : '';
+      const cmd     = `mysqldump -h ${dbHost} -P ${dbPort} -u ${dbUser} ${passArg} ${dbName}`;
+      const proc    = exec(cmd);
+      proc.stdout.pipe(res);
+      proc.stderr.on('data', d => console.error('mysqldump:', d));
+      proc.on('error', err => {
+        console.error(err);
+        if (!res.headersSent) res.status(500).send('Backup failed: ' + err.message);
+      });
+    } catch (err) {
+      console.error(err);
+      req.flash('error', 'DB backup failed: ' + err.message);
+      res.redirect('/admin/settings/general');
+    }
+  },
+
+  /* Backup: download media as zip */
+  async backupMedia(req, res) {
+    try {
+      if (!archiver) {
+        req.flash('error', 'Run: npm install archiver on the server first.');
+        return res.redirect('/admin/settings/general');
+      }
+      const uploadsDir = path.join(__dirname, '../../public/assets/uploads');
+      const timestamp  = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+      const filename   = `caterus-media-${timestamp}.zip`;
+      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.setHeader('Content-Type', 'application/zip');
+
+      const archive = archiver('zip', { zlib: { level: 5 } });
+      archive.pipe(res);
+      archive.directory(uploadsDir, 'uploads');
+      archive.finalize();
+    } catch (err) {
+      console.error(err);
+      req.flash('error', 'Media backup failed: ' + err.message);
+      res.redirect('/admin/settings/general');
+    }
+  },
+
+  /* Restore: upload .sql and run against DB */
+  async restoreDb(req, res) {
+    try {
+      if (!req.file) { req.flash('error', 'No file uploaded.'); return res.redirect('/admin/settings/general'); }
+      const { exec } = require('child_process');
+      const dbName   = process.env.DB_NAME;
+      const dbUser   = process.env.DB_USER;
+      const dbPass   = process.env.DB_PASSWORD || '';
+      const dbHost   = process.env.DB_HOST || 'localhost';
+      const dbPort   = process.env.DB_PORT || '3306';
+
+      const passArg = dbPass ? `-p${dbPass}` : '';
+      const cmd     = `mysql -h ${dbHost} -P ${dbPort} -u ${dbUser} ${passArg} ${dbName} < "${req.file.path}"`;
+      exec(cmd, (err) => {
+        fs.unlink(req.file.path, () => {});
+        if (err) {
+          req.flash('error', 'DB restore failed: ' + err.message);
+        } else {
+          req.flash('success', 'Database restored successfully.');
+        }
+        res.redirect('/admin/settings/general');
+      });
+    } catch (err) {
+      console.error(err);
+      req.flash('error', 'DB restore failed: ' + err.message);
+      res.redirect('/admin/settings/general');
+    }
+  },
+
+  /* Restore: upload media zip and extract */
+  async restoreMedia(req, res) {
+    try {
+      if (!req.file) { req.flash('error', 'No file uploaded.'); return res.redirect('/admin/settings/general'); }
+      if (!unzipper) {
+        req.flash('error', 'Run: npm install unzipper on the server first.');
+        fs.unlink(req.file.path, () => {});
+        return res.redirect('/admin/settings/general');
+      }
+      const uploadsDir = path.join(__dirname, '../../public/assets/uploads');
+      fs.createReadStream(req.file.path)
+        .pipe(unzipper.Extract({ path: path.join(__dirname, '../../public/assets') }))
+        .on('close', () => {
+          fs.unlink(req.file.path, () => {});
+          req.flash('success', 'Media restored successfully.');
+          res.redirect('/admin/settings/general');
+        })
+        .on('error', err => {
+          fs.unlink(req.file.path, () => {});
+          req.flash('error', 'Media restore failed: ' + err.message);
+          res.redirect('/admin/settings/general');
+        });
+    } catch (err) {
+      console.error(err);
+      req.flash('error', 'Media restore failed: ' + err.message);
+      res.redirect('/admin/settings/general');
+    }
+  },
+
+  /* Generate sitemap.xml string from DB */
+  async getSitemapXml(baseUrl) {
+    const Caterer = require('../../models/Caterer');
+    const Faq     = require('../../models/Faq');
+    const [caterers] = await db.query(
+      "SELECT slug, updated_at FROM caterers WHERE is_published = 1 AND status = 'active' AND (is_unlisted = 0 OR is_unlisted IS NULL) ORDER BY updated_at DESC"
+    );
+    const staticPages = [
+      { loc: '/',          priority: '1.0', changefreq: 'weekly' },
+      { loc: '/caterers',  priority: '0.9', changefreq: 'daily'  },
+      { loc: '/contact',   priority: '0.5', changefreq: 'monthly' },
+    ];
+    const toDate = d => d ? new Date(d).toISOString().slice(0, 10) : new Date().toISOString().slice(0, 10);
+
+    let urls = staticPages.map(p =>
+      `  <url>\n    <loc>${baseUrl}${p.loc}</loc>\n    <changefreq>${p.changefreq}</changefreq>\n    <priority>${p.priority}</priority>\n  </url>`
+    );
+    for (const c of caterers) {
+      urls.push(`  <url>\n    <loc>${baseUrl}/caterers/${c.slug}</loc>\n    <lastmod>${toDate(c.updated_at)}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>`);
+    }
+
+    return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>`;
   },
 };

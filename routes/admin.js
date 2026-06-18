@@ -1,6 +1,7 @@
 /* Admin Routes */
 const express = require('express');
 const router  = express.Router();
+const multer  = require('multer');
 const { requireAdmin } = require('../middleware/adminAuth');
 const upload = require('../middleware/upload');
 
@@ -16,6 +17,9 @@ const vettingController     = require('../controllers/admin/vettingController');
 const enquiryController     = require('../controllers/admin/enquiryController');
 const applicationController = require('../controllers/admin/applicationController');
 const faqController         = require('../controllers/admin/faqController');
+
+/* Multer for .sql and .zip restores (stored in OS temp) */
+const restoreUpload = multer({ dest: require('os').tmpdir() });
 
 /* Auth (no middleware) */
 router.get('/login',  authController.showLogin);
@@ -37,6 +41,9 @@ router.put('/caterers/:id',            upload.single('featured_image'), catererC
 router.delete('/caterers/:id',         catererController.destroy);
 router.post('/caterers/:id/images',    upload.array('images', 10), catererController.uploadImages);
 router.delete('/caterers/:id/images/:imgId', catererController.deleteImage);
+router.put('/caterers/:id/unlist',     catererController.unlist);
+router.put('/caterers/:id/relist',     catererController.relist);
+router.post('/caterers/:id/seo',       catererController.saveSeo);
 
 /* Vetting */
 router.get('/caterers/:id/vetting',    vettingController.show);
@@ -81,20 +88,31 @@ router.put('/faqs/:id',          faqController.update);
 router.delete('/faqs/:id',       faqController.destroy);
 
 /* Settings */
-router.get('/settings/general',          settingsController.general);
-router.get('/settings/smtp',             settingsController.smtp);
-router.get('/settings/stripe',           settingsController.stripe);
-router.get('/settings/seo',              settingsController.seo);
-router.post('/settings/seo',             upload.single('featured_image'), settingsController.saveSeo);
-router.get('/settings/profile',          settingsController.profile);
-router.put('/settings',                  settingsController.update);
-router.post('/settings/logo',            upload.single('logo'), settingsController.uploadLogo);
-router.post('/settings/smtp/test',       settingsController.testSmtp);
-router.put('/settings/profile',          settingsController.updateProfile);
-router.post('/settings/profile/info',    settingsController.updateProfileInfo);
-router.post('/settings/profile/avatar',  upload.single('avatar'), settingsController.uploadAvatar);
-router.post('/settings/2fa/setup',       settingsController.setup2fa);
-router.post('/settings/2fa/enable',      settingsController.enable2fa);
-router.post('/settings/2fa/disable',     settingsController.disable2fa);
+router.get('/settings/general',           settingsController.general);
+router.get('/settings/smtp',              settingsController.smtp);
+router.get('/settings/stripe',            settingsController.stripe);
+router.get('/settings/seo',               settingsController.seo);
+router.post('/settings/seo',              upload.single('featured_image'), settingsController.saveSeo);
+router.get('/settings/profile',           settingsController.profile);
+router.put('/settings',                   settingsController.update);
+router.post('/settings/logo',             upload.single('logo'), settingsController.uploadLogo);
+router.post('/settings/smtp/test',        settingsController.testSmtp);
+router.put('/settings/profile',           settingsController.updateProfile);
+router.post('/settings/profile/info',     settingsController.updateProfileInfo);
+router.post('/settings/profile/avatar',   upload.single('avatar'), settingsController.uploadAvatar);
+router.post('/settings/2fa/setup',        settingsController.setup2fa);
+router.post('/settings/2fa/enable',       settingsController.enable2fa);
+router.post('/settings/2fa/disable',      settingsController.disable2fa);
+
+/* Erase test data */
+router.post('/settings/erase-test-data',  settingsController.eraseTestData);
+
+/* Backup */
+router.get('/settings/backup/db',         settingsController.backupDb);
+router.get('/settings/backup/media',      settingsController.backupMedia);
+
+/* Restore */
+router.post('/settings/restore/db',       restoreUpload.single('sql_file'), settingsController.restoreDb);
+router.post('/settings/restore/media',    restoreUpload.single('zip_file'), settingsController.restoreMedia);
 
 module.exports = router;

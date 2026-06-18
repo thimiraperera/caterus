@@ -10,6 +10,12 @@
   <link rel="stylesheet" href="/admin.css">
   <%- style %>
 </head>
+<script>
+  (function() {
+    var t = localStorage.getItem('adminTheme') || 'light';
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+</script>
 <body class="admin-body">
   <div class="admin-layout">
     <%- include('../partials/admin-nav') %>
