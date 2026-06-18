@@ -26,13 +26,14 @@ async function getFooterData() {
     try { socialLinks = JSON.parse(s.social_links || '[]'); } catch (_) {}
     return {
       siteLogo:        s.logo_path         || '',
+      siteFavicon:     s.favicon_path      || '',
       contactEmail:    s.contact_email     || '',
       contactPhone:    s.contact_phone     || '',
       contactPhoneCountry: s.contact_phone_country || '',
       footerTagline:   s.footer_tagline    || 'Caterus Pty Ltd · Melbourne, Victoria, Australia',
       socialLinks,
     };
-  } catch { return { siteLogo: '', contactEmail: '', contactPhone: '', contactPhoneCountry: '', footerTagline: 'Caterus Pty Ltd · Melbourne, Victoria, Australia', socialLinks: [] }; }
+  } catch { return { siteLogo: '', siteFavicon: '', contactEmail: '', contactPhone: '', contactPhoneCountry: '', footerTagline: 'Caterus Pty Ltd · Melbourne, Victoria, Australia', socialLinks: [] }; }
 }
 
 const SOCIAL_ICONS = {

@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/styles.css">
+  <% if (typeof siteFavicon !== 'undefined' && siteFavicon) { %><link rel="icon" href="/<%= siteFavicon %>"><% } %>
   <style>
     .success-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
     .success-card { background: #fff; border: 1px solid rgba(29,27,23,0.12); border-radius: 24px; padding: 48px; max-width: 540px; width: 100%; text-align: center; box-shadow: 0 20px 48px -16px rgba(29,27,23,0.18); }

@@ -17,17 +17,21 @@ try { unzipper  = require('unzipper'); } catch (_) {}
 
 module.exports = {
   async general(req, res) {
-    const [settings, captchaSettings, logoSetting, logoDarkSetting] = await Promise.all([
+    const [settings, captchaSettings, logoSetting, logoDarkSetting, faviconSetting, mailLogoSetting] = await Promise.all([
       Settings.getByGroup('general'),
       Settings.getByGroup('captcha'),
       Settings.get('logo_path').catch(() => null),
       Settings.get('logo_path_dark').catch(() => null),
+      Settings.get('favicon_path').catch(() => null),
+      Settings.get('mail_logo_path').catch(() => null),
     ]);
     res.render('admin/settings/general', {
       title: 'Settings', currentPage: 'settings-general',
       settings: { ...settings, ...captchaSettings },
-      logoPath: logoSetting || '',
+      logoPath:     logoSetting     || '',
       logoDarkPath: logoDarkSetting || '',
+      faviconPath:  faviconSetting  || '',
+      mailLogoPath: mailLogoSetting || '',
     });
   },
 
@@ -132,6 +136,31 @@ module.exports = {
       req.flash('success', 'Dark logo uploaded.');
       res.redirect('/admin/settings/general');
     } catch (err) { console.error(err); req.flash('error', 'Dark logo upload failed.'); res.redirect('/admin/settings/general'); }
+  },
+
+  async uploadFavicon(req, res) {
+    try {
+      if (!req.file) { req.flash('error', 'No file selected.'); return res.redirect('/admin/settings/general'); }
+      const dir = path.join(__dirname, '../../public/assets/uploads/general');
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      const ext = path.extname(req.file.originalname).toLowerCase() || '.png';
+      const outPath = path.join(dir, 'favicon' + ext);
+      fs.copyFileSync(req.file.path, outPath);
+      fs.unlink(req.file.path, () => {});
+      await Settings.set('favicon_path', 'assets/uploads/general/favicon' + ext, 'general');
+      req.flash('success', 'Site icon updated.');
+      res.redirect('/admin/settings/general');
+    } catch (err) { console.error(err); req.flash('error', 'Site icon upload failed.'); res.redirect('/admin/settings/general'); }
+  },
+
+  async uploadMailLogo(req, res) {
+    try {
+      if (!req.file) { req.flash('error', 'No file selected.'); return res.redirect('/admin/settings/general'); }
+      const logoPath = await convertToWebp(req.file.path, { maxWidth: 600, maxHeight: 200, quality: 90, fit: 'inside' });
+      await Settings.set('mail_logo_path', logoPath, 'general');
+      req.flash('success', 'Email header logo updated.');
+      res.redirect('/admin/settings/general');
+    } catch (err) { console.error(err); req.flash('error', 'Email logo upload failed.'); res.redirect('/admin/settings/general'); }
   },
 
   async contact(req, res) {

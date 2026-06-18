@@ -11,11 +11,12 @@ const BASE_URL = process.env.BASE_URL || 'https://caterus.com.au';
 module.exports = {
   async showLogin(req, res) {
     try {
-      const [logoLight, logoDark, logoChoice, captchaSettings] = await Promise.all([
+      const [logoLight, logoDark, logoChoice, captchaSettings, favicon] = await Promise.all([
         Settings.get('logo_path').catch(() => null),
         Settings.get('logo_path_dark').catch(() => null),
         Settings.get('login_logo_choice').catch(() => 'light'),
         Settings.getByGroup('captcha').catch(() => ({})),
+        Settings.get('favicon_path').catch(() => null),
       ]);
       const choice = logoChoice || 'light';
       let loginLogo = '';
@@ -29,6 +30,7 @@ module.exports = {
         logoChoice: choice,
         captchaType:    captchaSettings.captcha_type    || 'none',
         captchaSiteKey: captchaSettings.captcha_site_key || '',
+        siteFavicon: favicon || '',
       });
     } catch (_) {
       res.render('admin/login', {
@@ -39,6 +41,7 @@ module.exports = {
         logoChoice: 'text',
         captchaType: 'none',
         captchaSiteKey: '',
+        siteFavicon: '',
       });
     }
   },

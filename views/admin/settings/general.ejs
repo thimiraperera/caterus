@@ -21,7 +21,7 @@
         </form>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:4px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px">
         <div>
           <p style="font-size:0.8rem;font-weight:600;margin-bottom:8px;color:var(--ink-soft)">Light Theme Logo</p>
           <% if (logoPath) { %>
@@ -50,7 +50,39 @@
             <button type="submit" class="btn btn-secondary btn-sm">Upload dark logo</button>
           </form>
         </div>
+
+        <div>
+          <p style="font-size:0.8rem;font-weight:600;margin-bottom:8px;color:var(--ink-soft)">Email Header Logo</p>
+          <% if (mailLogoPath) { %>
+          <div style="margin-bottom:10px;background:#f8f8f5;border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;align-items:center;justify-content:center;min-height:60px">
+            <img src="/<%= mailLogoPath %>" alt="Email logo" style="max-height:48px;max-width:160px;object-fit:contain">
+          </div>
+          <% } %>
+          <form method="POST" action="/admin/settings/mail-logo" enctype="multipart/form-data">
+            <div class="form-group" style="margin-bottom:8px">
+              <input type="file" name="mail_logo" class="form-control" accept="image/png,image/jpeg,image/svg+xml,image/webp" required>
+            </div>
+            <button type="submit" class="btn btn-secondary btn-sm">Upload email logo</button>
+          </form>
+        </div>
       </div>
+
+      <div style="margin-bottom:4px">
+        <p style="font-size:0.8rem;font-weight:600;margin-bottom:8px;color:var(--ink-soft)">Site Icon (Favicon)</p>
+        <p style="font-size:0.78rem;color:var(--muted);margin-bottom:10px">Shown in browser tabs and bookmarks. Use a square PNG or ICO file (32x32 or 64x64 recommended).</p>
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <% if (faviconPath) { %>
+          <div style="background:#f8f8f5;border:1px solid var(--line);border-radius:8px;padding:10px;display:flex;align-items:center;justify-content:center;width:52px;height:52px">
+            <img src="/<%= faviconPath %>" alt="Favicon" style="max-width:32px;max-height:32px;object-fit:contain">
+          </div>
+          <% } %>
+          <form method="POST" action="/admin/settings/favicon" enctype="multipart/form-data" style="display:flex;gap:8px;align-items:center">
+            <input type="file" name="favicon" class="form-control" accept="image/png,image/x-icon,image/svg+xml,image/vnd.microsoft.icon" required style="max-width:240px">
+            <button type="submit" class="btn btn-secondary btn-sm" style="white-space:nowrap">Upload favicon</button>
+          </form>
+        </div>
+      </div>
+
     </div>
 
     <div class="form-section">

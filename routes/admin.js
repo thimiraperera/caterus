@@ -38,15 +38,17 @@ router.post('/reset-password/:token', authController.resetPassword);
 /* All routes below require admin */
 router.use(requireAdmin);
 
-/* Inject logos into all admin views */
+/* Inject logos + favicon into all admin views */
 router.use(async (req, res, next) => {
   try {
-    const [light, dark] = await Promise.all([
+    const [light, dark, favicon] = await Promise.all([
       Settings.get('logo_path').catch(() => null),
       Settings.get('logo_path_dark').catch(() => null),
+      Settings.get('favicon_path').catch(() => null),
     ]);
-    res.locals.adminLogoLight = light || '';
-    res.locals.adminLogoDark  = dark  || '';
+    res.locals.adminLogoLight = light   || '';
+    res.locals.adminLogoDark  = dark    || '';
+    res.locals.adminFavicon   = favicon || '';
   } catch (_) {}
   next();
 });
@@ -150,8 +152,10 @@ router.post('/settings/occasions/delete',            settingsController.deleteOc
 router.get('/settings/contact',           settingsController.contact);
 router.post('/settings/contact',          settingsController.updateContact);
 
-/* Dark logo */
-router.post('/settings/logo-dark',        upload.single('logo_dark'), settingsController.uploadLogoDark);
+/* Dark logo, favicon, mail logo */
+router.post('/settings/logo-dark',        upload.single('logo_dark'),  settingsController.uploadLogoDark);
+router.post('/settings/favicon',          upload.single('favicon'),    settingsController.uploadFavicon);
+router.post('/settings/mail-logo',        upload.single('mail_logo'),  settingsController.uploadMailLogo);
 
 /* Backup */
 router.get('/settings/backup/db',         settingsController.backupDb);
