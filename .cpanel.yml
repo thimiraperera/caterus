@@ -1,0 +1,7 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=$HOME/caterus
+    - /bin/mkdir -p $DEPLOYPATH/tmp
+    - cd $DEPLOYPATH && /usr/local/bin/npm install --omit=dev --silent
+    - /bin/touch $DEPLOYPATH/tmp/restart.txt
