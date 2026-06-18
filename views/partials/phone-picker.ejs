@@ -69,7 +69,7 @@ const ppId = 'pp_' + fieldName.replace(/[^a-z0-9]/gi,'_') + '_' + Math.floor(Mat
 <div class="phone-picker" id="<%= ppId %>-wrap" style="display:flex;gap:8px;position:relative">
   <div style="position:relative;flex-shrink:0">
     <button type="button" class="form-control" id="<%= ppId %>-btn"
-      style="display:flex;align-items:center;gap:6px;width:110px;cursor:pointer;text-align:left;padding:0 10px;white-space:nowrap"
+      style="display:flex;align-items:center;gap:6px;width:110px;cursor:pointer;text-align:left;padding-left:10px;padding-right:6px;white-space:nowrap"
       onclick="ppToggle('<%= ppId %>')">
       <span id="<%= ppId %>-flag" style="font-size:1.1rem"><%= ppSel.f %></span>
       <span id="<%= ppId %>-code" style="font-size:0.88rem;font-weight:500"><%= ppSel.c %></span>

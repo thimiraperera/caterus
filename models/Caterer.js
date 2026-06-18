@@ -81,6 +81,8 @@ const Caterer = {
       const s = `%${filters.search}%`;
       params.push(s, s, s);
     }
+    if (filters.cuisine) { where += ' AND c.cuisine_type LIKE ?'; params.push(`%${filters.cuisine}%`); }
+    if (filters.suburb) { where += ' AND c.suburb LIKE ?'; params.push(`%${filters.suburb}%`); }
 
     const [countRows] = await db.query(`SELECT COUNT(*) AS total FROM caterers c ${where}`, params);
     const total = countRows[0].total;

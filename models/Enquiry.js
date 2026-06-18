@@ -5,7 +5,17 @@ module.exports = {
     let where = 'WHERE 1=1';
     const params = [];
     if (filters.status) { where += ' AND e.status = ?'; params.push(filters.status); }
-    const [countRows] = await db.query(`SELECT COUNT(*) AS total FROM contact_enquiries e ${where}`, params);
+    if (filters.hasCaterer === true)  { where += ' AND e.caterer_id IS NOT NULL'; }
+    if (filters.hasCaterer === false) { where += ' AND e.caterer_id IS NULL'; }
+    if (filters.search) {
+      where += ' AND (e.first_name LIKE ? OR e.last_name LIKE ? OR e.email LIKE ?)';
+      const s = `%${filters.search}%`; params.push(s, s, s);
+    }
+    if (filters.caterer_search) { where += ' AND c.business_name LIKE ?'; params.push(`%${filters.caterer_search}%`); }
+    if (filters.date_from) { where += ' AND DATE(e.created_at) >= ?'; params.push(filters.date_from); }
+    if (filters.date_to) { where += ' AND DATE(e.created_at) <= ?'; params.push(filters.date_to); }
+    const [countRows] = await db.query(
+      `SELECT COUNT(*) AS total FROM contact_enquiries e LEFT JOIN caterers c ON e.caterer_id = c.id ${where}`, params);
     const total = countRows[0].total;
     const page = Math.max(1, parseInt(filters.page) || 1);
     const limit = parseInt(filters.limit) || 20;

@@ -5,6 +5,12 @@ module.exports = {
     let where = 'WHERE 1=1';
     const params = [];
     if (filters.status) { where += ' AND status = ?'; params.push(filters.status); }
+    if (filters.search) {
+      where += ' AND (business_name LIKE ? OR contact_name LIKE ? OR email LIKE ? OR phone LIKE ?)';
+      const s = `%${filters.search}%`; params.push(s, s, s, s);
+    }
+    if (filters.cuisine) { where += ' AND cuisine LIKE ?'; params.push(`%${filters.cuisine}%`); }
+    if (filters.area) { where += ' AND service_area LIKE ?'; params.push(`%${filters.area}%`); }
     const [countRows] = await db.query(`SELECT COUNT(*) AS total FROM caterer_applications ${where}`, params);
     const total = countRows[0].total;
     const page = Math.max(1, parseInt(filters.page) || 1);

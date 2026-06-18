@@ -1,14 +1,23 @@
-<div class="filter-bar">
+<div class="filter-bar" style="flex-wrap:wrap;gap:8px">
   <div class="filter-tabs">
-    <a href="/admin/reviews?status=pending" class="filter-tab<%= currentStatus === 'pending' ? ' active' : '' %>">Pending</a>
+    <a href="/admin/reviews?status=pending"  class="filter-tab<%= currentStatus === 'pending'  ? ' active' : '' %>">Pending</a>
     <a href="/admin/reviews?status=approved" class="filter-tab<%= currentStatus === 'approved' ? ' active' : '' %>">Approved</a>
     <a href="/admin/reviews?status=rejected" class="filter-tab<%= currentStatus === 'rejected' ? ' active' : '' %>">Rejected</a>
   </div>
-  <select class="per-page-select form-control" style="margin-left:auto"
+  <select class="form-control" style="max-width:140px"
+    onchange="const p=new URLSearchParams(location.search);p.set('rating',this.value);p.delete('page');location.href=location.pathname+'?'+p.toString()">
+    <option value="" <%=currentRating===''?'selected':''%>>All ratings</option>
+    <option value="5" <%=currentRating==='5'?'selected':''%>>5 stars</option>
+    <option value="4" <%=currentRating==='4'?'selected':''%>>4 stars</option>
+    <option value="3" <%=currentRating==='3'?'selected':''%>>3 stars</option>
+    <option value="2" <%=currentRating==='2'?'selected':''%>>2 stars</option>
+    <option value="1" <%=currentRating==='1'?'selected':''%>>1 star</option>
+  </select>
+  <select class="per-page-select form-control" style="margin-left:auto;max-width:120px"
     onchange="const p=new URLSearchParams(location.search);p.set('per_page',this.value);p.delete('page');location.href=location.pathname+'?'+p.toString()">
-    <option value="10" <%=per_page===10?'selected':''%>>10 / page</option>
-    <option value="20" <%=per_page===20?'selected':''%>>20 / page</option>
-    <option value="50" <%=per_page===50?'selected':''%>>50 / page</option>
+    <option value="10"  <%=per_page===10?'selected':''%>>10 / page</option>
+    <option value="20"  <%=per_page===20?'selected':''%>>20 / page</option>
+    <option value="50"  <%=per_page===50?'selected':''%>>50 / page</option>
     <option value="100" <%=per_page===100?'selected':''%>>100 / page</option>
   </select>
 </div>

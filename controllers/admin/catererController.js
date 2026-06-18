@@ -9,11 +9,13 @@ const fs             = require('fs');
 module.exports = {
   async index(req, res) {
     try {
-      const { page = 1, per_page = 20, status, search } = req.query;
-      const result = await Caterer.findAll({ status, search, page, limit: per_page });
+      const { page = 1, per_page = 20, status, search, cuisine, suburb } = req.query;
+      const result = await Caterer.findAll({ status, search, cuisine, suburb, page, limit: per_page });
       const qp = [];
       if (status) qp.push('status=' + encodeURIComponent(status));
       if (search) qp.push('search=' + encodeURIComponent(search));
+      if (cuisine) qp.push('cuisine=' + encodeURIComponent(cuisine));
+      if (suburb) qp.push('suburb=' + encodeURIComponent(suburb));
       qp.push('per_page=' + per_page);
       const queryExtra = qp.join('&');
 
@@ -30,6 +32,7 @@ module.exports = {
         title: 'Caterers', currentPage: 'caterers',
         ...result, per_page: parseInt(per_page) || 20, queryExtra,
         currentStatus: status || '', searchQuery: search || '',
+        cfCuisine: cuisine || '', cfSuburb: suburb || '',
       });
     } catch (err) {
       console.error(err);
@@ -82,7 +85,12 @@ module.exports = {
       ]);
       const DEFAULT_OCCASIONS = ['Wedding', 'Corporate', 'Birthday', 'Christmas', 'Conference', 'Cocktail Party', 'Gala Dinner', 'School Event', 'Funeral', 'Other'];
       let allOccasions = DEFAULT_OCCASIONS;
-      try { if (occasionsRaw) allOccasions = JSON.parse(occasionsRaw); } catch (_) {}
+      try {
+        if (occasionsRaw) {
+          const parsed = JSON.parse(occasionsRaw);
+          allOccasions = parsed.map(o => typeof o === 'string' ? o : o.name);
+        }
+      } catch (_) {}
       res.render('admin/caterers/edit', { title: `Edit: ${caterer.business_name}`, currentPage: 'caterers', caterer, images, allOccasions });
     } catch (err) {
       console.error(err);

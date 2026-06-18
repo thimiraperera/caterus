@@ -47,6 +47,10 @@ module.exports = {
     Object.keys(allSeo).forEach(k => {
       seo[k.replace(/^seo_/, '')] = allSeo[k];
     });
+    if (!seo.home_is_cornerstone) {
+      seo.home_is_cornerstone = '1';
+      Settings.set('seo_home_is_cornerstone', '1', 'seo').catch(() => {});
+    }
     res.render('admin/settings/seo', { title: 'SEO Settings', currentPage: 'settings-seo', seo });
   },
 
@@ -282,8 +286,18 @@ module.exports = {
     const raw = await Settings.get('occasions_list').catch(() => null);
     let occasions = [];
     try { occasions = raw ? JSON.parse(raw) : []; } catch (_) {}
+    occasions = occasions.map(o => typeof o === 'string' ? { name: o, image: '', description: '' } : o);
     if (!occasions.length) {
-      occasions = ['Wedding', 'Corporate', 'Birthday', 'Christmas', 'Conference', 'Cocktail Party', 'Gala Dinner', 'School Event', 'Funeral', 'Other'];
+      occasions = [
+        { name: 'Corporate',         image: '', description: 'Professional catering for corporate meetings, conferences, and business events.' },
+        { name: 'Wedding',           image: '', description: 'Elegant catering solutions for your special day, from intimate ceremonies to grand celebrations.' },
+        { name: 'Party',             image: '', description: 'Delicious food and great vibes for any party occasion.' },
+        { name: 'Private Dining',    image: '', description: 'Exclusive private dining experiences tailored to your guests.' },
+        { name: 'Gala Dinners',      image: '', description: 'Sophisticated catering for prestigious gala evenings and formal dinners.' },
+        { name: 'Conferences',       image: '', description: 'Efficient, high-quality catering for conferences and large professional gatherings.' },
+        { name: 'Christmas Parties', image: '', description: 'Festive catering to make your Christmas celebration memorable.' },
+        { name: 'Product Launches',  image: '', description: 'Impressive catering to complement your product launch event.' },
+      ];
       await Settings.set('occasions_list', JSON.stringify(occasions), 'general');
     }
     res.render('admin/settings/occasions', { title: 'Occasions', currentPage: 'settings-occasions', occasions });
@@ -293,21 +307,48 @@ module.exports = {
     const raw = await Settings.get('occasions_list').catch(() => null);
     let occasions = [];
     try { occasions = raw ? JSON.parse(raw) : []; } catch (_) {}
+    occasions = occasions.map(o => typeof o === 'string' ? { name: o, image: '', description: '' } : o);
     const name = (req.body.name || '').trim();
-    if (name && !occasions.includes(name)) {
-      occasions.push(name);
+    const description = (req.body.description || '').trim();
+    if (name && !occasions.find(o => o.name === name)) {
+      const newOcc = { name, image: '', description };
+      if (req.file) {
+        try { newOcc.image = await convertToWebp(req.file.path, { maxWidth: 800, maxHeight: 600, quality: 85 }); } catch (_) {}
+      }
+      occasions.push(newOcc);
       await Settings.set('occasions_list', JSON.stringify(occasions), 'general');
     }
     req.flash('success', `Occasion "${name}" added.`);
     res.redirect('/admin/settings/occasions');
   },
 
+  async updateOccasion(req, res) {
+    try {
+      const idx = parseInt(req.params.index);
+      const raw = await Settings.get('occasions_list').catch(() => null);
+      let occasions = [];
+      try { occasions = raw ? JSON.parse(raw) : []; } catch (_) {}
+      occasions = occasions.map(o => typeof o === 'string' ? { name: o, image: '', description: '' } : o);
+      if (occasions[idx]) {
+        if (req.body.name) occasions[idx].name = req.body.name.trim();
+        occasions[idx].description = (req.body.description || '').trim();
+        if (req.file) {
+          try { occasions[idx].image = await convertToWebp(req.file.path, { maxWidth: 800, maxHeight: 600, quality: 85 }); } catch (_) {}
+        }
+        await Settings.set('occasions_list', JSON.stringify(occasions), 'general');
+        req.flash('success', 'Occasion updated.');
+      }
+      res.redirect('/admin/settings/occasions');
+    } catch (err) { console.error(err); req.flash('error', 'Failed to update occasion.'); res.redirect('/admin/settings/occasions'); }
+  },
+
   async deleteOccasion(req, res) {
     const raw = await Settings.get('occasions_list').catch(() => null);
     let occasions = [];
     try { occasions = raw ? JSON.parse(raw) : []; } catch (_) {}
+    occasions = occasions.map(o => typeof o === 'string' ? { name: o, image: '', description: '' } : o);
     const name = req.body.name || '';
-    occasions = occasions.filter(o => o !== name);
+    occasions = occasions.filter(o => o.name !== name);
     await Settings.set('occasions_list', JSON.stringify(occasions), 'general');
     req.flash('success', `Occasion "${name}" removed.`);
     res.redirect('/admin/settings/occasions');

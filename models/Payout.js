@@ -5,7 +5,14 @@ module.exports = {
     let where = 'WHERE 1=1';
     const params = [];
     if (filters.status) { where += ' AND p.status = ?'; params.push(filters.status); }
-    const [countRows] = await db.query(`SELECT COUNT(*) AS total FROM payouts p ${where}`, params);
+    if (filters.caterer_search) { where += ' AND c.business_name LIKE ?'; params.push(`%${filters.caterer_search}%`); }
+    if (filters.booking_search) { where += ' AND b.reference LIKE ?'; params.push(`%${filters.booking_search}%`); }
+    if (filters.amount_min != null && filters.amount_min !== '') { where += ' AND p.amount >= ?'; params.push(parseFloat(filters.amount_min)); }
+    if (filters.amount_max != null && filters.amount_max !== '') { where += ' AND p.amount <= ?'; params.push(parseFloat(filters.amount_max)); }
+    if (filters.date_from) { where += ' AND DATE(p.created_at) >= ?'; params.push(filters.date_from); }
+    if (filters.date_to) { where += ' AND DATE(p.created_at) <= ?'; params.push(filters.date_to); }
+    const [countRows] = await db.query(
+      `SELECT COUNT(*) AS total FROM payouts p LEFT JOIN caterers c ON p.caterer_id = c.id LEFT JOIN bookings b ON p.booking_id = b.id ${where}`, params);
     const total = countRows[0].total;
     const page = Math.max(1, parseInt(filters.page) || 1);
     const limit = parseInt(filters.limit) || 20;

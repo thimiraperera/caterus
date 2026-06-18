@@ -1,0 +1,70 @@
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Caterer Messages</h1>
+    <p style="color:var(--muted);font-size:0.88rem;margin-top:4px">Enquiries sent directly to a caterer from their profile page.</p>
+  </div>
+</div>
+
+<div class="filter-bar" style="gap:10px">
+  <select class="form-control" style="max-width:160px"
+    onchange="const p=new URLSearchParams(location.search);p.set('status',this.value);p.delete('page');location.href=location.pathname+'?'+p.toString()">
+    <option value="">All statuses</option>
+    <option value="new"    <%=status==='new'?'selected':''%>>New</option>
+    <option value="read"   <%=status==='read'?'selected':''%>>Read</option>
+    <option value="closed" <%=status==='closed'?'selected':''%>>Closed</option>
+  </select>
+  <select class="form-control per-page-select" style="max-width:120px"
+    onchange="const p=new URLSearchParams(location.search);p.set('per_page',this.value);p.delete('page');location.href=location.pathname+'?'+p.toString()">
+    <option value="10" <%=per_page===10?'selected':''%>>10 / page</option>
+    <option value="20" <%=per_page===20?'selected':''%>>20 / page</option>
+    <option value="50" <%=per_page===50?'selected':''%>>50 / page</option>
+  </select>
+</div>
+
+<% if (enquiries.length === 0) { %>
+<div class="empty-state"><p>No caterer messages yet.</p></div>
+<% } else { %>
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Caterer</th>
+        <th>From</th>
+        <th>Email</th>
+        <th>Message</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th style="white-space:nowrap">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% enquiries.forEach(e => { %>
+      <tr>
+        <td><strong><%= e.caterer_name || 'Unknown' %></strong></td>
+        <td><%= e.first_name %> <%= e.last_name || '' %></td>
+        <td><a href="mailto:<%= e.email %>"><%= e.email %></a></td>
+        <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><%= e.message || '-' %></td>
+        <td style="white-space:nowrap"><%= formatDate(e.created_at) %></td>
+        <td><span class="badge badge-<%= e.status %>"><%= e.status %></span></td>
+        <td style="white-space:nowrap">
+          <div class="actions">
+            <a href="/admin/enquiries/<%= e.id %>" class="btn btn-primary btn-sm">View</a>
+            <% if (e.status === 'new') { %>
+            <form method="POST" action="/admin/enquiries/<%= e.id %>/status?_method=PUT" style="display:inline">
+              <input type="hidden" name="status" value="read">
+              <button type="submit" class="btn btn-secondary btn-sm">Mark Read</button>
+            </form>
+            <% } %>
+            <form method="POST" action="/admin/enquiries/<%= e.id %>/status?_method=PUT" style="display:inline">
+              <input type="hidden" name="status" value="closed">
+              <button type="submit" class="btn btn-secondary btn-sm">Close</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<%- include('../partials/pagination', { baseUrl: '/admin/caterer-messages', page, totalPages, queryExtra }) %>
+<% } %>

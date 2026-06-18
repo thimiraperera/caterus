@@ -15,8 +15,16 @@ const Booking = {
       where += ' AND (b.reference LIKE ? OR b.customer_first_name LIKE ? OR b.customer_last_name LIKE ? OR b.customer_email LIKE ?)';
       const s = `%${filters.search}%`; params.push(s, s, s, s);
     }
+    if (filters.caterer_search) { where += ' AND c.business_name LIKE ?'; params.push(`%${filters.caterer_search}%`); }
+    if (filters.date_from) { where += ' AND b.event_date >= ?'; params.push(filters.date_from); }
+    if (filters.date_to) { where += ' AND b.event_date <= ?'; params.push(filters.date_to); }
+    if (filters.total_min != null && filters.total_min !== '') { where += ' AND b.total >= ?'; params.push(parseFloat(filters.total_min)); }
+    if (filters.total_max != null && filters.total_max !== '') { where += ' AND b.total <= ?'; params.push(parseFloat(filters.total_max)); }
+    if (filters.guest_min != null && filters.guest_min !== '') { where += ' AND b.guest_count >= ?'; params.push(parseInt(filters.guest_min)); }
+    if (filters.guest_max != null && filters.guest_max !== '') { where += ' AND b.guest_count <= ?'; params.push(parseInt(filters.guest_max)); }
 
-    const [countRows] = await db.query(`SELECT COUNT(*) AS total FROM bookings b ${where}`, params);
+    const [countRows] = await db.query(
+      `SELECT COUNT(*) AS total FROM bookings b LEFT JOIN caterers c ON b.caterer_id = c.id ${where}`, params);
     const total = countRows[0].total;
     const page = Math.max(1, parseInt(filters.page) || 1);
     const limit = parseInt(filters.limit) || 20;

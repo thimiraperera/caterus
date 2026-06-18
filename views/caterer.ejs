@@ -52,24 +52,21 @@
       <section class="cat-top">
         <div class="cat-gallery">
           <% if (caterer.featured_image) { %>
-          <a href="#photos" class="ph ph--featured" style="background-image:url('/<%= caterer.featured_image %>');background-size:cover;background-position:center" aria-label="Featured image">
+          <a href="/<%= caterer.featured_image %>" class="ph ph--featured" style="background-image:url('/<%= caterer.featured_image %>');background-size:cover;background-position:center" data-gallery data-src="/<%= caterer.featured_image %>" aria-label="View featured image">
             <% if (caterer.is_featured) { %><span class="cat-gallery__badge">★ Top Rated</span><% } %>
           </a>
           <% } else { %>
-          <a href="#photos" class="ph ph--featured" aria-label="Featured image placeholder">
+          <div class="ph ph--featured" aria-label="No featured image">
             <span class="ph__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></span>
             <span class="ph__label">Featured image</span>
-          </a>
+          </div>
           <% } %>
           <div class="cat-gallery__thumbs">
-            <% images.slice(0, 4).forEach((img, i) => { %>
-            <div class="ph" <% if (img.image_path) { %>style="background-image:url('/<%= img.image_path %>');background-size:cover;background-position:center"<% } %>>
-              <% if (!img.image_path) { %><span class="ph__label">Photo <%= i + 1 %></span><% } %>
-            </div>
-            <% }) %>
-            <% for (let i = images.length; i < 4; i++) { %>
-            <div class="ph"><span class="ph__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></svg></span><span class="ph__label">Photo <%= i + 1 %></span></div>
+            <% images.slice(0, 4).forEach((img) => { %>
+            <% if (img.image_path) { %>
+            <a href="/<%= img.image_path %>" class="ph" style="background-image:url('/<%= img.image_path %>');background-size:cover;background-position:center" data-gallery aria-label="View photo"></a>
             <% } %>
+            <% }) %>
           </div>
         </div>
 
@@ -174,14 +171,50 @@
                 <% }) %>
               </div>
             </div>
-            <div class="rev-list">
-              <% reviews.forEach(rev => { %>
+            <div class="rev-list" id="rev-list">
+              <% reviews.slice(0, 5).forEach(rev => { %>
               <article class="rev-card">
-                <header><span class="rev-av"><%= rev.reviewer_initials || '??' %></span><div><strong><%= rev.reviewer_name %></strong><span class="rev-meta"><%= rev.event_type || '' %> · <%= rev.event_date || '' %></span></div><span class="rev-stars stars"><% for(let i=0;i<rev.rating;i++){%>★<%}%></span></header>
+                <header><div class="rev-id"><strong><%= rev.reviewer_name %></strong><span class="rev-meta"><%= rev.event_type || '' %><%= rev.event_type && rev.event_date ? ' · ' : '' %><%= rev.event_date || '' %></span></div><span class="rev-stars stars"><% for(let i=0;i<rev.rating;i++){%>★<%}%></span></header>
                 <p>"<%= rev.comment %>"</p>
               </article>
               <% }) %>
             </div>
+            <% if (reviews.length > 5) { %>
+            <div id="rev-pager" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:1.2rem"></div>
+            <script>
+            (function(){
+              var all = <%- JSON.stringify(reviews.map(function(r){ return { name: r.reviewer_name, event_type: r.event_type||'', event_date: r.event_date||'', rating: r.rating, comment: r.comment }; })) %>;
+              var PER = 5, page = 1;
+              var list = document.getElementById('rev-list');
+              var pager = document.getElementById('rev-pager');
+              function render(){
+                var slice = all.slice((page-1)*PER, page*PER);
+                list.innerHTML = slice.map(function(r){
+                  var stars = '';
+                  for(var i=0;i<r.rating;i++) stars += '★';
+                  var meta = [r.event_type, r.event_date].filter(Boolean).join(' · ');
+                  return '<article class="rev-card"><header><div class="rev-id"><strong>'+r.name+'</strong>'+(meta?'<span class="rev-meta">'+meta+'</span>':'')+'</div><span class="rev-stars stars">'+stars+'</span></header><p>"'+r.comment+'"</p></article>';
+                }).join('');
+                var totalPages = Math.ceil(all.length/PER);
+                var btns = '<button class="pager-btn" '+(page<=1?'disabled':'')+' onclick="revPage('+(page-1)+')">&#8592;</button>';
+                var lastWasEllipsis = false;
+                for(var p=1;p<=totalPages;p++){
+                  if(p===1||p===totalPages||Math.abs(p-page)<=1){
+                    btns+='<button class="pager-btn'+(p===page?' pager-btn--on':'')+'" onclick="revPage('+p+')">'+p+'</button>';
+                    lastWasEllipsis=false;
+                  } else if(!lastWasEllipsis){
+                    btns+='<span class="pager-ellipsis">...</span>';
+                    lastWasEllipsis=true;
+                  }
+                }
+                btns += '<button class="pager-btn" '+(page>=totalPages?'disabled':'')+' onclick="revPage('+(page+1)+')">&#8594;</button>';
+                pager.innerHTML = btns;
+              }
+              window.revPage = function(p){ page=p; render(); list.scrollIntoView({behavior:'smooth',block:'nearest'}); };
+              render();
+            })();
+            </script>
+            <% } %>
 
             <!-- Write a review -->
             <div class="rev-write" id="write-review">
@@ -189,8 +222,13 @@
               <form class="cform" id="review-form" novalidate>
                 <input type="hidden" name="caterer_id" value="<%= caterer.id %>"/>
                 <div class="cform__row">
-                  <label>Your name *<input type="text" name="reviewer_name" placeholder="Jane Doe" required/></label>
+                  <label>First name *<input type="text" name="reviewer_first_name" placeholder="Jane" required/></label>
+                  <label>Last name *<input type="text" name="reviewer_last_name" placeholder="Doe" required/></label>
+                </div>
+                <label>Email address *<input type="email" name="reviewer_email" placeholder="jane@example.com" required/></label>
+                <div class="cform__row">
                   <label>Event type<input type="text" name="event_type" placeholder="e.g. Corporate lunch"/></label>
+                  <label>Event date<input type="date" name="event_date"/></label>
                 </div>
                 <label>Rating *
                   <div class="star-pick" id="star-pick" role="group" aria-label="Rating">
@@ -201,6 +239,7 @@
                   </div>
                 </label>
                 <label>Your review *<textarea name="comment" rows="3" placeholder="Tell us about your experience…" required></textarea></label>
+                <p class="rev-write__disclaimer">Your email address will not be displayed publicly. Reviews are moderated before going live.</p>
                 <button type="submit" class="btn btn--fill">Submit review</button>
               </form>
               <p class="rev-write__note" hidden>Thanks! Your review has been submitted and is pending approval.</p>
@@ -322,6 +361,66 @@
       <p class="cform__success" hidden>Thanks - your enquiry is on its way. We'll be in touch shortly.</p>
     </div>
   </div>
+
+  <!-- Lightbox -->
+  <div id="lightbox" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.92);align-items:center;justify-content:center" role="dialog" aria-modal="true" aria-label="Image viewer">
+    <button onclick="closeLightbox()" style="position:absolute;top:16px;right:20px;background:none;border:none;color:#fff;font-size:2rem;cursor:pointer;line-height:1" aria-label="Close">&times;</button>
+    <button id="lb-prev" onclick="lbShift(-1)" style="position:absolute;left:16px;background:none;border:none;color:#fff;font-size:2.2rem;cursor:pointer;padding:8px" aria-label="Previous">&#8249;</button>
+    <img id="lb-img" src="" alt="Gallery photo" style="max-width:90vw;max-height:88vh;object-fit:contain;border-radius:8px;display:block"/>
+    <button id="lb-next" onclick="lbShift(1)" style="position:absolute;right:16px;background:none;border:none;color:#fff;font-size:2.2rem;cursor:pointer;padding:8px" aria-label="Next">&#8250;</button>
+  </div>
+  <script>
+  (function(){
+    var lbEl   = document.getElementById('lightbox');
+    var lbImg  = document.getElementById('lb-img');
+    var lbPrev = document.getElementById('lb-prev');
+    var lbNext = document.getElementById('lb-next');
+    var imgs   = [];
+    var lbIdx  = 0;
+    function collectImgs() {
+      imgs = [];
+      document.querySelectorAll('[data-gallery]').forEach(function(el){
+        var src = el.href || el.dataset.src;
+        if (src && src !== window.location.href) imgs.push(src);
+      });
+    }
+    window.openLightbox = function(src) {
+      collectImgs();
+      lbIdx = imgs.indexOf(src);
+      if (lbIdx < 0) lbIdx = 0;
+      showLb();
+      lbEl.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    };
+    window.closeLightbox = function() {
+      lbEl.style.display = 'none';
+      document.body.style.overflow = '';
+    };
+    window.lbShift = function(d) {
+      lbIdx = (lbIdx + d + imgs.length) % imgs.length;
+      showLb();
+    };
+    function showLb() {
+      lbImg.src = imgs[lbIdx] || '';
+      lbPrev.style.display = imgs.length > 1 ? '' : 'none';
+      lbNext.style.display = imgs.length > 1 ? '' : 'none';
+    }
+    document.querySelectorAll('[data-gallery]').forEach(function(el){
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', function(e){
+        e.preventDefault();
+        openLightbox(el.href || el.dataset.src || '');
+      });
+    });
+    document.addEventListener('keydown', function(e){
+      if (lbEl.style.display !== 'flex') return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') lbShift(-1);
+      if (e.key === 'ArrowRight') lbShift(1);
+    });
+    lbEl.addEventListener('click', function(e){ if (e.target === lbEl) closeLightbox(); });
+  })();
+  </script>
 
   <script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
   <script src="/script.js?v=4"></script>

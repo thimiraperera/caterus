@@ -1,44 +1,139 @@
-<div class="filter-bar">
-  <div class="filter-tabs">
-    <a href="/admin/bookings" class="filter-tab<%= !bookings.length || true ? ' active' : '' %>">All</a>
-    <a href="/admin/bookings?status=pending" class="filter-tab">Pending</a>
-    <a href="/admin/bookings?status=confirmed" class="filter-tab">Confirmed</a>
-    <a href="/admin/bookings?status=completed" class="filter-tab">Completed</a>
-    <a href="/admin/bookings?status=cancelled" class="filter-tab">Cancelled</a>
+<div class="filter-bar" style="flex-wrap:wrap;gap:8px">
+  <div class="filter-tabs" id="b-tabs">
+    <a class="filter-tab<%= !currentStatus ? ' active' : '' %>" data-status="" href="/admin/bookings">All</a>
+    <a class="filter-tab<%= currentStatus==='pending'   ? ' active' : '' %>" data-status="pending"   href="/admin/bookings?status=pending">Pending</a>
+    <a class="filter-tab<%= currentStatus==='confirmed' ? ' active' : '' %>" data-status="confirmed" href="/admin/bookings?status=confirmed">Confirmed</a>
+    <a class="filter-tab<%= currentStatus==='completed' ? ' active' : '' %>" data-status="completed" href="/admin/bookings?status=completed">Completed</a>
+    <a class="filter-tab<%= currentStatus==='cancelled' ? ' active' : '' %>" data-status="cancelled" href="/admin/bookings?status=cancelled">Cancelled</a>
   </div>
-  <form method="GET" action="/admin/bookings" style="flex:1;max-width:300px">
-    <input type="text" name="search" class="form-control" placeholder="Search ref, name, email…">
-  </form>
-  <select class="per-page-select form-control"
-    onchange="const p=new URLSearchParams(location.search);p.set('per_page',this.value);p.delete('page');location.href=location.pathname+'?'+p.toString()">
-    <option value="10"  <%=(typeof per_page!=='undefined'?per_page:10)===10?'selected':''%>>10 / page</option>
-    <option value="20"  <%=(typeof per_page!=='undefined'?per_page:10)===20?'selected':''%>>20 / page</option>
-    <option value="50"  <%=(typeof per_page!=='undefined'?per_page:10)===50?'selected':''%>>50 / page</option>
-    <option value="100" <%=(typeof per_page!=='undefined'?per_page:10)===100?'selected':''%>>100 / page</option>
+  <select id="bf-per-page" class="form-control" style="max-width:120px;margin-left:auto">
+    <option value="10"  <%=(per_page||20)===10?'selected':''%>>10 / page</option>
+    <option value="20"  <%=(per_page||20)===20?'selected':''%>>20 / page</option>
+    <option value="50"  <%=(per_page||20)===50?'selected':''%>>50 / page</option>
+    <option value="100" <%=(per_page||20)===100?'selected':''%>>100 / page</option>
   </select>
 </div>
 
-<% if (bookings.length === 0) { %>
-<div class="empty-state"><p>No bookings found.</p></div>
-<% } else { %>
-<div class="admin-table-wrap">
-  <table class="admin-table">
-    <thead><tr><th>Reference</th><th>Customer</th><th>Caterer</th><th>Event Date</th><th>Guests</th><th>Total</th><th>Status</th><th>Payment</th></tr></thead>
-    <tbody>
-      <% bookings.forEach(b => { %>
-      <tr onclick="window.location='/admin/bookings/<%= b.id %>'" style="cursor:pointer">
-        <td><strong><%= b.reference %></strong></td>
-        <td><%= b.customer_first_name %> <%= b.customer_last_name || '' %></td>
-        <td><%= b.caterer_name || 'N/A' %></td>
-        <td><%= formatDate(b.event_date) %></td>
-        <td><%= b.guest_count %></td>
-        <td><strong><%= formatCurrency(b.total) %></strong></td>
-        <td><span class="badge badge-<%= b.status %>"><%= b.status %></span></td>
-        <td><span class="badge badge-<%= b.payment_status %>"><%= b.payment_status %></span></td>
-      </tr>
-      <% }) %>
-    </tbody>
-  </table>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+  <input type="text" id="bf-search"  class="form-control" placeholder="Ref, name, email..." style="flex:1;min-width:160px;max-width:220px" value="<%= bfSearch %>">
+  <input type="text" id="bf-caterer" class="form-control" placeholder="Caterer..." style="flex:1;min-width:130px;max-width:180px" value="<%= bfCaterer %>">
+  <input type="date" id="bf-date-from" class="form-control" style="min-width:140px;max-width:160px" value="<%= bfDateFrom %>">
+  <input type="date" id="bf-date-to"   class="form-control" style="min-width:140px;max-width:160px" value="<%= bfDateTo %>">
+  <select id="bf-payment" class="form-control" style="max-width:150px">
+    <option value="" <%=bfPayment===''?'selected':''%>>All payments</option>
+    <option value="unpaid"   <%=bfPayment==='unpaid'?'selected':''%>>Unpaid</option>
+    <option value="paid"     <%=bfPayment==='paid'?'selected':''%>>Paid</option>
+    <option value="refunded" <%=bfPayment==='refunded'?'selected':''%>>Refunded</option>
+  </select>
 </div>
-<%- include('../../partials/pagination', { baseUrl: '/admin/bookings', page, totalPages }) %>
-<% } %>
+
+<div style="display:flex;gap:20px;flex-wrap:wrap;margin-bottom:16px">
+  <div class="filter-slider" style="min-width:200px;max-width:300px;flex:1">
+    <div class="filter-slider__hd"><span>Guests</span><span id="bf-guest-label">Any</span></div>
+    <div class="range-wrap" id="bf-guest-track">
+      <input type="range" id="bf-guest-lo" min="0" max="500" value="<%= bfGuestMin || 0 %>" step="5">
+      <input type="range" id="bf-guest-hi" min="0" max="500" value="<%= bfGuestMax || 500 %>" step="5">
+    </div>
+  </div>
+  <div class="filter-slider" style="min-width:200px;max-width:300px;flex:1">
+    <div class="filter-slider__hd"><span>Total ($)</span><span id="bf-total-label">Any</span></div>
+    <div class="range-wrap" id="bf-total-track">
+      <input type="range" id="bf-total-lo" min="0" max="50000" value="<%= bfTotalMin || 0 %>" step="100">
+      <input type="range" id="bf-total-hi" min="0" max="50000" value="<%= bfTotalMax || 50000 %>" step="100">
+    </div>
+  </div>
+</div>
+
+<div id="b-table-wrap">
+  <%- include('./_table', { bookings, page, totalPages, per_page: per_page||20, queryExtra, formatCurrency, formatDate }) %>
+</div>
+
+<script>
+(function() {
+  var wrap = document.getElementById('b-table-wrap');
+  var dbt;
+  var currentStatus = '<%= currentStatus %>';
+  var currentPerPage = String(<%= per_page||20 %>);
+
+  function getVal(id) { return document.getElementById(id).value; }
+
+  function load(extra) {
+    extra = extra || {};
+    var params = new URLSearchParams();
+    if (currentStatus)      params.set('status', currentStatus);
+    var s = getVal('bf-search');
+    var c = getVal('bf-caterer');
+    var df = getVal('bf-date-from');
+    var dt = getVal('bf-date-to');
+    var pay = getVal('bf-payment');
+    var glo = getVal('bf-guest-lo'), ghi = getVal('bf-guest-hi');
+    var tlo = getVal('bf-total-lo'), thi = getVal('bf-total-hi');
+    if (s)   params.set('search', s);
+    if (c)   params.set('caterer_search', c);
+    if (df)  params.set('date_from', df);
+    if (dt)  params.set('date_to', dt);
+    if (pay) params.set('payment_status', pay);
+    if (glo !== '0')     params.set('guest_min', glo);
+    if (ghi !== '500')   params.set('guest_max', ghi);
+    if (tlo !== '0')     params.set('total_min', tlo);
+    if (thi !== '50000') params.set('total_max', thi);
+    params.set('per_page', currentPerPage);
+    if (extra.page) params.set('page', extra.page);
+    wrap.classList.add('table-loading');
+    fetch('/admin/bookings?' + params.toString(), { headers: { 'X-Partial': '1' } })
+      .then(function(r) { return r.text(); })
+      .then(function(html) { wrap.innerHTML = html; wrap.classList.remove('table-loading'); })
+      .catch(function() { wrap.classList.remove('table-loading'); });
+    history.replaceState(null, '', '/admin/bookings?' + params.toString());
+  }
+
+  function schedule() { clearTimeout(dbt); dbt = setTimeout(load, 320); }
+
+  document.getElementById('bf-search').addEventListener('input', schedule);
+  document.getElementById('bf-caterer').addEventListener('input', schedule);
+  document.getElementById('bf-date-from').addEventListener('change', function() { load(); });
+  document.getElementById('bf-date-to').addEventListener('change', function() { load(); });
+  document.getElementById('bf-payment').addEventListener('change', function() { load(); });
+  document.getElementById('bf-per-page').addEventListener('change', function() {
+    currentPerPage = this.value; load();
+  });
+
+  document.querySelectorAll('#b-tabs .filter-tab').forEach(function(tab) {
+    tab.addEventListener('click', function(e) {
+      e.preventDefault();
+      currentStatus = this.dataset.status || '';
+      document.querySelectorAll('#b-tabs .filter-tab').forEach(function(t) { t.classList.remove('active'); });
+      this.classList.add('active');
+      load();
+    });
+  });
+
+  wrap.addEventListener('click', function(e) {
+    var btn = e.target.closest('a.pg-btn');
+    if (!btn) return;
+    e.preventDefault();
+    load({ page: new URL(btn.href).searchParams.get('page') });
+  });
+
+  function bindSlider(loId, hiId, trackId, labelId, max, fmt) {
+    var lo = document.getElementById(loId);
+    var hi = document.getElementById(hiId);
+    var track = document.getElementById(trackId);
+    var label = document.getElementById(labelId);
+    function upd() {
+      var lv = parseInt(lo.value), hv = parseInt(hi.value);
+      if (lv > hv) { lv = hv; lo.value = lv; }
+      var lp = lv / max * 100, hp = hv / max * 100;
+      track.style.background = 'linear-gradient(to right,var(--line) ' + lp + '%,var(--accent) ' + lp + '%,var(--accent) ' + hp + '%,var(--line) ' + hp + '%)';
+      label.textContent = (lv === 0 && hv === max) ? 'Any' : fmt(lv, hv);
+      schedule();
+    }
+    lo.addEventListener('input', upd);
+    hi.addEventListener('input', upd);
+    upd();
+  }
+
+  bindSlider('bf-guest-lo', 'bf-guest-hi', 'bf-guest-track', 'bf-guest-label', 500, function(a, b) { return a + ' - ' + b; });
+  bindSlider('bf-total-lo', 'bf-total-hi', 'bf-total-track', 'bf-total-label', 50000, function(a, b) { return '$' + a.toLocaleString() + ' - $' + b.toLocaleString(); });
+})();
+</script>

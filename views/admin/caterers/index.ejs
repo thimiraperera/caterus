@@ -10,8 +10,12 @@
     <a href="/admin/caterers?status=draft" class="filter-tab<%= currentStatus==='draft' ? ' active' : '' %>" data-status="draft">Draft</a>
     <a href="/admin/caterers?status=pending" class="filter-tab<%= currentStatus==='pending' ? ' active' : '' %>" data-status="pending">Pending</a>
   </div>
-  <input type="text" id="caterer-search" class="form-control" style="flex:1;max-width:280px"
-    placeholder="Search caterers..." value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+  <input type="text" id="caterer-search" class="form-control" style="flex:1;max-width:220px"
+    placeholder="Business name..." value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+  <input type="text" id="caterer-cuisine" class="form-control" style="flex:1;max-width:160px"
+    placeholder="Cuisine..." value="<%= typeof cfCuisine !== 'undefined' ? cfCuisine : '' %>">
+  <input type="text" id="caterer-suburb" class="form-control" style="flex:1;max-width:160px"
+    placeholder="Suburb..." value="<%= typeof cfSuburb !== 'undefined' ? cfSuburb : '' %>">
   <select class="per-page-select form-control"
     onchange="const p=new URLSearchParams(location.search);p.set('per_page',this.value);p.delete('page');location.href=location.pathname+'?'+p.toString()">
     <option value="10"  <%=per_page===10?'selected':''%>>10 / page</option>
@@ -28,7 +32,9 @@
 <script>
 (function() {
   const wrap = document.getElementById('caterers-table-wrap');
-  const searchInput = document.getElementById('caterer-search');
+  const searchInput  = document.getElementById('caterer-search');
+  const cuisineInput = document.getElementById('caterer-cuisine');
+  const suburbInput  = document.getElementById('caterer-suburb');
   const tabs = document.querySelectorAll('#caterer-status-tabs .filter-tab');
   const countEl = document.getElementById('caterer-count');
   let debounce;
@@ -38,8 +44,10 @@
   async function load(params) {
     wrap.classList.add('table-loading');
     const url = new URL('/admin/caterers', location.origin);
-    if (params.status) url.searchParams.set('status', params.status);
-    if (params.search) url.searchParams.set('search', params.search);
+    if (params.status)  url.searchParams.set('status', params.status);
+    if (params.search)  url.searchParams.set('search', params.search);
+    if (params.cuisine) url.searchParams.set('cuisine', params.cuisine);
+    if (params.suburb)  url.searchParams.set('suburb', params.suburb);
     url.searchParams.set('per_page', params.per_page || currentPerPage);
     if (params.page) url.searchParams.set('page', params.page);
 
@@ -50,11 +58,22 @@
     history.replaceState(null, '', url.pathname + '?' + url.searchParams.toString());
   }
 
-  searchInput.addEventListener('input', function() {
-    clearTimeout(debounce);
-    debounce = setTimeout(() => {
-      load({ status: currentStatus, search: this.value, per_page: currentPerPage });
-    }, 280);
+  function getFilterParams(extra) {
+    return {
+      status:  currentStatus,
+      search:  searchInput.value,
+      cuisine: cuisineInput.value,
+      suburb:  suburbInput.value,
+      per_page: currentPerPage,
+      ...extra,
+    };
+  }
+
+  [searchInput, cuisineInput, suburbInput].forEach(function(inp) {
+    inp.addEventListener('input', function() {
+      clearTimeout(debounce);
+      debounce = setTimeout(() => load(getFilterParams()), 280);
+    });
   });
 
   tabs.forEach(tab => {
@@ -63,7 +82,7 @@
       currentStatus = this.dataset.status || '';
       tabs.forEach(t => t.classList.remove('active'));
       this.classList.add('active');
-      load({ status: currentStatus, search: searchInput.value, per_page: currentPerPage });
+      load(getFilterParams());
     });
   });
 
@@ -72,7 +91,7 @@
     if (!pgBtn) return;
     e.preventDefault();
     const page = new URL(pgBtn.href).searchParams.get('page');
-    load({ status: currentStatus, search: searchInput.value, per_page: currentPerPage, page });
+    load(getFilterParams({ page }));
   });
 })();
 </script>

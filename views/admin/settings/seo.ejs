@@ -79,11 +79,12 @@
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label" style="display:flex;align-items:center;gap:10px;cursor:pointer">
-        <input type="checkbox" name="is_cornerstone" value="1" style="width:16px;height:16px" <%=seo.home_is_cornerstone==='1'?'checked':''%>>
+      <label class="form-label" style="display:flex;align-items:center;gap:10px">
+        <input type="hidden" name="is_cornerstone" value="1">
+        <input type="checkbox" value="1" style="width:16px;height:16px" checked disabled>
         Mark as cornerstone content
       </label>
-      <p class="form-hint">Cornerstone content is your most important, comprehensive content.</p>
+      <p class="form-hint">The home page is permanently marked as cornerstone content.</p>
     </div>
 
     <p class="seo-section-label">Social (Open Graph)</p>

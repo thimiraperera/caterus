@@ -128,47 +128,83 @@
     });
   });
 
-  /* ---- Search form ---- */
+  /* ---- Search form — navigates to /caterers ---- */
   const form = $("#search-form");
   if (form) {
-    form.addEventListener("submit", async (e) => {
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
       const loc    = ($("#s-loc").value || "").trim();
       const occ    = $("#s-occ").value;
       const guests = $("#s-guests").value;
-
       const params = new URLSearchParams();
-      if (loc)    params.set("search",  loc);
-      if (occ)    params.set("occasion", occ);
-      if (guests) params.set("guests",  guests);
-
-      const grid    = $("#cat-grid");
-      const section = $("#caterers");
-      const btn     = form.querySelector('button[type="submit"]');
-      const origHTML = btn.innerHTML;
-      btn.disabled = true;
-      btn.innerHTML = "<span>Searching…</span>";
-
-      try {
-        const res  = await fetch("/api/caterers?" + params);
-        const data = await res.json();
-        if (grid) {
-          if (data.caterers && data.caterers.length > 0) {
-            grid.innerHTML = data.caterers.map(renderCatCard).join("");
-          } else {
-            grid.innerHTML = '<p style="grid-column:1/-1;padding:2rem;color:#8a857a;text-align:center">No caterers found matching your search. <a href="/" style="color:#75896d;font-weight:600">Clear search</a></p>';
-          }
-          // Reset active filter to "All"
-          filters.forEach((b) => b.classList.toggle("filter--on", b.getAttribute("data-f") === "all"));
-        }
-        if (section) scrollToEl(section);
-      } catch (_) {
-        if (section) scrollToEl(section);
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = origHTML;
-      }
+      if (loc)    params.set("suburb",    loc);
+      if (occ)    params.set("occasion",  occ);
+      if (guests) params.set("minGuests", guests);
+      window.location.href = "/caterers" + (params.toString() ? "?" + params.toString() : "");
     });
+  }
+
+  /* ---- Homepage caterers grid pagination ---- */
+  const catGrid  = $("#cat-grid");
+  const catPager = $("#cat-pager");
+  let catPage    = 1;
+  let catTotal   = catGrid ? parseInt(catGrid.dataset.total || "0", 10) : 0;
+  const CAT_LIMIT = 9;
+
+  function buildPager(current, totalPages) {
+    if (!catPager || totalPages <= 1) { if (catPager) catPager.hidden = true; return; }
+    catPager.hidden = false;
+    const pages = [];
+    for (let p = 1; p <= totalPages; p++) {
+      if (p === 1 || p === totalPages || Math.abs(p - current) <= 1) {
+        pages.push(p);
+      } else if (pages[pages.length - 1] !== "...") {
+        pages.push("...");
+      }
+    }
+    catPager.innerHTML =
+      `<button class="pager-btn" data-pg="${current - 1}" ${current <= 1 ? "disabled" : ""} aria-label="Previous">&#8592;</button>` +
+      pages.map(p => p === "..."
+        ? `<span class="pager-ellipsis">...</span>`
+        : `<button class="pager-btn${p === current ? " pager-btn--on" : ""}" data-pg="${p}">${p}</button>`
+      ).join("") +
+      `<button class="pager-btn" data-pg="${current + 1}" ${current >= totalPages ? "disabled" : ""} aria-label="Next">&#8594;</button>`;
+
+    catPager.querySelectorAll(".pager-btn[data-pg]").forEach((btn) => {
+      if (btn.disabled) return;
+      btn.addEventListener("click", () => loadCatPage(parseInt(btn.dataset.pg, 10)));
+    });
+  }
+
+  async function loadCatPage(page) {
+    if (!catGrid) return;
+    catPage = page;
+    const filterEl = $$(".filter--on")[0];
+    const activeFilter = filterEl ? filterEl.getAttribute("data-f") : "all";
+    const params = new URLSearchParams({ page, limit: CAT_LIMIT, sort: "reviews" });
+    if (activeFilter && activeFilter !== "all") params.set("occasion", activeFilter);
+    const spinner = '<div style="grid-column:1/-1;padding:3rem;text-align:center;color:var(--muted)">Loading...</div>';
+    catGrid.innerHTML = spinner;
+    try {
+      const data = await fetch("/api/caterers?" + params).then(r => r.json());
+      if (data.caterers && data.caterers.length) {
+        catGrid.innerHTML = data.caterers.map(renderCatCard).join("");
+        $$("[data-reveal]", catGrid).forEach(el => el.classList.add("in"));
+      } else {
+        catGrid.innerHTML = '<p style="grid-column:1/-1;padding:2rem;color:#8a857a;text-align:center">No caterers found.</p>';
+      }
+      catTotal = data.total || 0;
+      buildPager(catPage, data.totalPages || 1);
+      const section = $("#caterers");
+      if (section && page > 1) scrollToEl(section);
+    } catch (_) {
+      catGrid.innerHTML = '<p style="grid-column:1/-1;padding:2rem;color:#8a857a;text-align:center">Could not load caterers.</p>';
+    }
+  }
+
+  if (catGrid && catPager) {
+    const totalPages = Math.ceil(catTotal / CAT_LIMIT);
+    buildPager(1, totalPages);
   }
 
   function escHtml(s) {

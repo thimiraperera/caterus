@@ -9,6 +9,7 @@ const Review = {
     const params = [];
     if (filters.status) { where += ' AND r.status = ?'; params.push(filters.status); }
     if (filters.caterer_id) { where += ' AND r.caterer_id = ?'; params.push(filters.caterer_id); }
+    if (filters.rating) { where += ' AND r.rating = ?'; params.push(parseInt(filters.rating)); }
 
     const [countRows] = await db.query(`SELECT COUNT(*) AS total FROM reviews r ${where}`, params);
     const total = countRows[0].total;
@@ -38,8 +39,8 @@ const Review = {
 
   async create(data) {
     const [result] = await db.query(
-      'INSERT INTO reviews (caterer_id, booking_id, reviewer_name, reviewer_initials, event_type, event_date, rating, comment, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [data.caterer_id, data.booking_id || null, data.reviewer_name, data.reviewer_initials, data.event_type, data.event_date, data.rating, data.comment, 'pending']
+      'INSERT INTO reviews (caterer_id, booking_id, reviewer_name, reviewer_initials, reviewer_email, event_type, event_date, rating, comment, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [data.caterer_id, data.booking_id || null, data.reviewer_name, data.reviewer_initials, data.reviewer_email || null, data.event_type, data.event_date, data.rating, data.comment, 'pending']
     );
     return result.insertId;
   },

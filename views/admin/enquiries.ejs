@@ -1,21 +1,31 @@
-<div class="filter-bar" style="justify-content:flex-end">
-  <select class="form-control per-page-select"
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+  <input type="text" id="ef-search"  class="form-control" placeholder="Name, email..." style="flex:1;min-width:140px;max-width:200px" value="<%= efSearch %>">
+  <input type="text" id="ef-caterer" class="form-control" placeholder="Caterer..." style="flex:1;min-width:130px;max-width:180px" value="<%= efCaterer %>">
+  <input type="date" id="ef-date-from" class="form-control" style="min-width:140px;max-width:160px" value="<%= efDateFrom %>">
+  <input type="date" id="ef-date-to"   class="form-control" style="min-width:140px;max-width:160px" value="<%= efDateTo %>">
+  <select id="ef-status" class="form-control" style="max-width:150px">
+    <option value="" <%=currentStatus===''?'selected':''%>>All statuses</option>
+    <option value="new"    <%=currentStatus==='new'?'selected':''%>>New</option>
+    <option value="read"   <%=currentStatus==='read'?'selected':''%>>Read</option>
+    <option value="closed" <%=currentStatus==='closed'?'selected':''%>>Closed</option>
+  </select>
+  <select class="form-control" style="max-width:120px"
     onchange="const p=new URLSearchParams(location.search);p.set('per_page',this.value);p.delete('page');location.href=location.pathname+'?'+p.toString()">
-    <option value="10" <%=per_page===10?'selected':''%>>10 / page</option>
-    <option value="20" <%=per_page===20?'selected':''%>>20 / page</option>
-    <option value="50" <%=per_page===50?'selected':''%>>50 / page</option>
+    <option value="10"  <%=per_page===10?'selected':''%>>10 / page</option>
+    <option value="20"  <%=per_page===20?'selected':''%>>20 / page</option>
+    <option value="50"  <%=per_page===50?'selected':''%>>50 / page</option>
     <option value="100" <%=per_page===100?'selected':''%>>100 / page</option>
   </select>
 </div>
 
 <% if (enquiries.length === 0) { %>
-<div class="empty-state"><p>No enquiries.</p></div>
+<div class="empty-state"><p>No enquiries match your filters.</p></div>
 <% } else { %>
 <div class="admin-table-wrap">
   <table class="admin-table">
     <thead><tr><th>Name</th><th>Email</th><th>Caterer</th><th>Message</th><th>Date</th><th>Status</th><th style="white-space:nowrap">Actions</th></tr></thead>
     <tbody>
-      <% enquiries.forEach(e => { %>
+      <% enquiries.forEach(function(e) { %>
       <tr>
         <td><%= e.first_name %> <%= e.last_name || '' %></td>
         <td><a href="mailto:<%= e.email %>"><%= e.email %></a></td>
@@ -39,3 +49,30 @@
 </div>
 <%- include('../partials/pagination', { baseUrl: '/admin/enquiries', page, totalPages, queryExtra }) %>
 <% } %>
+
+<script>
+(function() {
+  var dbt;
+  function load() {
+    var params = new URLSearchParams(location.search);
+    var s = document.getElementById('ef-search').value;
+    var c = document.getElementById('ef-caterer').value;
+    var df = document.getElementById('ef-date-from').value;
+    var dt = document.getElementById('ef-date-to').value;
+    var st = document.getElementById('ef-status').value;
+    params.delete('page');
+    s  ? params.set('search', s)           : params.delete('search');
+    c  ? params.set('caterer_search', c)   : params.delete('caterer_search');
+    df ? params.set('date_from', df)       : params.delete('date_from');
+    dt ? params.set('date_to', dt)         : params.delete('date_to');
+    st ? params.set('status', st)          : params.delete('status');
+    location.href = location.pathname + '?' + params.toString();
+  }
+  function schedule() { clearTimeout(dbt); dbt = setTimeout(load, 400); }
+  document.getElementById('ef-search').addEventListener('input', schedule);
+  document.getElementById('ef-caterer').addEventListener('input', schedule);
+  document.getElementById('ef-date-from').addEventListener('change', load);
+  document.getElementById('ef-date-to').addEventListener('change', load);
+  document.getElementById('ef-status').addEventListener('change', load);
+})();
+</script>

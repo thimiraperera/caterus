@@ -40,8 +40,7 @@
   <div class="card-header">
     <h2 class="card-title">Recent Bookings</h2>
     <div style="display:flex;align-items:center;gap:12px">
-      <select class="form-control per-page-select"
-        onchange="const p=new URLSearchParams(location.search);p.set('per_page',this.value);p.delete('page');location.href=location.pathname+'?'+p.toString()">
+      <select class="form-control" id="db-per-page" style="max-width:130px">
         <option value="5"  <%=per_page===5?'selected':''%>>5 per page</option>
         <option value="10" <%=per_page===10?'selected':''%>>10 per page</option>
         <option value="25" <%=per_page===25?'selected':''%>>25 per page</option>
@@ -50,28 +49,71 @@
       <a href="/admin/bookings" class="btn btn-secondary btn-sm">View all</a>
     </div>
   </div>
-  <% if (recentBookings.length === 0) { %>
-  <div class="empty-state"><p>No bookings yet</p></div>
-  <% } else { %>
-  <div class="admin-table-wrap" style="border:none;box-shadow:none;margin-bottom:0">
-    <table class="admin-table">
-      <thead>
-        <tr><th>Reference</th><th>Customer</th><th>Caterer</th><th>Date</th><th>Total</th><th>Status</th></tr>
-      </thead>
-      <tbody>
-        <% recentBookings.forEach(b => { %>
-        <tr>
-          <td><a href="/admin/bookings/<%= b.id %>"><strong><%= b.reference %></strong></a></td>
-          <td><%= b.customer_first_name %> <%= b.customer_last_name || '' %></td>
-          <td><%= b.caterer_name || 'N/A' %></td>
-          <td><%= formatDate(b.event_date) %></td>
-          <td><strong><%= formatCurrency(b.total) %></strong></td>
-          <td><span class="badge badge-<%= b.status %>"><%= b.status %></span></td>
-        </tr>
-        <% }) %>
-      </tbody>
-    </table>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;padding:0 0 14px">
+    <input type="text" id="db-search" class="form-control" placeholder="Ref, name, email..." style="flex:1;min-width:140px;max-width:210px" value="<%= dfSearch %>">
+    <input type="text" id="db-caterer" class="form-control" placeholder="Caterer..." style="flex:1;min-width:120px;max-width:180px" value="<%= dfCaterer %>">
+    <input type="date" id="db-date-from" class="form-control" style="min-width:140px;max-width:160px" value="<%= dfDateFrom %>">
+    <input type="date" id="db-date-to" class="form-control" style="min-width:140px;max-width:160px" value="<%= dfDateTo %>">
+    <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+      <span style="font-size:0.78rem;color:var(--muted);white-space:nowrap">Total $</span>
+      <input type="number" id="db-total-min" class="form-control" placeholder="Min" min="0" step="100" style="width:82px" value="<%= dfTotalMin %>">
+      <span style="color:var(--muted)">-</span>
+      <input type="number" id="db-total-max" class="form-control" placeholder="Max" min="0" step="100" style="width:82px" value="<%= dfTotalMax %>">
+    </div>
   </div>
-  <%- include('../partials/pagination', { baseUrl: '/admin', page: bookingPage, totalPages: bookingTotalPages, queryExtra }) %>
-  <% } %>
+  <div id="db-table-wrap">
+    <%- include('./dashboard/_bookings', { bookings: bookings || [], bookingPage, bookingTotalPages, per_page, queryExtra, formatCurrency, formatDate }) %>
+  </div>
 </div>
+
+<script>
+(function() {
+  var wrap = document.getElementById('db-table-wrap');
+  var dbt;
+  var currentPerPage = '<%= per_page %>';
+
+  function load(extra) {
+    extra = extra || {};
+    var params = new URLSearchParams();
+    var s = document.getElementById('db-search').value;
+    var c = document.getElementById('db-caterer').value;
+    var df = document.getElementById('db-date-from').value;
+    var dt = document.getElementById('db-date-to').value;
+    var tmin = document.getElementById('db-total-min').value;
+    var tmax = document.getElementById('db-total-max').value;
+    if (s)    params.set('search', s);
+    if (c)    params.set('caterer_search', c);
+    if (df)   params.set('date_from', df);
+    if (dt)   params.set('date_to', dt);
+    if (tmin) params.set('total_min', tmin);
+    if (tmax) params.set('total_max', tmax);
+    params.set('per_page', currentPerPage);
+    if (extra.page) params.set('page', extra.page);
+    wrap.classList.add('table-loading');
+    fetch('/admin?' + params.toString(), { headers: { 'X-Partial': '1' } })
+      .then(function(r) { return r.text(); })
+      .then(function(html) { wrap.innerHTML = html; wrap.classList.remove('table-loading'); })
+      .catch(function() { wrap.classList.remove('table-loading'); });
+    history.replaceState(null, '', location.pathname + '?' + params.toString());
+  }
+
+  function schedule() { clearTimeout(dbt); dbt = setTimeout(load, 320); }
+
+  document.getElementById('db-search').addEventListener('input', schedule);
+  document.getElementById('db-caterer').addEventListener('input', schedule);
+  document.getElementById('db-total-min').addEventListener('input', schedule);
+  document.getElementById('db-total-max').addEventListener('input', schedule);
+  document.getElementById('db-date-from').addEventListener('change', function() { load(); });
+  document.getElementById('db-date-to').addEventListener('change', function() { load(); });
+  document.getElementById('db-per-page').addEventListener('change', function() {
+    currentPerPage = this.value; load();
+  });
+
+  wrap.addEventListener('click', function(e) {
+    var btn = e.target.closest('a.pg-btn');
+    if (!btn) return;
+    e.preventDefault();
+    load({ page: new URL(btn.href).searchParams.get('page') });
+  });
+})();
+</script>

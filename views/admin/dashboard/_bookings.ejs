@@ -1,0 +1,24 @@
+<% if (bookings.length === 0) { %>
+<div class="empty-state"><p>No bookings match your filters.</p></div>
+<% } else { %>
+<div class="admin-table-wrap" style="border:none;box-shadow:none;margin-bottom:0">
+  <table class="admin-table">
+    <thead>
+      <tr><th>Reference</th><th>Customer</th><th>Caterer</th><th>Date</th><th>Total</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <% bookings.forEach(function(b) { %>
+      <tr>
+        <td><a href="/admin/bookings/<%= b.id %>"><strong><%= b.reference %></strong></a></td>
+        <td><%= b.customer_first_name %> <%= b.customer_last_name || '' %></td>
+        <td><%= b.caterer_name || 'N/A' %></td>
+        <td><%= formatDate(b.event_date) %></td>
+        <td><strong><%= formatCurrency(b.total) %></strong></td>
+        <td><span class="badge badge-<%= b.status %>"><%= b.status %></span></td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<%- include('../../partials/pagination', { baseUrl: '/admin', page: bookingPage, totalPages: bookingTotalPages, queryExtra }) %>
+<% } %>

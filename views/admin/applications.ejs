@@ -1,21 +1,31 @@
-<div class="filter-bar" style="justify-content:flex-end">
-  <select class="form-control per-page-select"
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+  <input type="text" id="af-search"  class="form-control" placeholder="Business, name, email, phone..." style="flex:1;min-width:180px;max-width:260px" value="<%= afSearch %>">
+  <input type="text" id="af-cuisine" class="form-control" placeholder="Cuisine..." style="flex:1;min-width:120px;max-width:160px" value="<%= afCuisine %>">
+  <input type="text" id="af-area"    class="form-control" placeholder="Area / suburb..." style="flex:1;min-width:130px;max-width:180px" value="<%= afArea %>">
+  <select id="af-status" class="form-control" style="max-width:150px">
+    <option value="" <%=currentStatus===''?'selected':''%>>All statuses</option>
+    <option value="new"       <%=currentStatus==='new'?'selected':''%>>New</option>
+    <option value="reviewing" <%=currentStatus==='reviewing'?'selected':''%>>Reviewing</option>
+    <option value="approved"  <%=currentStatus==='approved'?'selected':''%>>Approved</option>
+    <option value="rejected"  <%=currentStatus==='rejected'?'selected':''%>>Rejected</option>
+  </select>
+  <select class="form-control" style="max-width:120px"
     onchange="const p=new URLSearchParams(location.search);p.set('per_page',this.value);p.delete('page');location.href=location.pathname+'?'+p.toString()">
-    <option value="10" <%=per_page===10?'selected':''%>>10 / page</option>
-    <option value="20" <%=per_page===20?'selected':''%>>20 / page</option>
-    <option value="50" <%=per_page===50?'selected':''%>>50 / page</option>
+    <option value="10"  <%=per_page===10?'selected':''%>>10 / page</option>
+    <option value="20"  <%=per_page===20?'selected':''%>>20 / page</option>
+    <option value="50"  <%=per_page===50?'selected':''%>>50 / page</option>
     <option value="100" <%=per_page===100?'selected':''%>>100 / page</option>
   </select>
 </div>
 
 <% if (applications.length === 0) { %>
-<div class="empty-state"><p>No applications.</p></div>
+<div class="empty-state"><p>No applications match your filters.</p></div>
 <% } else { %>
 <div class="admin-table-wrap">
   <table class="admin-table">
     <thead><tr><th>Business</th><th>Contact</th><th>Email</th><th>Cuisine</th><th>Area</th><th>Status</th><th style="white-space:nowrap">Actions</th></tr></thead>
     <tbody>
-      <% applications.forEach(a => { %>
+      <% applications.forEach(function(a) { %>
       <tr>
         <td><strong><%= a.business_name %></strong></td>
         <td><%= a.contact_name || '-' %></td>
@@ -43,3 +53,27 @@
 </div>
 <%- include('../partials/pagination', { baseUrl: '/admin/applications', page, totalPages, queryExtra }) %>
 <% } %>
+
+<script>
+(function() {
+  var dbt;
+  function load() {
+    var params = new URLSearchParams(location.search);
+    var s  = document.getElementById('af-search').value;
+    var c  = document.getElementById('af-cuisine').value;
+    var ar = document.getElementById('af-area').value;
+    var st = document.getElementById('af-status').value;
+    params.delete('page');
+    s  ? params.set('search', s)    : params.delete('search');
+    c  ? params.set('cuisine', c)   : params.delete('cuisine');
+    ar ? params.set('area', ar)     : params.delete('area');
+    st ? params.set('status', st)   : params.delete('status');
+    location.href = location.pathname + '?' + params.toString();
+  }
+  function schedule() { clearTimeout(dbt); dbt = setTimeout(load, 400); }
+  document.getElementById('af-search').addEventListener('input', schedule);
+  document.getElementById('af-cuisine').addEventListener('input', schedule);
+  document.getElementById('af-area').addEventListener('input', schedule);
+  document.getElementById('af-status').addEventListener('change', load);
+})();
+</script>

@@ -49,11 +49,12 @@ module.exports = {
   /** Home page */
   async home(req, res) {
     try {
-      const [{ caterers }, catererStats, faqs, footerData] = await Promise.all([
-        Caterer.getPublished({ limit: 20 }),
+      const [{ caterers, total: catTotal }, catererStats, faqs, footerData, occasionsRaw] = await Promise.all([
+        Caterer.getPublished({ limit: 9, sort: 'reviews' }),
         Caterer.getStats(),
         Faq.findPublished(),
         getFooterData(),
+        Settings.get('occasions_list').catch(() => null),
       ]);
       const stats = {
         totalEvents: 12000,
@@ -61,10 +62,14 @@ module.exports = {
         satisfactionRate: 98,
         cities: 3,
       };
-      res.render('index', { layout: false, caterers, stats, faqs, ...footerData, formatCurrency, SOCIAL_ICONS });
+      let occasions = [];
+      try { occasions = occasionsRaw ? JSON.parse(occasionsRaw) : []; } catch (_) {}
+      occasions = occasions.map(o => typeof o === 'string' ? o : o.name);
+      if (!occasions.length) occasions = ['Wedding', 'Corporate', 'Birthday', 'Christmas', 'Conference', 'Cocktail Party', 'Gala Dinner', 'School Event'];
+      res.render('index', { layout: false, caterers, catTotal, stats, faqs, occasions, ...footerData, formatCurrency, SOCIAL_ICONS });
     } catch (err) {
       console.error('Home page error:', err);
-      res.render('index', { layout: false, caterers: [], faqs: [], stats: { totalEvents: 12000, totalCaterers: 150, satisfactionRate: 98, cities: 3 }, siteLogo: '', contactEmail: '', contactPhone: '', contactPhoneCountry: '', footerTagline: 'Caterus Pty Ltd · Melbourne, Victoria, Australia', socialLinks: [], formatCurrency, SOCIAL_ICONS });
+      res.render('index', { layout: false, caterers: [], catTotal: 0, faqs: [], occasions: [], stats: { totalEvents: 12000, totalCaterers: 150, satisfactionRate: 98, cities: 3 }, siteLogo: '', contactEmail: '', contactPhone: '', contactPhoneCountry: '', footerTagline: 'Caterus Pty Ltd · Melbourne, Victoria, Australia', socialLinks: [], formatCurrency, SOCIAL_ICONS });
     }
   },
 

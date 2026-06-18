@@ -17,7 +17,8 @@ const settingsController    = require('../controllers/admin/settingsController')
 const vettingController     = require('../controllers/admin/vettingController');
 const enquiryController     = require('../controllers/admin/enquiryController');
 const applicationController = require('../controllers/admin/applicationController');
-const faqController         = require('../controllers/admin/faqController');
+const faqController              = require('../controllers/admin/faqController');
+const catererMessagesController  = require('../controllers/admin/catererMessagesController');
 
 /* Multer for .sql and .zip restores (stored in OS temp) */
 const restoreUpload = multer({ dest: require('os').tmpdir() });
@@ -84,6 +85,9 @@ router.get('/payouts',                 payoutController.index);
 router.post('/payouts',                payoutController.store);
 router.put('/payouts/:id/status',      payoutController.updateStatus);
 
+/* Caterer Messages */
+router.get('/caterer-messages',        catererMessagesController.index);
+
 /* Enquiries */
 router.get('/enquiries',               enquiryController.index);
 router.get('/enquiries/:id',           enquiryController.show);
@@ -124,9 +128,10 @@ router.post('/settings/2fa/disable',      settingsController.disable2fa);
 router.post('/settings/erase-test-data',  settingsController.eraseTestData);
 
 /* Occasions */
-router.get('/settings/occasions',         settingsController.occasions);
-router.post('/settings/occasions',        settingsController.addOccasion);
-router.post('/settings/occasions/delete', settingsController.deleteOccasion);
+router.get('/settings/occasions',                    settingsController.occasions);
+router.post('/settings/occasions',                   upload.single('occasion_image'), settingsController.addOccasion);
+router.post('/settings/occasions/:index/update',     upload.single('occasion_image'), settingsController.updateOccasion);
+router.post('/settings/occasions/delete',            settingsController.deleteOccasion);
 
 /* Contact & Social */
 router.get('/settings/contact',           settingsController.contact);
