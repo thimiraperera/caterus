@@ -342,6 +342,21 @@ CREATE TABLE IF NOT EXISTS caterer_applications (
 ) ENGINE=InnoDB;
 
 -- ──────────────────────────────────────────────────────────────
+-- FAQS
+-- ──────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS faqs (
+  id            INT AUTO_INCREMENT PRIMARY KEY,
+  question      VARCHAR(500) NOT NULL,
+  answer        TEXT NOT NULL,
+  sort_order    INT DEFAULT 0,
+  is_published  TINYINT(1) DEFAULT 1,
+  created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_published (is_published),
+  INDEX idx_sort (sort_order)
+) ENGINE=InnoDB;
+
+-- ──────────────────────────────────────────────────────────────
 -- SETTINGS
 -- ──────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS settings (

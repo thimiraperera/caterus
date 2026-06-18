@@ -1,0 +1,53 @@
+<div style="max-width:680px">
+  <div style="margin-bottom:20px">
+    <a href="/admin/faqs" class="btn btn-secondary btn-sm" style="display:inline-flex;align-items:center;gap:6px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to FAQs
+    </a>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title"><%= faq ? 'Edit FAQ' : 'New FAQ' %></h2>
+    </div>
+    <div style="padding:24px">
+      <form method="POST" action="<%= faq ? `/admin/faqs/${faq.id}?_method=PUT` : '/admin/faqs' %>">
+
+        <div class="form-group">
+          <label class="form-label">Question <span style="color:var(--danger)">*</span></label>
+          <input type="text" name="question" class="form-control" maxlength="500" required
+            value="<%= faq ? faq.question : '' %>" placeholder="e.g. How does Caterus vet caterers?">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Answer <span style="color:var(--danger)">*</span></label>
+          <textarea name="answer" class="form-control" rows="5" required
+            placeholder="Write the answer here..."><%= faq ? faq.answer : '' %></textarea>
+        </div>
+
+        <div class="form-group" style="display:flex;gap:24px;align-items:flex-end">
+          <div style="flex:0 0 120px">
+            <label class="form-label">Sort Order</label>
+            <input type="number" name="sort_order" class="form-control" min="0" max="999"
+              value="<%= faq ? faq.sort_order : 0 %>" placeholder="0">
+            <p class="form-hint">Lower = appears first</p>
+          </div>
+
+          <div class="form-group" style="flex:1;margin-bottom:0">
+            <label class="form-label" style="display:flex;align-items:center;gap:10px;cursor:pointer">
+              <input type="checkbox" name="is_published" value="1" style="width:16px;height:16px"
+                <%= faq && faq.is_published ? 'checked' : (!faq ? 'checked' : '') %>>
+              Published on homepage
+            </label>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;margin-top:8px">
+          <button type="submit" class="btn btn-primary"><%= faq ? 'Save changes' : 'Add FAQ' %></button>
+          <a href="/admin/faqs" class="btn btn-secondary">Cancel</a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

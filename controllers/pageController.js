@@ -5,24 +5,28 @@ const Caterer = require('../models/Caterer');
 const Menu    = require('../models/Menu');
 const Review  = require('../models/Review');
 const Booking = require('../models/Booking');
+const Faq     = require('../models/Faq');
 const { formatCurrency, formatDate } = require('../utils/helpers');
 
 module.exports = {
   /** Home page */
   async home(req, res) {
     try {
-      const { caterers } = await Caterer.getPublished({ limit: 20 });
-      const catererStats = await Caterer.getStats();
+      const [{ caterers }, catererStats, faqs] = await Promise.all([
+        Caterer.getPublished({ limit: 20 }),
+        Caterer.getStats(),
+        Faq.findPublished(),
+      ]);
       const stats = {
         totalEvents: 12000,
         totalCaterers: catererStats.activeCaterers || 150,
         satisfactionRate: 98,
         cities: 3,
       };
-      res.render('index', { layout: false, caterers, stats, formatCurrency });
+      res.render('index', { layout: false, caterers, stats, faqs, formatCurrency });
     } catch (err) {
       console.error('Home page error:', err);
-      res.render('index', { layout: false, caterers: [], stats: { totalEvents: 12000, totalCaterers: 150, satisfactionRate: 98, cities: 3 }, formatCurrency });
+      res.render('index', { layout: false, caterers: [], faqs: [], stats: { totalEvents: 12000, totalCaterers: 150, satisfactionRate: 98, cities: 3 }, formatCurrency });
     }
   },
 

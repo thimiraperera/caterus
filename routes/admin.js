@@ -17,6 +17,7 @@ const settingsController    = require('../controllers/admin/settingsController')
 const vettingController     = require('../controllers/admin/vettingController');
 const enquiryController     = require('../controllers/admin/enquiryController');
 const applicationController = require('../controllers/admin/applicationController');
+const faqController         = require('../controllers/admin/faqController');
 
 /* ── Auth (no middleware) ── */
 router.get('/login',  authController.showLogin);
@@ -76,6 +77,14 @@ router.put('/enquiries/:id/status',    enquiryController.updateStatus);
 /* ── Applications ── */
 router.get('/applications',            applicationController.index);
 router.put('/applications/:id/status', applicationController.updateStatus);
+
+/* ── FAQs ── */
+router.get('/faqs',              faqController.index);
+router.get('/faqs/create',       faqController.create);
+router.post('/faqs',             faqController.store);
+router.get('/faqs/:id/edit',     faqController.edit);
+router.put('/faqs/:id',          faqController.update);
+router.delete('/faqs/:id',       faqController.destroy);
 
 /* ── Settings ── */
 router.get('/settings/general',        settingsController.general);

@@ -1,0 +1,50 @@
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+  <div></div>
+  <a href="/admin/faqs/create" class="btn btn-primary" style="display:inline-flex;align-items:center;gap:8px">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    New FAQ
+  </a>
+</div>
+
+<% if (faqs.length === 0) { %>
+<div class="empty-state">
+  <p>No FAQs yet. Add one to display on the homepage.</p>
+</div>
+<% } else { %>
+<div class="admin-table-wrap">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th style="width:40px">#</th>
+        <th>Question</th>
+        <th style="width:110px">Published</th>
+        <th style="width:100px">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% faqs.forEach((f, i) => { %>
+      <tr>
+        <td style="color:var(--text-muted);font-size:0.85rem"><%= f.sort_order || i + 1 %></td>
+        <td><strong><%= f.question %></strong></td>
+        <td>
+          <% if (f.is_published) { %>
+            <span class="badge badge-confirmed">Published</span>
+          <% } else { %>
+            <span class="badge badge-cancelled">Hidden</span>
+          <% } %>
+        </td>
+        <td>
+          <div style="display:flex;gap:8px;align-items:center">
+            <a href="/admin/faqs/<%= f.id %>/edit" class="btn btn-secondary btn-sm">Edit</a>
+            <form method="POST" action="/admin/faqs/<%= f.id %>?_method=DELETE" onsubmit="return confirm('Delete this FAQ?')">
+              <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<p style="margin-top:12px;font-size:0.82rem;color:var(--text-muted)">FAQs are shown on the homepage in sort order. Lower numbers appear first.</p>
+<% } %>

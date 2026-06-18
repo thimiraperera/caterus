@@ -13,6 +13,19 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="/styles.css"/>
+  <% if (typeof faqs !== 'undefined' && faqs.length > 0) { %>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": <%- JSON.stringify(faqs.map(f => ({
+      "@type": "Question",
+      "name": f.question,
+      "acceptedAnswer": { "@type": "Answer", "text": f.answer }
+    }))) %>
+  }
+  </script>
+  <% } %>
 </head>
 <body>
   <div class="noise" aria-hidden="true"></div>
@@ -468,12 +481,18 @@
         <a href="#search" class="btn btn--fill faq__btn">Find a caterer</a>
       </div>
       <div class="faq__items">
+        <% if (typeof faqs !== 'undefined' && faqs.length > 0) { %>
+          <% faqs.forEach((f, i) => { %>
+          <details class="faq-d" data-reveal data-delay="<%= i * 50 %>"><summary><%- f.question %><span class="faq-d__icon"></span></summary><p><%- f.answer %></p></details>
+          <% }) %>
+        <% } else { %>
         <details class="faq-d" data-reveal data-delay="0"><summary>How does Caterus vet caterers?<span class="faq-d__icon"></span></summary><p>Every application is reviewed by our team. We verify food safety certifications, public liability insurance, ABN registration and conduct quality checks. Only approved caterers are listed.</p></details>
         <details class="faq-d" data-reveal data-delay="50"><summary>How much does it cost?<span class="faq-d__icon"></span></summary><p>Searching and browsing is completely free. You only pay when you confirm a booking. The price shown is always the final price - no hidden fees, no surprise charges.</p></details>
         <details class="faq-d" data-reveal data-delay="100"><summary>Can I customise my menu?<span class="faq-d__icon"></span></summary><p>Yes. When building your order you can choose menu items, add dietary requirements (vegan, gluten-free, halal etc.), select add-ons and specify delivery or setup instructions - all before you pay.</p></details>
         <details class="faq-d" data-reveal data-delay="150"><summary>How do payments work?<span class="faq-d__icon"></span></summary><p>All payments are processed securely via Stripe. You pay Caterus when you book. After the event is completed, we release payment to the caterer minus our commission. This protects both parties.</p></details>
         <details class="faq-d" data-reveal data-delay="200"><summary>What if I need to cancel?<span class="faq-d__icon"></span></summary><p>Cancellation policies are shown on each caterer's profile. Generally, 14+ days before the event receives a full refund. For emergencies, contact our support - we'll do everything we can to help.</p></details>
         <details class="faq-d" data-reveal data-delay="250"><summary>Which cities do you serve?<span class="faq-d__icon"></span></summary><p>We currently serve Melbourne, Sydney and Brisbane. We're expanding to Adelaide and Perth in 2026. Enter your suburb in the search to see available caterers near you.</p></details>
+        <% } %>
       </div>
     </div>
   </section>
