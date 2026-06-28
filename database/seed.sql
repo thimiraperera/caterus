@@ -5,7 +5,7 @@
 
 -- ── Admin ──
 INSERT INTO admins (email, password_hash, name, role) VALUES
-('admin@caterus.com.au', '$2a$12$LJ3m4ys3Rl8MHxvo3.GFOO8gMDZfPGKBRXkGhKdDuQxBtBpFxGe.i', 'Admin', 'super_admin');
+('admin@caterus.com.au', '$2a$12$hDyobWlkKjVNP4DPmCJH4OE.3E9Ujxum2ZjUfO5gZSq8irEgxIYli', 'Admin', 'super_admin');
 
 -- ── Caterers ──
 INSERT INTO caterers (slug, business_name, tagline, description, cuisine_type, suburb, city, postcode, state, contact_name, contact_email, contact_phone, abn, price_from, min_guests, max_guests, min_notice_days, response_time, featured_image, is_published, is_featured, rating_avg, review_count, status) VALUES
